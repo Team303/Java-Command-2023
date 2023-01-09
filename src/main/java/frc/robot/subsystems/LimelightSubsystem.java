@@ -13,11 +13,11 @@ public class LimelightSubsystem extends SubsystemBase {
     /* ShuffleBoard */
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
     
-    public static final GenericEntry VALID_TARGETS = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-    public static final GenericEntry OFFSET_X = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-    public static final GenericEntry OFFSET_Y = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-    public static final GenericEntry TARGET_AREA = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-    public static final GenericEntry SKEW_ROTATION = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
+    public static final GenericEntry VALID_TARGETS = DRIVEBASE_TAB.add("Valid Targets", 0).getEntry();
+    public static final GenericEntry OFFSET_X = DRIVEBASE_TAB.add("Offset X", 0).getEntry();
+    public static final GenericEntry OFFSET_Y = DRIVEBASE_TAB.add("Offset Y", 0).getEntry();
+    public static final GenericEntry TARGET_AREA = DRIVEBASE_TAB.add("Target Area", 0).getEntry();
+    public static final GenericEntry SKEW_ROTATION = DRIVEBASE_TAB.add("Skew Rotation", 0).getEntry();
 
     public static final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight"); 
 
