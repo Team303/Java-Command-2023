@@ -59,6 +59,11 @@ public final class RobotMap {
 		public static final double DRIVE_GEAR_RATIO = 12.75; // Toughbox mini 12.75:1
 		public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for each encoder unit
 
+		/* Starting Position */
+		public static final double STARTING_X = 0;
+		public static final double STARTING_Y = 0;
+
+
 		static {
 			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
 			double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
