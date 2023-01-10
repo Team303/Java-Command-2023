@@ -18,7 +18,7 @@ public class CrosshairAlign extends CommandBase {
 
 
     public CrosshairAlign() {
-        addRequirements(SwerveSubsystem.getSwerve());
+        addRequirements(swerve);
         PIDController xControl = new PIDController(0.01, 0, 0);
         PIDController yControl = new PIDController(0.01, 0, 0);
     }

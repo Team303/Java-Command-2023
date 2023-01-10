@@ -2,29 +2,26 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.NetworkTable;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.GenericEntry;
 import frc.robot.Robot;
 import frc.robot.RobotMap.Swerve;
-
-import com.ctre.phoenix.sensors.CANCoder;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -55,19 +52,24 @@ public class SwerveSubsystem extends SubsystemBase {
 	/*Chasis Speeds*/
 	private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-	/*Define location of modules as vector*/
+	/* Kinematics */
 	private final SwerveDriveKinematics kinematics;
+
+	/* Odometry */
+	SwerveDriveOdometry odometry;
 
 	/*Shuffleboard Tab*/
 	private static final ShuffleboardTab SWERVE_TAB = Shuffleboard.getTab("Swerve");
 
-	private static SwerveSubsystem instance;
+	private Pose2d pose;
 
 	public static final double MAX_VOLTAGE = 12.0;
 
 	public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
 		SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
 		SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
+
+	private static SwerveSubsystem instance;
 
 	public SwerveSubsystem() {
 
@@ -118,6 +120,15 @@ public class SwerveSubsystem extends SubsystemBase {
 			Swerve.RIGHT_BACK_STEER_CANCODER_ID,
 			Swerve.RIGHT_BACK_STEER_OFFSET
 		);
+
+		odometry = new SwerveDriveOdometry(
+			kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+			new SwerveModulePosition[] {
+				new SwerveModulePosition(leftFrontModule.getDriveDistance(), Rotation2d.fromDegrees(leftFrontModule.getSteerAngle())),
+				new SwerveModulePosition(leftBackModule.getDriveDistance(), Rotation2d.fromDegrees(leftBackModule.getSteerAngle())),
+				new SwerveModulePosition(rightFrontModule.getDriveDistance(), Rotation2d.fromDegrees(rightFrontModule.getSteerAngle())),
+				new SwerveModulePosition(rightBackModule.getDriveDistance(), Rotation2d.fromDegrees(rightBackModule.getSteerAngle()))
+			}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 	}
 
 	/* return instance of swerve subsystem*/
@@ -127,6 +138,12 @@ public class SwerveSubsystem extends SubsystemBase {
 			return new SwerveSubsystem();
 		}
 		return instance;
+	}
+
+	/* return current positition and angle */
+
+	public Pose2d getPose() {
+		return pose;
 	}
 
 	/*get average encoders*/
@@ -189,5 +206,16 @@ public class SwerveSubsystem extends SubsystemBase {
 			LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightBackModule.getSteerAngle());
 			NAVX_ANGLE_ENTRY.setDouble(Robot.getNavX().getAngle());
 			NAVX_RATE_ENTRY.setDouble(Robot.getNavX().getRate());
+
+			/* Update Pose */
+			Rotation2d angle = Rotation2d.fromDegrees(Robot.getNavX().getAngle());
+
+			pose = odometry.update(angle,
+			new SwerveModulePosition[] {
+				new SwerveModulePosition(leftFrontModule.getDriveDistance(), Rotation2d.fromDegrees(leftFrontModule.getSteerAngle())),
+				new SwerveModulePosition(leftBackModule.getDriveDistance(), Rotation2d.fromDegrees(leftBackModule.getSteerAngle())),
+				new SwerveModulePosition(rightFrontModule.getDriveDistance(), Rotation2d.fromDegrees(rightFrontModule.getSteerAngle())),
+				new SwerveModulePosition(rightBackModule.getDriveDistance(), Rotation2d.fromDegrees(rightBackModule.getSteerAngle()))
+			});
 	}
 }
