@@ -2,6 +2,8 @@
 
 package frc.robot.subsystems;
 
+import javax.swing.plaf.basic.BasicSplitPaneUI.KeyboardHomeHandler;
+
 import com.ctre.phoenix.sensors.CANCoder;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
@@ -20,6 +22,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.revrobotics.CANSparkMax;
 import frc.robot.Robot;
 import frc.robot.RobotMap.Swerve;
 
@@ -121,13 +124,15 @@ public class SwerveSubsystem extends SubsystemBase {
 			Swerve.RIGHT_BACK_STEER_OFFSET
 		);
 
+
+
 		odometry = new SwerveDriveOdometry(
 			kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 			new SwerveModulePosition[] {
-				new SwerveModulePosition(leftFrontModule.getDriveDistance(), Rotation2d.fromDegrees(leftFrontModule.getSteerAngle())),
-				new SwerveModulePosition(leftBackModule.getDriveDistance(), Rotation2d.fromDegrees(leftBackModule.getSteerAngle())),
-				new SwerveModulePosition(rightFrontModule.getDriveDistance(), Rotation2d.fromDegrees(rightFrontModule.getSteerAngle())),
-				new SwerveModulePosition(rightBackModule.getDriveDistance(), Rotation2d.fromDegrees(rightBackModule.getSteerAngle()))
+				new SwerveModulePosition(leftFrontModule.getDriveDistance(), Rotation2d.fromRadians(leftFrontModule.getSteerAngle())),
+				new SwerveModulePosition(leftBackModule.getDriveDistance(), Rotation2d.fromRadians(leftBackModule.getSteerAngle())),
+				new SwerveModulePosition(rightFrontModule.getDriveDistance(), Rotation2d.fromRadians(rightFrontModule.getSteerAngle())),
+				new SwerveModulePosition(rightBackModule.getDriveDistance(), Rotation2d.fromRadians(rightBackModule.getSteerAngle()))
 			}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 	}
 
@@ -138,6 +143,11 @@ public class SwerveSubsystem extends SubsystemBase {
 			return new SwerveSubsystem();
 		}
 		return instance;
+	}
+
+	/* return kinematics instance */
+	public SwerveDriveKinematics getKinematics() {
+		return kinematics;
 	}
 
 	/* return current positition and angle */
@@ -160,39 +170,48 @@ public class SwerveSubsystem extends SubsystemBase {
 		rightBackEncoder.setPosition(0);
 	}
 
-	/*driving methods*/
-
-	public void robotOrientedDrive(Translation2d translation, double rotation) {
-		robotOrientedOffCenterDrive(translation, rotation, new Translation2d(0,0));
-	}
-
-	public void robotOrientedOffCenterDrive(Translation2d translation, double rotation, Translation2d centerOfRotation) {
-
+	public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
-		chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-		drive(chassisSpeeds, centerOfRotation);
+
+		if (fieldOriented) {
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
+		}
+		else {
+			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+		}
+
+		drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 	}
 
-	public void fieldoOrientedDrive(Translation2d translation, double rotation) {
-		fieldOrientedOffCenterDrive(translation, rotation, new Translation2d(0,0));
-	}
-
-	public void fieldOrientedOffCenterDrive(Translation2d translation, double rotation, Translation2d centerOfRotation) {
+	public void offCenterDrive(Translation2d translation, double rotation, Translation2d centerOfRotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
-		chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
-		drive(chassisSpeeds, centerOfRotation);
+
+		if (fieldOriented) {
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
+		}
+		else {
+			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+		}
+
+		drive(kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation));
 	}
 
 	/*generic drive method*/
 
-	private void drive(ChassisSpeeds chassisSpeeds, Translation2d centerOfRotation) {
-		SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation);
+	public void drive(SwerveModuleState[] state) {
 
 		/*map speed of swerve modules to voltage*/
-		leftFrontModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-		rightFrontModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-		leftBackModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-		rightBackModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+		leftFrontModule.set(state[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[0].angle.getRadians());
+		rightFrontModule.set(state[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[1].angle.getRadians());
+		leftBackModule.set(state[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[2].angle.getRadians());
+		rightBackModule.set(state[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[3].angle.getRadians());
+	}
+
+	public void stop() {
+		leftFrontModule.set(0, leftFrontModule.getSteerAngle());
+		rightFrontModule.set(0, rightBackModule.getSteerAngle());
+		leftBackModule.set(0, leftBackModule.getSteerAngle());
+		rightBackModule.set(0, rightFrontModule.getSteerAngle());
 	}
 
 
@@ -212,10 +231,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
 			pose = odometry.update(angle,
 			new SwerveModulePosition[] {
-				new SwerveModulePosition(leftFrontModule.getDriveDistance(), Rotation2d.fromDegrees(leftFrontModule.getSteerAngle())),
-				new SwerveModulePosition(leftBackModule.getDriveDistance(), Rotation2d.fromDegrees(leftBackModule.getSteerAngle())),
-				new SwerveModulePosition(rightFrontModule.getDriveDistance(), Rotation2d.fromDegrees(rightFrontModule.getSteerAngle())),
-				new SwerveModulePosition(rightBackModule.getDriveDistance(), Rotation2d.fromDegrees(rightBackModule.getSteerAngle()))
+				new SwerveModulePosition(leftFrontModule.getDriveDistance(), Rotation2d.fromRadians(leftFrontModule.getSteerAngle())),
+				new SwerveModulePosition(leftBackModule.getDriveDistance(), Rotation2d.fromRadians(leftBackModule.getSteerAngle())),
+				new SwerveModulePosition(rightFrontModule.getDriveDistance(), Rotation2d.fromRadians(rightFrontModule.getSteerAngle())),
+				new SwerveModulePosition(rightBackModule.getDriveDistance(), Rotation2d.fromRadians(rightBackModule.getSteerAngle()))
 			});
 	}
 }

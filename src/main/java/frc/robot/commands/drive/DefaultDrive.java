@@ -5,20 +5,24 @@ import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Robot;
 
-public class RobotOrientedDrive extends CommandBase {
+public class DefaultDrive extends CommandBase {
 
-    public RobotOrientedDrive() {
+    boolean fieldOriented;
+
+    public DefaultDrive(boolean fieldOriented) {
         addRequirements(SwerveSubsystem.getSwerve());
+        this.fieldOriented = fieldOriented;
     }
 
     @Override
     public void execute() {
-        SwerveSubsystem.getSwerve().robotOrientedDrive(
+        SwerveSubsystem.getSwerve().drive(
             new Translation2d(
                 Robot.getRightJoyStick().getX(), 
                 Robot.getRightJoyStick().getY()
             ), 
-            Robot.getLeftJoyStick().getY()
+            Robot.getLeftJoyStick().getY(),
+            fieldOriented
         );
     }
 }

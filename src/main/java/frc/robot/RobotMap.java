@@ -63,6 +63,10 @@ public final class RobotMap {
 		public static final double STARTING_X = 0;
 		public static final double STARTING_Y = 0;
 
+		/* Voltage Constants */
+		public static final double VOLTS = 0;
+		public static final double VOLTS_SECONDS_PER_METER = 0;
+		public static final double VOLTS_SECONDS_PER_METER_SQUARED = 0;
 
 		static {
 			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
@@ -87,6 +91,13 @@ public final class RobotMap {
 		public static final float SOFT_LIMIT = 1000;
 
 		public static final boolean CLIMB_MOTOR_INVERTED = true;
+	}
+
+	public static final class Auto {
+		public static final double MAX_VELOCITY = 10;
+		public static final double MAX_ACCELERATION = 10;
+		public static final double RAMSETE_B = 10;
+		public static final double RAMSETE_ZETA = 10;
 	}
 
 	public static final class IOConstants {

@@ -26,7 +26,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.commands.led.LEDSolidColor;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.commands.drive.FieldOrientedDrive;
+import frc.robot.commands.drive.DefaultDrive;
 
 public class Robot extends TimedRobot {
 
@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
 		configureButtonBindings();
 
 		//set default commands
-		SwerveSubsystem.getSwerve().setDefaultCommand(new FieldOrientedDrive());
+		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
 
 		// Start Camera
 		CameraServer.startAutomaticCapture();
