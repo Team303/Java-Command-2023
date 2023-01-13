@@ -17,7 +17,7 @@ public class Autolevel extends PIDCommand{
             PID_CONTROLLER,
             () -> -Robot.getNavX().getRawGyroY(),
             gyro,
-            (output) -> SwerveSubsystem.getSwerve().fieldoOrientedDrive(new Translation2d(0, output*10), 0.0),
+            (output) -> SwerveSubsystem.getSwerve().fieldoOrientedDrive(new Translation2d(0, output), 0.0),
             SwerveSubsystem.getSwerve());
 
             getController().setTolerance(1, 0);
