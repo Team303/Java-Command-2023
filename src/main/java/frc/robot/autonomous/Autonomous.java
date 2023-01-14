@@ -3,6 +3,10 @@ package frc.robot.autonomous;
 import static frc.robot.autonomous.AutonomousProgram.create;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import java.io.FileNotFoundException;
+
+import frc.robot.commands.drive.DriveWait;
+import frc.robot.commands.drive.FollowTrajectory;
 
 /**
  * Quick guide to Comand Groups:
@@ -29,5 +33,27 @@ public class Autonomous {
 
   public static void init() {
     /* Start with back against hub */
+    
+    /*create (
+      "Follow Trajectory",
+      () -> {
+        try {
+          return new SequentialCommandGroup(
+            new FollowTrajectory("PathWeaver/output/Unnamed.wpilib.json")
+          );
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
+      }
+    );*/
+
+    create (
+      "DriveWait",
+      () -> 
+      new SequentialCommandGroup(
+        new DriveWait(10)
+      )
+    );
   }
 }
