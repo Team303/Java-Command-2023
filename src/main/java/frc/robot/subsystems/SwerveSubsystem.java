@@ -34,7 +34,7 @@ import frc.robot.RobotMap.Swerve;
 public class SwerveSubsystem extends SubsystemBase {
 
 	/* Field Sim */
-	private static final Field2d field = new Field2d();
+	public static final Field2d field = new Field2d();
 
 	/* ShuffleBoard */
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
@@ -49,7 +49,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final GenericEntry LEFT_BACK_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Back Left Steer Angle", 0).getEntry();
 	public static final GenericEntry RIGHT_BACK_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Back Right Steer Angle", 0).getEntry();
 	public static final GenericEntry DRIVE_ENCODER_ENTRY = DRIVEBASE_TAB.add("Average Encoders", 0).getEntry();
-	public static final ComplexWidget FIELD_SIM_ENTRY = DRIVEBASE_TAB.add("FIELD SIM", field);
+	//public static final ComplexWidget FIELD_SIM_ENTRY = DRIVEBASE_TAB.add("FIELD SIM", field);
 
 	/*Swerve Modules*/
 
@@ -86,7 +86,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	private SwerveSubsystem() {
 
-		SmartDashboard.putData("Field", field);
+		SmartDashboard.putData("FIELD SIM", field);
 
 		leftFrontEncoder = new CANCoder(Swerve.LEFT_FRONT_DRIVE_CANCODER_ID);
 		leftBackEncoder = new CANCoder(Swerve.LEFT_BACK_DRIVE_CANCODER_ID);
@@ -111,7 +111,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			Swerve.LEFT_FRONT_STEER_OFFSET
 		);
 
-		
+
 		leftBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
 			DRIVEBASE_TAB.getLayout("leftBackModule", BuiltInLayouts.kGrid)
 				.withSize(2, 4)
@@ -144,7 +144,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			Swerve.RIGHT_BACK_STEER_CANCODER_ID,
 			Swerve.RIGHT_BACK_STEER_OFFSET
 		);
-		
+
 		odometry = new SwerveDriveOdometry(
 			kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 			new SwerveModulePosition[] {
@@ -244,7 +244,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			rightFrontModule.getPosition(),
 			rightBackModule.getPosition(),
 		});
-		
+
 		/* Update ShuffleBoard */
 		DRIVE_ENCODER_ENTRY.setDouble(getEncoderDistance());
 		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(leftFrontModule.getSteerAngle());
@@ -252,10 +252,12 @@ public class SwerveSubsystem extends SubsystemBase {
 		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightFrontModule.getSteerAngle());
 		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightBackModule.getSteerAngle());
 		NAVX_ANGLE_ENTRY.setDouble(Robot.getNavX().getAngle());
-		NAVX_RATE_ENTRY.setDouble(Robot.getNavX().getRate());	
+		NAVX_RATE_ENTRY.setDouble(Robot.getNavX().getRate());
 		POSITION_X_ENTRY.setDouble(pose.getX());
 		POSITION_Y_ENTRY.setDouble(pose.getY());
 
 		field.setRobotPose(odometry.getPoseMeters());
+		//SmartDashboard.putData("Pose", odometry);
+
 	}
 }

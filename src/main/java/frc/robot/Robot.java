@@ -27,6 +27,19 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.commands.led.LEDSolidColor;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.commands.drive.DefaultDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.geometry.Rotation2d;
+import java.util.List;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.commands.drive.FollowTrajectory;
+import java.io.FileNotFoundException;
 
 public class Robot extends TimedRobot {
 
@@ -83,8 +96,13 @@ public class Robot extends TimedRobot {
 		//set default commands
 		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
 
+		//add Autos to Shuffleboard
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
+
 		// Start Camera
-		CameraServer.startAutomaticCapture();
+		if (Robot.isReal())
+			CameraServer.startAutomaticCapture();
 	}
 
 	@Override
@@ -128,6 +146,28 @@ public class Robot extends TimedRobot {
 	}
 
 	private void configureButtonBindings() {
+
+	}
+
+	
+	@Override
+	public void simulationInit() {
+
+		//set default commands
+		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
+
+		//Path Weaver Trajectory
+		try {
+			Trajectory trajectory = FollowTrajectory.convert("PathWeaver/output/GoodAuto.wpilib.json");
+			// Push the trajectory to Field2d.
+			SwerveSubsystem.field.getObject("traj").setTrajectory(trajectory);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override 
+	public void simulationPeriodic() {
 
 	}
 
