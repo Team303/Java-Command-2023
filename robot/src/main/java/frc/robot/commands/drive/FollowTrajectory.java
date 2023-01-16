@@ -19,7 +19,7 @@ import java.io.FileNotFoundException;
 
 public class FollowTrajectory extends SwerveControllerCommand {
 
-    private static Trajectory convert(String dir) throws FileNotFoundException {
+    public static Trajectory convert(String dir) throws FileNotFoundException {
         try {
             return TrajectoryUtil.fromPathweaverJson(Filesystem.getDeployDirectory().toPath().resolve(dir));
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class FollowTrajectory extends SwerveControllerCommand {
         );
     }
 
-    private FollowTrajectory(String directory, ProfiledPIDController angleController) throws FileNotFoundException {
+    public FollowTrajectory(String directory, ProfiledPIDController angleController) throws FileNotFoundException {
             super(
                 convert(directory),
                 SwerveSubsystem.getSwerve()::getPose,

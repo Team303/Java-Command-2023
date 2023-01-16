@@ -138,6 +138,8 @@ $RECYCLE.BIN/
 ### Gradle ###
 .gradle
 /build/
+robot/build/
+kinematics/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
