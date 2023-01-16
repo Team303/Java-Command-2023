@@ -1,6 +1,6 @@
 // Copyright (c) 2022 Team 303
 
-package frc.robot.commands;
+package com.team303.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;

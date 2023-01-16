@@ -1,11 +1,10 @@
-package frc.robot.commands.drive;
+package com.team303.robot.commands.drive;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -14,8 +13,11 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import frc.robot.RobotMap.Auto;
+
 import java.io.FileNotFoundException;
+
+import com.team303.robot.RobotMap.Auto;
+import com.team303.robot.subsystems.SwerveSubsystem;
 
 public class FollowTrajectory extends SwerveControllerCommand {
 

@@ -1,8 +1,9 @@
-package frc.robot.commands.led;
+package com.team303.robot.commands.led;
+
+import com.team303.robot.Robot;
+import com.team303.robot.subsystems.LEDSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.subsystems.LEDSubsystem;
 
 public class LEDFade extends CommandBase {
 

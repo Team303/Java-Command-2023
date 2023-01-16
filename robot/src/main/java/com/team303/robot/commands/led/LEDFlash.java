@@ -1,12 +1,13 @@
-package frc.robot.commands.led;
+package com.team303.robot.commands.led;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import com.team303.robot.Robot;
+import com.team303.robot.RobotMap;
+import com.team303.robot.subsystems.LEDSubsystem;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.Robot;
-import frc.robot.RobotMap;
-import frc.robot.subsystems.LEDSubsystem;
 
 public class LEDFlash extends CommandBase {
 

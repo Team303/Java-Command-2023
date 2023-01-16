@@ -1,6 +1,8 @@
 // Copyright (c) 2022 Team 303
 
-package frc.robot.subsystems;
+package com.team303.robot.subsystems;
+
+import com.team303.robot.RobotMap.LED;
 
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -8,7 +10,6 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotMap.LED;
 
 public class LEDSubsystem extends SubsystemBase {
 

@@ -1,11 +1,12 @@
 // Copyright (c) 2022 Team 303
 
-package frc.robot.commands.led;
+package com.team303.robot.commands.led;
+
+import com.team303.robot.Robot;
+import com.team303.robot.subsystems.LEDSubsystem;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.subsystems.LEDSubsystem;
 
 public class LEDSolidColor extends CommandBase {
 	Color color;

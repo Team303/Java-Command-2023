@@ -1,12 +1,13 @@
-package frc.robot.autonomous;
-
-import static frc.robot.autonomous.AutonomousProgram.create;
+package com.team303.robot.autonomous;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
+import static com.team303.robot.autonomous.AutonomousProgram.create;
+
 import java.io.FileNotFoundException;
 
-import frc.robot.commands.drive.DriveWait;
-import frc.robot.commands.drive.FollowTrajectory;
+import com.team303.robot.commands.drive.DriveWait;
+import com.team303.robot.commands.drive.FollowTrajectory;
 
 /**
  * Quick guide to Comand Groups:

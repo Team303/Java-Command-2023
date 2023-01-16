@@ -1,6 +1,6 @@
 // Copyright (c) 2022 Team 303
 
-package frc.robot.subsystems;
+package com.team303.robot.subsystems;
 
 import java.lang.reflect.GenericArrayType;
 
@@ -8,6 +8,8 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
+import com.team303.robot.Robot;
+import com.team303.robot.RobotMap.Swerve;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,8 +30,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Robot;
-import frc.robot.RobotMap.Swerve;
 
 public class SwerveSubsystem extends SubsystemBase {
 

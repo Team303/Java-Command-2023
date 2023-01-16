@@ -2,17 +2,23 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.led;
+package com.team303.robot.commands.led;
 
+import com.team303.robot.Robot;
+import com.team303.robot.subsystems.LEDSubsystem;
+
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.subsystems.LEDSubsystem;
 
-public class LEDRainbowRotate extends CommandBase {
-	private int hue = 0;
+public class LEDLeftRight extends CommandBase {
+	private Color left;
+	private Color right;
 
-	public LEDRainbowRotate() {
+	public LEDLeftRight(Color left, Color right) {
 		addRequirements(LEDSubsystem.getLED());
+
+		this.left = left;
+		this.right = right;
 	}
 
 	@Override
@@ -22,15 +28,13 @@ public class LEDRainbowRotate extends CommandBase {
 
 	@Override
 	public void execute() {
+		int bufferLen = LEDSubsystem.getLED().ledBuffer.getLength() / 2;
 
-		int hue = this.hue++;
-
-		// for each singlar LED a assign a color
-		for (var i = 0; i < LEDSubsystem.getLED().ledBuffer.getLength(); i++) {
-			LEDSubsystem.getLED().ledBuffer.setHSV(i, (hue + i) % 180, 255, 10);
+		for (int i = 0; i < bufferLen; i++) {
+			LEDSubsystem.getLED().ledBuffer.setLED(i, this.left);
+			LEDSubsystem.getLED().ledBuffer.setLED(bufferLen + i, this.right);
 		}
 
-		// send the color to be used by the LEDSubsystem
 		LEDSubsystem.getLED().writeData();
 	}
 

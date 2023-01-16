@@ -1,6 +1,6 @@
 // Copyright (c) 2022 Team 303
 
-package frc.robot;
+package com.team303.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
 

@@ -1,7 +1,17 @@
-package frc.robot;
+package com.team303.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.team303.robot.RobotMap.IOConstants;
+import com.team303.robot.RobotMap.LED;
+import com.team303.robot.autonomous.Autonomous;
+import com.team303.robot.autonomous.AutonomousProgram;
+import com.team303.robot.commands.drive.DefaultDrive;
+import com.team303.robot.commands.drive.DriveWait;
+import com.team303.robot.commands.drive.FollowTrajectory;
+import com.team303.robot.commands.led.LEDSolidColor;
+import com.team303.robot.subsystems.ArmSubsystem;
+import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,16 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.RobotMap.IOConstants;
-import frc.robot.RobotMap.LED;
-import frc.robot.autonomous.Autonomous;
-import frc.robot.autonomous.AutonomousProgram;
-import frc.robot.commands.drive.DriveWait;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.commands.led.LEDSolidColor;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.commands.drive.DefaultDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -37,8 +37,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.math.trajectory.Trajectory;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.commands.drive.FollowTrajectory;
+
 import java.io.FileNotFoundException;
 
 public class Robot extends TimedRobot {
