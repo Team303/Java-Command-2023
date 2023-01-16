@@ -8,7 +8,6 @@ import com.team303.robot.Robot;
 import com.team303.robot.subsystems.LEDSubsystem;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
 public class LEDRainbowRotate extends CommandBase {
 	private int hue = 0;
 

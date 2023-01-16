@@ -69,6 +69,9 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
+    implementation project(':team303libs')
+    implementation files('../team303libs/build/libs/team303-kinematics-0.1.0.jar') 
+
 }
 
 test {
