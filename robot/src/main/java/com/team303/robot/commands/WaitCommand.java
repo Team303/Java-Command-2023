@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class WaitCommand extends CommandBase {
 	private double waitTime;
-	private Timer timer;
+	private Timer timer = new Timer();
 
 	public WaitCommand(double seconds, Subsystem... subsystems) {
 		this.waitTime = seconds;

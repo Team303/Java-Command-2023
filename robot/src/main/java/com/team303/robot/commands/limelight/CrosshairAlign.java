@@ -12,8 +12,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 
 public class CrosshairAlign extends CommandBase {
 
-    public static final NetworkTable limelight = LimelightModule.getLimelight();
-    public static final SwerveSubsystem swerve = SwerveSubsystem.getSwerve();
+    private static final NetworkTable limelight = LimelightModule.getLimelight();
+    private static final SwerveSubsystem swerve = SwerveSubsystem.getSwerve();
 
     public static PIDController xControl;
     public static PIDController yControl;
@@ -39,6 +39,6 @@ public class CrosshairAlign extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return xControl.atSetpoint() && yControl.atSetpoint();
+        return  limelight.getEntry("tv").getDouble(0) < 1 || xControl.atSetpoint() && yControl.atSetpoint();
     }
 }

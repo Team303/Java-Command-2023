@@ -3,6 +3,7 @@
 package com.team303.robot;
 
 import edu.wpi.first.wpilibj.util.Color;
+import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
 
 /*
 TODO Change around all the CAN IDs to fit
@@ -77,6 +78,39 @@ public final class RobotMap {
 					* axelRotationsPerMotorRotation
 					* wheelCircumference;
 		}
+
+		/* Default Module Configurations */
+		public static final MechanicalConfiguration MK4I_L2_LEFT_FRONT = new MechanicalConfiguration(
+            0.10033,
+            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+            true,
+            (14.0 / 50.0) * (10.0 / 60.0),
+            false
+    	);
+
+		public static final MechanicalConfiguration MK4I_L2_LEFT_BACK = new MechanicalConfiguration(
+            0.10033,
+            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+            true,
+            (14.0 / 50.0) * (10.0 / 60.0),
+            false
+    	);
+
+		public static final MechanicalConfiguration MK4I_L2_RIGHT_FRONT = new MechanicalConfiguration(
+            0.10033,
+            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+            true,
+            (14.0 / 50.0) * (10.0 / 60.0),
+            false
+    	);
+
+		public static final MechanicalConfiguration MK4I_L2_RIGHT_BACK = new MechanicalConfiguration(
+            0.10033,
+            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+            true,
+            (14.0 / 50.0) * (10.0 / 60.0),
+            false
+    	);
 	}
 
 	public static final class Climber {

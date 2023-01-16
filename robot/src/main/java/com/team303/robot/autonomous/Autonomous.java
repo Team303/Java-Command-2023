@@ -35,19 +35,19 @@ public class Autonomous {
   public static void init() {
     /* Start with back against hub */
     
-    /*create (
+    create (
       "Follow Trajectory",
       () -> {
         try {
           return new SequentialCommandGroup(
-            new FollowTrajectory("PathWeaver/output/Unnamed.wpilib.json")
+            new FollowTrajectory("PathWeaver/output/GoodAuto.wpilib.json")
           );
         } catch (Exception e) {
           e.printStackTrace();
           return null;
         }
       }
-    );*/
+    );
 
     create (
       "DriveWait",

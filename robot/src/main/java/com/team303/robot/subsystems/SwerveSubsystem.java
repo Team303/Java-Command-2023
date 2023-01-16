@@ -5,11 +5,6 @@ package com.team303.robot.subsystems;
 import java.lang.reflect.GenericArrayType;
 
 import com.ctre.phoenix.sensors.CANCoder;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
-import com.swervedrivespecialties.swervelib.ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
-import com.team303.robot.Robot;
-import com.team303.robot.RobotMap.Swerve;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,12 +19,16 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
+import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import com.swervedrivespecialties.swervelib.MotorType;
+import frc.robot.Robot;
+import frc.robot.RobotMap.Swerve;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -100,59 +99,70 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Translation2d(-Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0)
 		);
 
-		leftFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
-			DRIVEBASE_TAB.getLayout("leftFrontModule", BuiltInLayouts.kGrid)
+		leftFrontModule = new MkSwerveModuleBuilder()
+			.withLayout(
+				DRIVEBASE_TAB.getLayout("leftFrontModule", BuiltInLayouts.kGrid)
 				.withSize(2, 4)
-				.withPosition(2, 0),
-			GearRatio.L2,
-			Swerve.LEFT_FRONT_DRIVE_ID,
-			Swerve.LEFT_FRONT_STEER_ID,
-			Swerve.LEFT_FRONT_STEER_CANCODER_ID,
-			Swerve.LEFT_FRONT_STEER_OFFSET
-		);
+				.withPosition(4, 0))
+			.withGearRatio(Swerve.MK4I_L2_LEFT_FRONT)
+			.withDriveMotor(MotorType.FALCON, Swerve.LEFT_FRONT_DRIVE_ID)
+			.withSteerMotor(MotorType.NEO, Swerve.LEFT_FRONT_STEER_ID)
+			.withSteerEncoderPort(Swerve.LEFT_FRONT_STEER_CANCODER_ID)
+			.build();
 
-
-		leftBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
-			DRIVEBASE_TAB.getLayout("leftBackModule", BuiltInLayouts.kGrid)
+		leftBackModule = new MkSwerveModuleBuilder()
+			.withLayout(
+				DRIVEBASE_TAB.getLayout("leftBackModule", BuiltInLayouts.kGrid)
 				.withSize(2, 4)
-				.withPosition(4, 0),
-			GearRatio.L2,
-			Swerve.LEFT_BACK_DRIVE_ID,
-			Swerve.LEFT_BACK_STEER_ID,
-			Swerve.LEFT_BACK_STEER_CANCODER_ID,
-			Swerve.LEFT_BACK_STEER_OFFSET
-		);
+				.withPosition(4, 0))
+			.withGearRatio(Swerve.MK4I_L2_LEFT_BACK)
+			.withDriveMotor(MotorType.FALCON, Swerve.LEFT_BACK_DRIVE_ID)
+			.withSteerMotor(MotorType.NEO, Swerve.LEFT_BACK_STEER_ID)
+			.withSteerEncoderPort(Swerve.LEFT_BACK_STEER_CANCODER_ID)
+			.build();
 
-		rightFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
-			DRIVEBASE_TAB.getLayout("rightFrontModule", BuiltInLayouts.kGrid)
+		rightFrontModule = new MkSwerveModuleBuilder()
+			.withLayout(
+				DRIVEBASE_TAB.getLayout("rightFrontModule", BuiltInLayouts.kGrid)
 				.withSize(2, 4)
-				.withPosition(6, 0),
-			GearRatio.L2,
-			Swerve.RIGHT_FRONT_DRIVE_ID,
-			Swerve.RIGHT_FRONT_STEER_ID,
-			Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
-			Swerve.RIGHT_FRONT_STEER_OFFSET
-		);
+				.withPosition(4, 0))
+			.withGearRatio(Swerve.MK4I_L2_RIGHT_FRONT)
+			.withDriveMotor(MotorType.FALCON, Swerve.RIGHT_FRONT_DRIVE_ID)
+			.withSteerMotor(MotorType.NEO, Swerve.RIGHT_FRONT_STEER_ID)
+			.withSteerEncoderPort(Swerve.RIGHT_FRONT_STEER_CANCODER_ID)
+			.build();
 
-		rightBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
-			DRIVEBASE_TAB.getLayout("rightBackModule", BuiltInLayouts.kGrid)
+		rightBackModule = new MkSwerveModuleBuilder()
+			.withLayout(
+				DRIVEBASE_TAB.getLayout("rightBackModule", BuiltInLayouts.kGrid)
 				.withSize(2, 4)
-				.withPosition(8, 0),
-			GearRatio.L2,
-			Swerve.RIGHT_BACK_DRIVE_ID,
-			Swerve.RIGHT_BACK_STEER_ID,
-			Swerve.RIGHT_BACK_STEER_CANCODER_ID,
-			Swerve.RIGHT_BACK_STEER_OFFSET
-		);
+				.withPosition(4, 0))
+			.withGearRatio(Swerve.MK4I_L2_RIGHT_BACK)
+			.withDriveMotor(MotorType.FALCON, Swerve.RIGHT_BACK_DRIVE_ID)
+			.withSteerMotor(MotorType.NEO, Swerve.RIGHT_BACK_STEER_ID)
+			.withSteerEncoderPort(Swerve.RIGHT_BACK_STEER_CANCODER_ID)
+			.build();
 
-		odometry = new SwerveDriveOdometry(
-			kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
-			new SwerveModulePosition[] {
-				leftFrontModule.getPosition(),
-				leftBackModule.getPosition(),
-				rightFrontModule.getPosition(),
-				rightBackModule.getPosition(),
-			}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+		if (RobotBase.isReal()) {
+			odometry = new SwerveDriveOdometry(
+				kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+				new SwerveModulePosition[] {
+					leftFrontModule.getPosition(),
+					leftBackModule.getPosition(),
+					rightFrontModule.getPosition(),
+					rightBackModule.getPosition(),
+				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+		}
+		else {
+			odometry = new SwerveDriveOdometry(
+				kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+				new SwerveModulePosition[] {
+					leftFrontModule.getPosition(),
+					leftBackModule.getPosition(),
+					rightFrontModule.getPosition(),
+					rightBackModule.getPosition(),
+				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+		}
 
 	}
 
