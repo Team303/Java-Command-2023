@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team303libs.kinematics.IKWrapper;
 
-
 //import com.team303.lib.kinematics.IKWrapper;
 
 public class ArmSubsystem extends SubsystemBase {
