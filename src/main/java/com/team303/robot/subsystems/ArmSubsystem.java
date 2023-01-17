@@ -8,13 +8,13 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.team303libs.kinematics.IKWrapper;
 
 
 //import com.team303.lib.kinematics.IKWrapper;
 
 public class ArmSubsystem extends SubsystemBase {
 
-	/* ShuffleBoard */
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
 	private static ArmSubsystem instance = new ArmSubsystem();
 	private ArmSubsystem() {

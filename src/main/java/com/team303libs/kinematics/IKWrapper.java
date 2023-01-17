@@ -1,4 +1,4 @@
-package com.team303.lib.kinematics;
+package com.team303libs.kinematics;
 
 import java.util.HashMap;
 

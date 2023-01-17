@@ -23,12 +23,16 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
-import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
+//import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
+//import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
+//import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+
+import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
+//import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.MotorType;
-import frc.robot.Robot;
-import frc.robot.RobotMap.Swerve;
+import com.team303.robot.Robot;
+import com.team303.robot.RobotMap.Swerve;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -98,6 +102,13 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Translation2d(-Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
 			new Translation2d(-Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0)
 		);
+/* 
+		leftFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
+		leftBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
+		rightFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
+		rightBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
+*/
+		
 
 		leftFrontModule = new MkSwerveModuleBuilder()
 			.withLayout(
@@ -166,29 +177,29 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	}
 
-	/* return instance of swerve subsystem*/
+	//return instance of swerve subsystem
 	public static SwerveSubsystem getSwerve() {
 		return instance;
 	}
 
-	/* return kinematics instance */
+	//return kinematics instance
 	public SwerveDriveKinematics getKinematics() {
 		return kinematics;
 	}
 
-	/* return current positition and angle */
+	//return current positition and angle
 
 	public Pose2d getPose() {
 		return pose;
 	}
 
-	/*get average encoders*/
+	//get average encoders
 
 	public double getEncoderDistance() {
 		return (leftFrontEncoder.getPosition() + leftBackEncoder.getPosition() + rightFrontEncoder.getPosition() + rightBackEncoder.getPosition()) / 4.0;
 	}
 
-	/*reset encoders*/
+	//reset encoders
 	public void setEncoderDistance() {
 		leftFrontEncoder.setPosition(0);
 		leftBackEncoder.setPosition(0);
@@ -222,11 +233,11 @@ public class SwerveSubsystem extends SubsystemBase {
 		drive(kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation));
 	}
 
-	/*generic drive method*/
+	//generic drive method
 
 	public void drive(SwerveModuleState[] state) {
 
-		/*map speed of swerve modules to voltage*/
+		//map speed of swerve modules to voltage
 		leftFrontModule.set(state[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[0].angle.getRadians());
 		rightFrontModule.set(state[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[1].angle.getRadians());
 		leftBackModule.set(state[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[2].angle.getRadians());
@@ -244,7 +255,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 
-		/* Update Pose */
+		//Update Pose
 		Rotation2d angle = Rotation2d.fromDegrees(Robot.getNavX().getAngle());
 
 		pose = odometry.update(angle,
@@ -255,7 +266,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			rightBackModule.getPosition(),
 		});
 
-		/* Update ShuffleBoard */
+		//Update ShuffleBoard
 		DRIVE_ENCODER_ENTRY.setDouble(getEncoderDistance());
 		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(leftFrontModule.getSteerAngle());
 		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(leftBackModule.getSteerAngle());
