@@ -4,11 +4,15 @@
 
 package com.team303.robot.subsystems;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.team303.robot.RobotMap.Arm;
+import com.team303libs.kinematics.IKWrapper;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.team303libs.kinematics.IKWrapper;
 
 
 //import com.team303.lib.kinematics.IKWrapper;
@@ -16,8 +20,17 @@ import com.team303libs.kinematics.IKWrapper;
 public class ArmSubsystem extends SubsystemBase {
 
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
+	/* Joint motors */
+	private final CANSparkMax shoulderJoint;
+	private final CANSparkMax elbowJoint;
+	private final CANSparkMax clawJoint;
+
+	private final RelativeEncoder shoulderEncoder;
+	private final RelativeEncoder elbowEncoder;
+	private final RelativeEncoder clawEncoder;
 	private static ArmSubsystem instance = new ArmSubsystem();
 	private ArmSubsystem() {
+		//Initialize arm with constant values
 		IKWrapper arm = new IKWrapper();
 		arm.setArmLength(86.03f);
 		arm.setSegmentLengthRatio(0,0.5f);
@@ -31,9 +44,18 @@ public class ArmSubsystem extends SubsystemBase {
 		arm.setSegmentInitialDirection(1,0f);
 		arm.setSegmentInitialDirection(2,(float)-Math.PI/4);
 		arm.initializeArm();
+		shoulderJoint = new CANSparkMax(Arm.SHOULDER_JOINT_ID, MotorType.kBrushless);
+		elbowJoint = new CANSparkMax(Arm.ELBOW_JOINT_ID, MotorType.kBrushless);
+		clawJoint = new CANSparkMax(Arm.CLAW_JOINT_ID, MotorType.kBrushless);
+		shoulderEncoder = shoulderJoint.getEncoder();
+		elbowEncoder = elbowJoint.getEncoder();
+		clawEncoder = clawJoint.getEncoder();
 	}
 	public static ArmSubsystem getArm() {
 		return instance;
+	}
+	public void reach() {
+		
 	}
 
 

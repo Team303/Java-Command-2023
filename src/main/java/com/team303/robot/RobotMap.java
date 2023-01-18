@@ -113,14 +113,16 @@ public final class RobotMap {
     	);
 	}
 
-	public static final class Climber {
+	public static final class Arm {
 
-		public static final int CLIMB_PORT_ID = 7;
-		public static final int BOTTOM_LEFT_LIMIT_SWITCH = 0;
+		public static final int SHOULDER_JOINT_ID = 17;
+		public static final int ELBOW_JOINT_ID = 18;
+		public static final int CLAW_JOINT_ID = 19;
+		/*public static final int BOTTOM_LEFT_LIMIT_SWITCH = 0;
 		public static final int BOTTOM_RIGHT_LIMIT_SWITCH = 1;
 		public static final int TOP_RIGHT_LIMIT_SWITCH = 8;
 		public static final int TOP_LEFT_LIMIT_SWITCH = 9;
-		public static final int NEUTRAL_TOGGLE_SWITCH = 4;
+		public static final int NEUTRAL_TOGGLE_SWITCH = 4;*/
 
 		public static final float SOFT_LIMIT = 1000;
 

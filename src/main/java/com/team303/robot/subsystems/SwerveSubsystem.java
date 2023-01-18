@@ -154,26 +154,16 @@ public class SwerveSubsystem extends SubsystemBase {
 			.withSteerEncoderPort(Swerve.RIGHT_BACK_STEER_CANCODER_ID)
 			.build();
 
-		if (RobotBase.isReal()) {
-			odometry = new SwerveDriveOdometry(
-				kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
-				new SwerveModulePosition[] {
-					leftFrontModule.getPosition(),
-					leftBackModule.getPosition(),
-					rightFrontModule.getPosition(),
-					rightBackModule.getPosition(),
-				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
-		}
-		else {
-			odometry = new SwerveDriveOdometry(
-				kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
-				new SwerveModulePosition[] {
-					leftFrontModule.getPosition(),
-					leftBackModule.getPosition(),
-					rightFrontModule.getPosition(),
-					rightBackModule.getPosition(),
-				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
-		}
+
+		odometry = new SwerveDriveOdometry(
+			kinematics,	Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+			new SwerveModulePosition[] {
+				leftFrontModule.getPosition(),
+				leftBackModule.getPosition(),
+				rightFrontModule.getPosition(),
+				rightBackModule.getPosition(),
+			}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+
 
 	}
 
