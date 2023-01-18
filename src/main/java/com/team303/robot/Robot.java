@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
 
 		//Path Weaver Trajectory
 		try {
-			Trajectory trajectory = FollowTrajectory.convert("PathWeaver/output/GoodAuto.wpilib.json");
+			Trajectory trajectory = FollowTrajectory.convert("output/Test.wpilib.json");
 			// Push the trajectory to Field2d.
 			SwerveSubsystem.field.getObject("traj").setTrajectory(trajectory);
 		} catch (Exception e) {
