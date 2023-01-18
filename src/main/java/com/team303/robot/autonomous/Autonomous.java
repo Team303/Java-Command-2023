@@ -40,7 +40,7 @@ public class Autonomous {
       () -> {
         try {
           return new SequentialCommandGroup(
-            new FollowTrajectory("PathWeaver/output/GoodAuto.wpilib.json")
+            new FollowTrajectory("output/Test.wpilib.json")
           );
         } catch (Exception e) {
           e.printStackTrace();
