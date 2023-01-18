@@ -23,16 +23,12 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
-//import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
-//import com.swervedrivespecialties.swervelib.MkModuleConfiguration;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
-//import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.MotorType;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -88,7 +84,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	private static SwerveSubsystem instance = new SwerveSubsystem();
 
 	private SwerveSubsystem() {
-
 		SmartDashboard.putData("FIELD SIM", field);
 
 		leftFrontEncoder = new CANCoder(Swerve.LEFT_FRONT_DRIVE_CANCODER_ID);
@@ -109,6 +104,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		rightBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
 */
 		
+		if (Robot.isReal()) {}
 
 		leftFrontModule = new MkSwerveModuleBuilder()
 			.withLayout(
@@ -267,8 +263,9 @@ public class SwerveSubsystem extends SubsystemBase {
 		POSITION_X_ENTRY.setDouble(pose.getX());
 		POSITION_Y_ENTRY.setDouble(pose.getY());
 
-		field.setRobotPose(odometry.getPoseMeters());
-		//SmartDashboard.putData("Pose", odometry);
+		//field.setRobotPose(odometry.getPoseMeters());
+		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
+		
 
 	}
 }

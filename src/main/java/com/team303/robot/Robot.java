@@ -17,7 +17,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -37,10 +36,15 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import java.io.FileNotFoundException;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
@@ -89,6 +93,37 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void robotInit() {
+		Logger logger = Logger.getInstance();
+
+		// Record metadata
+		logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+		logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+		logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+		logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+		logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+		switch (BuildConstants.DIRTY) {
+			case 0:
+			logger.recordMetadata("GitDirty", "All changes committed");
+			break;
+			case 1:
+			logger.recordMetadata("GitDirty", "Uncomitted changes");
+			break;
+			default:
+			logger.recordMetadata("GitDirty", "Unknown");
+			break;
+		}
+
+		    // Set up data receivers & replay source
+		if (Robot.isReal()) {
+			// Running on a real robot, log to a USB stick
+			logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+			logger.addDataReceiver(new NT4Publisher());
+		}
+		else {
+			logger.addDataReceiver(new WPILOGWriter(""));
+			logger.addDataReceiver(new NT4Publisher());
+		}
+
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
@@ -102,6 +137,8 @@ public class Robot extends TimedRobot {
 		// Start Camera
 		if (Robot.isReal())
 			CameraServer.startAutomaticCapture();
+
+		logger.start();
 	}
 
 	@Override

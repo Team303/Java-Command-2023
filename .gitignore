@@ -162,3 +162,8 @@ bin/
 
 # Simulation GUI and other tools window save file
 *-window.json
+
+#stuff
+src/main/java/frc/robot/BuildConstants.java
+
+*.wpilog
