@@ -47,6 +47,20 @@ public class Autonomous {
     );
 
     create (
+      "Straight Forward",
+      () -> {
+        try {
+          return new SequentialCommandGroup(
+            new FollowTrajectory("output/StraightForward.wpilib.json")
+          );
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
+      }
+    );
+
+    create (
       "DriveWait",
       () -> 
       new SequentialCommandGroup(

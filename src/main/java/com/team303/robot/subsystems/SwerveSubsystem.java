@@ -26,11 +26,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 import com.swervedrivespecialties.swervelib.MotorType;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.wpilibj.Timer;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
+
+	/* odometry sim */
+	private final double DELAY_MS = 100.0;
+    private final double SECOND_TO_MS = 1000.0;
+    private final Timer timer = new Timer();
+	private double last = 0;
+
+	//private Rotation2d angle = new Rotation2d();
+	private double angle = 0;
+	private double positions[] = {0, 0, 0, 0};
 
 	/* Field Sim */
 	public static final Field2d field = new Field2d();
@@ -73,7 +85,8 @@ public class SwerveSubsystem extends SubsystemBase {
 	/* Odometry */
 	SwerveDriveOdometry odometry;
 
-	private Pose2d pose;
+	private Pose2d pose = new Pose2d();
+	private SwerveDrivePoseEstimator poseEstimator;
 
 	public static final double MAX_VOLTAGE = 12.0;
 
@@ -84,6 +97,9 @@ public class SwerveSubsystem extends SubsystemBase {
 	private static SwerveSubsystem instance = new SwerveSubsystem();
 
 	private SwerveSubsystem() {
+		
+		timer.start();
+
 		SmartDashboard.putData("FIELD SIM", field);
 
 		leftFrontEncoder = new CANCoder(Swerve.LEFT_FRONT_DRIVE_CANCODER_ID);
@@ -160,6 +176,17 @@ public class SwerveSubsystem extends SubsystemBase {
 				rightBackModule.getPosition(),
 			}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 
+		poseEstimator = new SwerveDrivePoseEstimator(
+			kinematics, 
+			new Rotation2d(), 
+			new SwerveModulePosition[] {
+				new SwerveModulePosition(0.0, new Rotation2d()),
+				new SwerveModulePosition(0.0, new Rotation2d()),
+				new SwerveModulePosition(0.0, new Rotation2d()),
+				new SwerveModulePosition(0.0, new Rotation2d()),
+			}, 
+			new Pose2d()
+		);
 
 	}
 
@@ -196,8 +223,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
 
-		if (fieldOriented) {
+		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
+		}
+		else if (fieldOriented && !Robot.isReal()) {
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromRadians(angle));
 		}
 		else {
 			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
@@ -240,17 +270,47 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
+		SmartDashboard.putBoolean("Evaluate", false);
 
-		//Update Pose
-		Rotation2d angle = Rotation2d.fromDegrees(Robot.getNavX().getAngle());
+		
+		SwerveModuleState[] current = kinematics.toSwerveModuleStates(chassisSpeeds);
 
-		pose = odometry.update(angle,
-		new SwerveModulePosition[] {
-			leftFrontModule.getPosition(),
-			leftBackModule.getPosition(),
-			rightFrontModule.getPosition(),
-			rightBackModule.getPosition(),
-		});
+		if (Robot.isReal()) {
+			//Update Pose
+ 
+
+			pose = odometry.update(
+				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+				new SwerveModulePosition[] {
+					leftFrontModule.getPosition(),
+					leftBackModule.getPosition(),
+					rightFrontModule.getPosition(),
+					rightBackModule.getPosition(),
+				}
+			);
+		}
+		else {
+
+			if ((timer.get() * SECOND_TO_MS) - last >= DELAY_MS) {
+				last = timer.get();
+				SmartDashboard.putBoolean("Evaluate", true);
+				angle += chassisSpeeds.omegaRadiansPerSecond / SECOND_TO_MS * DELAY_MS;
+				positions[0] += current[0].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
+				positions[1] += current[1].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
+				positions[2] += current[2].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
+				positions[3] += current[3].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
+
+				//random 4 lol
+				pose = odometry.update(Rotation2d.fromRadians(angle * 4),
+				new SwerveModulePosition[] {
+					new SwerveModulePosition(positions[0], current[0].angle),
+					new SwerveModulePosition(positions[1], current[1].angle),
+					new SwerveModulePosition(positions[2], current[2].angle),
+					new SwerveModulePosition(positions[3], current[3].angle),
+				});
+
+			}
+		}
 
 		//Update ShuffleBoard
 		DRIVE_ENCODER_ENTRY.setDouble(getEncoderDistance());
@@ -265,6 +325,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		//field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
+		Logger.getInstance().recordOutput("Odometry", pose);
 		
 
 	}
