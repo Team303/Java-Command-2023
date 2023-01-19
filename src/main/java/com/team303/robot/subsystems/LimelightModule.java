@@ -20,6 +20,7 @@ public class LimelightModule extends SubsystemBase {
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
     
     public static final NetworkTable limelight = Robot.getNetworkTableInstance().getTable("limelight"); 
+    
 
     public static final DoubleSubscriber VALID_TARGETS_SUB = limelight.getDoubleTopic("tv").subscribe(0);
     public static final DoubleSubscriber OFFSET_X_SUB = limelight.getDoubleTopic("tx").subscribe(0.0);

@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,6 +32,8 @@ import edu.wpi.first.wpilibj.Timer;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.DoublePublisher;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -51,6 +54,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
 	//public static final ShuffleboardTab FIELD_TAB = Shuffleboard.getTab("Drivebase");
 
+	/*
 	public static final GenericEntry NAVX_ANGLE_ENTRY = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
 	public static final GenericEntry NAVX_RATE_ENTRY = DRIVEBASE_TAB.add("NavX Rate", 0).getEntry();
 	public static final GenericEntry POSITION_X_ENTRY = DRIVEBASE_TAB.add("Position X", 0).getEntry();
@@ -60,6 +64,18 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final GenericEntry LEFT_BACK_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Back Left Steer Angle", 0).getEntry();
 	public static final GenericEntry RIGHT_BACK_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Back Right Steer Angle", 0).getEntry();
 	public static final GenericEntry DRIVE_ENCODER_ENTRY = DRIVEBASE_TAB.add("Average Encoders", 0).getEntry();
+*/
+	public static final NetworkTable swerveTable = Robot.getNetworkTableInstance().getTable("swerve");
+
+	public static final DoublePublisher NAVX_ANGLE_PUB = swerveTable.getDoubleTopic("NavX Angle").publish();
+	public static final DoublePublisher NAVX_RATE_PUB = swerveTable.getDoubleTopic("NavX Rate").publish();
+	public static final DoublePublisher POS_X_PUB = swerveTable.getDoubleTopic("Position X").publish();
+	public static final DoublePublisher POS_Y_PUB = swerveTable.getDoubleTopic("Position Y").publish();
+	public static final DoublePublisher LEFT_FRONT_STEER_ANGLE_PUB = swerveTable.getDoubleTopic("Front Left Steer Angle").publish();
+	public static final DoublePublisher RIGHT_FRONT_STEER_ANGLE_PUB = swerveTable.getDoubleTopic("Front Right Steer Angle").publish();
+	public static final DoublePublisher LEFT_BACK_STEER_ANGLE_PUB = swerveTable.getDoubleTopic("Back Left Steer Angle").publish();
+	public static final DoublePublisher RIGHT_BACK_STEER_ANGLE_PUB = swerveTable.getDoubleTopic("Back Right Steer Angle").publish();
+	public static final DoublePublisher DRIVE_ENCODER_PUB = swerveTable.getDoubleTopic("Average Encoders").publish();
 	//public static final ComplexWidget FIELD_SIM_ENTRY = DRIVEBASE_TAB.add("FIELD SIM", field);
 
 	/*Swerve Modules*/
@@ -313,20 +329,18 @@ public class SwerveSubsystem extends SubsystemBase {
 		}
 
 		//Update ShuffleBoard
-		DRIVE_ENCODER_ENTRY.setDouble(getEncoderDistance());
-		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(leftFrontModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(leftBackModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightFrontModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightBackModule.getSteerAngle());
-		NAVX_ANGLE_ENTRY.setDouble(Robot.getNavX().getAngle());
-		NAVX_RATE_ENTRY.setDouble(Robot.getNavX().getRate());
-		POSITION_X_ENTRY.setDouble(pose.getX());
-		POSITION_Y_ENTRY.setDouble(pose.getY());
+		NAVX_ANGLE_PUB.set(Robot.getNavX().getAngle());
+		NAVX_RATE_PUB.set(Robot.getNavX().getRate());
+		POS_X_PUB.set(pose.getX());
+		POS_Y_PUB.set(pose.getY());
+		LEFT_FRONT_STEER_ANGLE_PUB.set(leftFrontModule.getSteerAngle());
+		LEFT_BACK_STEER_ANGLE_PUB.set(leftBackModule.getSteerAngle());
+		RIGHT_FRONT_STEER_ANGLE_PUB.set(rightFrontModule.getSteerAngle());
+		RIGHT_BACK_STEER_ANGLE_PUB.set(leftBackModule.getSteerAngle());
+		DRIVE_ENCODER_PUB.set(getEncoderDistance());
 
 		//field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
 		Logger.getInstance().recordOutput("Odometry", pose);
-		
-
 	}
 }
