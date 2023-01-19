@@ -3,9 +3,6 @@ package com.team303.robot.autonomous;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import static com.team303.robot.autonomous.AutonomousProgram.create;
-
-import java.io.FileNotFoundException;
-
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 
