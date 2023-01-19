@@ -3,9 +3,6 @@ package com.team303.robot.autonomous;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 import static com.team303.robot.autonomous.AutonomousProgram.create;
-
-import java.io.FileNotFoundException;
-
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 
@@ -40,7 +37,21 @@ public class Autonomous {
       () -> {
         try {
           return new SequentialCommandGroup(
-            new FollowTrajectory("PathWeaver/output/GoodAuto.wpilib.json")
+            new FollowTrajectory("output/Test.wpilib.json")
+          );
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
+      }
+    );
+
+    create (
+      "Straight Forward",
+      () -> {
+        try {
+          return new SequentialCommandGroup(
+            new FollowTrajectory("output/StraightForward.wpilib.json")
           );
         } catch (Exception e) {
           e.printStackTrace();
