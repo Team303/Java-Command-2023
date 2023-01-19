@@ -164,6 +164,6 @@ bin/
 *-window.json
 
 #stuff
-src/main/java/frc/robot/BuildConstants.java
+src/main/java/com/team303/robot/BuildConstants.java
 
 *.wpilog
