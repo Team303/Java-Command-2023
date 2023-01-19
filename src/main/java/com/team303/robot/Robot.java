@@ -1,7 +1,6 @@
 package com.team303.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
@@ -14,6 +13,8 @@ import com.team303.robot.commands.led.LEDSolidColor;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
@@ -42,7 +43,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-import java.io.FileNotFoundException;
 
 public class Robot extends LoggedRobot {
 
@@ -62,6 +62,8 @@ public class Robot extends LoggedRobot {
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
 
+	private static final NetworkTableInstance inst = NetworkTableInstance.getDefault();;
+
 	/*Getter Methods*/
 
 	public static AHRS getNavX() {
@@ -74,6 +76,10 @@ public class Robot extends LoggedRobot {
 
 	public static Joystick getLeftJoyStick() {
 		return leftJoystick;
+	}
+
+	public static NetworkTableInstance getNetworkTableInstance() {
+		return inst;
 	}
 
 	/**
@@ -90,6 +96,7 @@ public class Robot extends LoggedRobot {
 
 	// The command configured to run during auto
 	private Command autonomousCommand;
+;
 
 	@Override
 	public void robotInit() {

@@ -12,13 +12,14 @@ import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 
+import com.team303.robot.Robot;
+
 public class LimelightModule extends SubsystemBase {
 
     /* ShuffleBoard */
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
     
-    public static final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    public static final NetworkTable limelight = inst.getTable("limelight"); 
+    public static final NetworkTable limelight = Robot.getNetworkTableInstance().getTable("limelight"); 
 
     public static final DoubleSubscriber VALID_TARGETS_SUB = limelight.getDoubleTopic("tv").subscribe(0);
     public static final DoubleSubscriber OFFSET_X_SUB = limelight.getDoubleTopic("tx").subscribe(0.0);

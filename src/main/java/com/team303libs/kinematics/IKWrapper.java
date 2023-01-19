@@ -101,7 +101,6 @@ public class IKWrapper {
     public double[] getIKAnglesRadians() {
         double[] outputAnglesRadians = new double[chain.getNumBones()];
         Vec2f vectorDirection = new Vec2f();
-        double doubleDirection;
         for (int i=0;i<chain.getNumBones(); i++) {
             vectorDirection = chain.getBone(i).getDirectionUV();
             outputAnglesRadians[i] = Math.atan2(vectorDirection.y,vectorDirection.x);
