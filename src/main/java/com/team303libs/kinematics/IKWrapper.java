@@ -4,10 +4,9 @@ import java.util.HashMap;
 
 import au.edu.federation.caliko.FabrikBone2D;
 import au.edu.federation.caliko.FabrikChain2D;
-import au.edu.federation.caliko.FabrikStructure2D;
 import au.edu.federation.caliko.FabrikChain2D.BaseboneConstraintType2D;
+import au.edu.federation.caliko.FabrikStructure2D;
 import au.edu.federation.utils.Vec2f;
-
 import edu.wpi.first.math.geometry.Translation3d;
 //import com.team303.robot.Robot;
 
@@ -24,7 +23,7 @@ public class IKWrapper {
     float armLength;
 
     public void setArmLength(float lengthInches) {
-        float armLength = lengthInches;
+        armLength = lengthInches;
     }
     public float getArmLength() {
         return armLength;
@@ -45,7 +44,6 @@ public class IKWrapper {
         return segmentRatio.get(segmentIndex);
     }
     public void setSegmentLengths() {
-        float[] output;
         int x=0;
         for (float i : segmentRatio.values()) {
             segmentLength.put(x,i*armLength);
@@ -106,5 +104,15 @@ public class IKWrapper {
             outputAnglesRadians[i] = Math.atan2(vectorDirection.y,vectorDirection.x);
         }
         return outputAnglesRadians;
+    }
+
+    public float getIKPositionError() {
+        Vec2f forwardKinematics = new Vec2f();
+        for (int i=0;i<chain.getNumBones(); i++) {
+           Vec2f vectorDirection = chain.getBone(i).getDirectionUV();
+           forwardKinematics = forwardKinematics.plus(vectorDirection.times(chain.getBone(i).length()));
+        }
+        Vec2f inverseKinematics = chain.getEffectorLocation();
+        return Vec2f.distanceBetween(forwardKinematics,inverseKinematics);
     }
 }
