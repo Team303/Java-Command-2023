@@ -95,13 +95,15 @@ public class ArmSubsystem extends SubsystemBase {
 	public static ArmSubsystem getArm() {
 		return instance;
 	}
-	public static void reach(Translation3d translation) {
+	public void reach(Translation3d translation) {
 		caliko.solveTargetIK(translation);
 		//Units of error are inches
 		if (caliko.getIKPositionError()>=5) {
 			return;
 		}
-		double[] desiredRadianAngles = caliko.getIKAnglesRadians();
+		reach(caliko.getIKAnglesRadians());
+	}
+	public void reach(double[]desiredRadianAngles) {
 		shoulderControl.setGoal(desiredRadianAngles[0]);
 		elbowControl.setGoal(desiredRadianAngles[1]);
 		clawControl.setGoal(desiredRadianAngles[2]);

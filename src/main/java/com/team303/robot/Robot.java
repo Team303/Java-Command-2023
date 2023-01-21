@@ -5,11 +5,12 @@ import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
+import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.led.LEDSolidColor;
-//import com.team303.robot.subsystems.ArmSubsystem;
+import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -52,6 +53,7 @@ public class Robot extends LoggedRobot {
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
+	private static final XboxController XBOX_CONTROLLER = new XboxController(0);
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -76,6 +78,10 @@ public class Robot extends LoggedRobot {
 
 	public static Joystick getLeftJoyStick() {
 		return leftJoystick;
+	}
+
+	public static XboxController getXbox() {
+		return XBOX_CONTROLLER;
 	}
 
 	public static NetworkTableInstance getNetworkTableInstance() {
@@ -136,6 +142,7 @@ public class Robot extends LoggedRobot {
 
 		//set default commands
 		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
+		ArmSubsystem.getArm().setDefaultCommand(new DefaultIKControlCommand());
 
 		//add Autos to Shuffleboard
 		Autonomous.init();
