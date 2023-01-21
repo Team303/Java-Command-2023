@@ -105,7 +105,7 @@ public class IKWrapper {
         }
         return outputAnglesRadians;
     }
-
+    //Returns inches
     public float getIKPositionError() {
         Vec2f forwardKinematics = new Vec2f();
         for (int i=0;i<chain.getNumBones(); i++) {

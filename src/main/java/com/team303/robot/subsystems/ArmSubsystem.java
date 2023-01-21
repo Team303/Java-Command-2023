@@ -97,6 +97,10 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 	public static void reach(Translation3d translation) {
 		caliko.solveTargetIK(translation);
+		//Units of error are inches
+		if (caliko.getIKPositionError()>=5) {
+			return;
+		}
 		double[] desiredRadianAngles = caliko.getIKAnglesRadians();
 		shoulderControl.setGoal(desiredRadianAngles[0]);
 		elbowControl.setGoal(desiredRadianAngles[1]);
@@ -112,15 +116,8 @@ public class ArmSubsystem extends SubsystemBase {
 		getArm().shoulderJoint.setVoltage(shoulderFeedForward+shoulderFeedback);
 		getArm().elbowJoint.setVoltage(elbowFeedForward+elbowFeedback);
 		getArm().clawJoint.setVoltage(clawFeedForward+clawFeedback);
-
-
-
-
-		//If forward kinematics aren't within a range of inverse kinematics end effector, don't perform the reach
-		//During teleop, an x-position and a y-position are provided and then reach is performed
-		//During auto, desired angles are inputted
-		
 	}
+
 	public void resetEncoders() {
 		shoulderEncoder.setPosition(0.0);
 		elbowEncoder.setPosition(0.0);
