@@ -42,9 +42,12 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import com.team303.robot.subsystems.LimelightModule;
 
 
 public class Robot extends LoggedRobot {
+
+	public static final ShuffleboardTab LIMELIGHT_TAB = Shuffleboard.getTab("limelight");
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
@@ -135,15 +138,15 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		//set default commands
-		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
+		//SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
 
 		//add Autos to Shuffleboard
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
-		if (Robot.isReal())
-			CameraServer.startAutomaticCapture();
+		//if (Robot.isReal())
+			//CameraServer.startAutomaticCapture();
 
 		logger.start();
 	}
@@ -230,6 +233,11 @@ public class Robot extends LoggedRobot {
 		 * robot's periodic
 		 * block in order for anything in the Command-based framework to work.
 		 */
+
+		SmartDashboard.putNumber("X crosshair", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Y crosshair", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Num Targets", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Target Area", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
 
 		try {
 			CommandScheduler.getInstance().run();
