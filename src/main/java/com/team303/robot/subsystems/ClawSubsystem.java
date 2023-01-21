@@ -22,7 +22,7 @@ public class ClawSubsystem extends SubsystemBase {
 	public final GroundedDigitalInput innerLeft;
 	public final GroundedDigitalInput innerRight;
 
-    private final int encoderGo;
+    //private final int encoderGo;
 
 	public ClawSubsystem(int encoderRotations) 
     {
@@ -36,7 +36,7 @@ public class ClawSubsystem extends SubsystemBase {
 	innerLeft = new GroundedDigitalInput(15);
 	innerRight = new GroundedDigitalInput(22);
 
-    encoderRotations = encoder
+   // encoderRotations = encoder
     
     }
 
@@ -54,12 +54,12 @@ public class ClawSubsystem extends SubsystemBase {
 			return innerRight.get() || innerLeft.get();
 		}
 
-        public void close(double speed) {
+         public void close(double speed) {
 		if ((outerLimitReached() && speed < 0) || (innerLimitReached() && speed > 0)) {
-			climbMotor.set(0);
+			//climbMotor.set(0);
 			return;
 		}
-		climbMotor.set(speed);
+		//climbMotor.set(speed);
 	}
 
 		

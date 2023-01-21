@@ -9,9 +9,9 @@ import com.team303.robot.Robot;
 import com.team303.robot.RobotMap;
 import com.team303.robot.subsystems.ClawSubsystem;
 //eat my claw ass arav. eat it
-public class Closeclaw extends CommandBase
+public class CloseClaw extends CommandBase
 {
-    public Closeclaw()
+    public CloseClaw()
     {
     
     }
