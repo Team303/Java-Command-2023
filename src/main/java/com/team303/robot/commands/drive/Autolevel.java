@@ -1,8 +1,8 @@
-package frc.robot.commands.drive;
+package com.team303.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.Robot;
-import frc.robot.subsystems.SwerveSubsystem;
+import com.team303.robot.Robot;
+import com.team303.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -16,7 +16,7 @@ public class Autolevel extends PIDCommand{
             PID_CONTROLLER,
             () -> -Robot.getNavX().getRawGyroY(),
             gyro,
-            (output) -> SwerveSubsystem.getSwerve().fieldoOrientedDrive(new Translation2d(0, output), 0.0),
+            (output) -> SwerveSubsystem.getSwerve().drive(new Translation2d(0, output), 0.0,true),
             SwerveSubsystem.getSwerve());
 
             getController().setTolerance(1, 0);

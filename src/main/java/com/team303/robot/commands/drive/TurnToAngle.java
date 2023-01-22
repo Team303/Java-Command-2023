@@ -1,8 +1,8 @@
-package frc.robot.commands.drive;
+package com.team303.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.PIDCommand;
-import frc.robot.Robot;
-import frc.robot.subsystems.SwerveSubsystem;
+import com.team303.robot.Robot;
+import com.team303.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -13,7 +13,7 @@ public class TurnToAngle extends PIDCommand {
         super(new PIDController(0.01, 0, 0),
             ()->Robot.getNavX().getAngle(),
             angle,
-            (output) -> SwerveSubsystem.getSwerve().fieldoOrientedDrive(new Translation2d(0, 0), output),
+            (output) -> SwerveSubsystem.getSwerve().drive(new Translation2d(0, 0), output,true),
             SwerveSubsystem.getSwerve()
         );
     
