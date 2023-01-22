@@ -2,59 +2,81 @@ package com.team303.robot.subsystems;
 
 import java.util.List;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import com.team303.robot.Robot;
+import com.team303.robot.RobotMap.PhotonvisionConstants;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.PhotonUtils;
-
-import com.team303.robot.RobotMap.PhotonvisionConstants;
 
 public class PhotonvisionModule extends SubsystemBase {
     
     public static final ShuffleboardTab PHOTONVISION_TAB = Shuffleboard.getTab("PhotonVision");
     
+    public static final NetworkTable photonvision = Robot.getNetworkTableInstance().getTable("PhotonVision"); 
+
     public static final GenericEntry APRILTAG_ID = PHOTONVISION_TAB.add("April ID", 0).getEntry();
     public static final GenericEntry TARGET_AMBIGUITY = PHOTONVISION_TAB.add("ID Ambiguity", 0).getEntry();
     public static final GenericEntry TARGET_YAW = PHOTONVISION_TAB.add("ID Yaw", 0).getEntry();
     public static final GenericEntry TARGET_PITCH = PHOTONVISION_TAB.add("ID Pitch", 0).getEntry();
     public static final GenericEntry TARGET_SKEW = PHOTONVISION_TAB.add("ID Skew", 0).getEntry();
+
+    private final PhotonCamera camera;
+    private static PhotonvisionModule instance = new PhotonvisionModule();
    // public static final GenericEntry TARGET_CORNERS = PHOTONVISION_TAB.add("ID Corners", 0).getEntry();
 
-    private static PhotonCamera camera = new PhotonCamera("photovision");
-
+    private PhotonvisionModule() {
+       camera = new PhotonCamera("photovision");
+    }
+    public static PhotonvisionModule getPhotonvision() {
+        return instance;
+    }
     public PhotonCamera getCamera() {
-        return camera;
+        return getPhotonvision().camera;
     }
 
     public PhotonPipelineResult getLatestResult() {
-        return camera.getLatestResult();
+        return getPhotonvision().camera.getLatestResult();
     }
 
     public Boolean hasTargets() {
-        return camera.getLatestResult().hasTargets();
+        return getPhotonvision().camera.getLatestResult().hasTargets();
     }
 
     public List<PhotonTrackedTarget> getTargetList() {
-        return camera.getLatestResult().getTargets();
+        return getPhotonvision().camera.getLatestResult().getTargets();
     }
 
     public PhotonTrackedTarget getBestTarget() {
-        return camera.getLatestResult().getBestTarget();
+        return getPhotonvision().camera.getLatestResult().getBestTarget();
     }
 
     public void takeImage() {
-        camera.takeInputSnapshot();
+        getPhotonvision().camera.takeInputSnapshot();
     }
 
     public void getImages() {
-        camera.takeOutputSnapshot();
+        getPhotonvision().camera.takeOutputSnapshot();
+    }
+    public void setCubePipeline() {
+        getPhotonvision().camera.setPipelineIndex(0);
+    }
+    public void setConePipeline() {
+        getPhotonvision().camera.setPipelineIndex(1);
+    }
+    public void setAprilTagPipeline() {
+        getPhotonvision().camera.setPipelineIndex(2);
+    }
+    public int getPipelineIndex() {
+        return getPhotonvision().camera.getPipelineIndex();
     }
 
     public double getDistanceToTarget() {

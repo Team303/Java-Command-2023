@@ -19,9 +19,7 @@ public class ReachConeToNodeCommand extends CommandBase {
 
     public ReachConeToNodeCommand() {
         addRequirements(swerve,arm);
-        xControl = new PIDController(0.01,0,0);
-        
-       
+        xControl = new PIDController(0.01,0,0);    
     }
 
     @Override
@@ -34,6 +32,7 @@ public class ReachConeToNodeCommand extends CommandBase {
             0,
             true
         );
+        //TODO: Find optimal joint angles
         arm.reach(new double[]{Math.PI/4,Math.PI/4,Math.PI/4});
         
     }
