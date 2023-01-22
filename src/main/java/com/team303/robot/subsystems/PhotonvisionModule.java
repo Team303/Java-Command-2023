@@ -44,39 +44,39 @@ public class PhotonvisionModule extends SubsystemBase {
     }
 
     public PhotonPipelineResult getLatestResult() {
-        return getPhotonvision().camera.getLatestResult();
+        return getPhotonvision().getCamera().getLatestResult();
     }
 
     public Boolean hasTargets() {
-        return getPhotonvision().camera.getLatestResult().hasTargets();
+        return getPhotonvision().getLatestResult().hasTargets();
     }
 
     public List<PhotonTrackedTarget> getTargetList() {
-        return getPhotonvision().camera.getLatestResult().getTargets();
+        return getPhotonvision().getLatestResult().getTargets();
     }
 
     public PhotonTrackedTarget getBestTarget() {
-        return getPhotonvision().camera.getLatestResult().getBestTarget();
+        return getPhotonvision().getLatestResult().getBestTarget();
     }
 
     public void takeImage() {
-        getPhotonvision().camera.takeInputSnapshot();
+        getPhotonvision().getCamera().takeInputSnapshot();
     }
 
     public void getImages() {
-        getPhotonvision().camera.takeOutputSnapshot();
+        getPhotonvision().getCamera().takeOutputSnapshot();
     }
     public void setCubePipeline() {
-        getPhotonvision().camera.setPipelineIndex(0);
+        getPhotonvision().getCamera().setPipelineIndex(0);
     }
     public void setConePipeline() {
-        getPhotonvision().camera.setPipelineIndex(1);
+        getPhotonvision().getCamera().setPipelineIndex(1);
     }
     public void setAprilTagPipeline() {
-        getPhotonvision().camera.setPipelineIndex(2);
+        getPhotonvision().getCamera().setPipelineIndex(2);
     }
     public int getPipelineIndex() {
-        return getPhotonvision().camera.getPipelineIndex();
+        return getPhotonvision().getCamera().getPipelineIndex();
     }
 
     public double getDistanceToTarget() {
