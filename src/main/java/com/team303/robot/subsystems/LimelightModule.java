@@ -20,15 +20,8 @@ public class LimelightModule extends SubsystemBase {
     /* ShuffleBoard */
 	public static final ShuffleboardTab LIMELIGHT_TAB = Shuffleboard.getTab("limelight");
     
-<<<<<<< HEAD
-    public static final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight"); 
-
-
-    //public static final network
-=======
     public static final NetworkTable limelight = Robot.getNetworkTableInstance().getTable("limelight"); 
     
->>>>>>> refs/remotes/origin/master
 
     public static final DoubleSubscriber VALID_TARGETS_SUB = limelight.getDoubleTopic("tv").subscribe(0);
     public static final DoubleSubscriber OFFSET_X_SUB = limelight.getDoubleTopic("tx").subscribe(0.0);

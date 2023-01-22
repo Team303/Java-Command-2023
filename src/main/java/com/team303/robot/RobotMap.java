@@ -2,8 +2,9 @@
 
 package com.team303.robot;
 
-import edu.wpi.first.wpilibj.util.Color;
 import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
+
+import edu.wpi.first.wpilibj.util.Color;
 
 /*
 TODO Change around all the CAN IDs to fit
@@ -135,6 +136,14 @@ public final class RobotMap {
 		public static final double RAMSETE_B = 10;
 		public static final double RAMSETE_ZETA = 10;
 	}
+	
+	public static final class PhotonvisionConstants {
+		public static final double CAMERA_HEIGHT_METERS = 0; //NOT FINAL
+		public static final double GRID_TARGET_HEIGHT_METERS = 0.36;
+		public static final double DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS = 0.59;
+		public static final double CAMERA_PITCH_RADIANS = 0; //NOT FINAL
+	}
+
 
 	public static final class IOConstants {
 

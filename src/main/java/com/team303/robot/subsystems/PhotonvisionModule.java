@@ -1,19 +1,22 @@
-package frc.robot.subsystems;
+package com.team303.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.List;
+
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
-import edu.wpi.first.networktables.NetworkTable;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import java.util.List;
 import org.photonvision.PhotonUtils;
-import edu.wpi.first.math.util.Units;
-import frc.robot.RobotMap.PhotonvisionConstants;
 
-public class PhotonvisionSubsystem extends SubsystemBase {
+import com.team303.robot.RobotMap.PhotonvisionConstants;
+
+public class PhotonvisionModule extends SubsystemBase {
     
     public static final ShuffleboardTab PHOTONVISION_TAB = Shuffleboard.getTab("PhotonVision");
     

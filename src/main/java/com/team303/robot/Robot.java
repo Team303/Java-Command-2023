@@ -144,12 +144,8 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		//set default commands
-<<<<<<< HEAD
-		//SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
-=======
 		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
 		ArmSubsystem.getArm().setDefaultCommand(new DefaultIKControlCommand());
->>>>>>> refs/remotes/origin/master
 
 		//add Autos to Shuffleboard
 		Autonomous.init();
