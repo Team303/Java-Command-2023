@@ -99,6 +99,7 @@ public class ArmSubsystem extends SubsystemBase {
 		caliko.solveTargetIK(translation);
 		//Units of error are inches
 		if (caliko.getIKPositionError()>=5) {
+			System.out.println("Exception: Target out of range.");
 			return;
 		}
 		reach(caliko.getIKAnglesRadians());
