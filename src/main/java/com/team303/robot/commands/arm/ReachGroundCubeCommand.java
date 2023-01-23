@@ -1,48 +1,42 @@
 package com.team303.robot.commands.arm;
 
+import com.team303.robot.subsystems.ArmSubsystem;
+import com.team303.robot.subsystems.PhotonvisionModule;
+import com.team303.robot.subsystems.SwerveSubsystem;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-import com.team303.robot.subsystems.ArmSubsystem;
-import com.team303.robot.subsystems.SwerveSubsystem;
-import com.team303.robot.subsystems.PhotonvisionModule;
-
-public class ReachCubeToNodeCommand extends CommandBase {
+public class ReachGroundCubeCommand extends CommandBase {
     private static final ArmSubsystem arm = ArmSubsystem.getArm();
     private static final SwerveSubsystem swerve = SwerveSubsystem.getSwerve();
     private static final PhotonvisionModule photonvision = PhotonvisionModule.getPhotonvision();
     
     public static PIDController xControl;
     public static PIDController yControl;
-    
-    public ReachCubeToNodeCommand() {
+
+    public ReachGroundCubeCommand() {
         addRequirements(swerve,arm);
         xControl = new PIDController(0.01,0,0);
         yControl = new PIDController(0.01,0,0);
     }
+
     public void execute() {
-        if (photonvision.getPipelineIndex() != 2) {
-            photonvision.setAprilTagPipeline();
+        if (photonvision.getPipelineIndex() != 0) {
+            photonvision.setCubePipeline();
         }
-        //TODO: Find optimal distance from drivetrain to node
+        //TODO: Find optimal distance for drivetrain from cube
         swerve.drive(
             new Translation2d(
-            xControl.calculate(photonvision.getBestTarget().getBestCameraToTarget().getX(),Units.inchesToMeters(3)),
+            xControl.calculate(photonvision.getBestTarget().getBestCameraToTarget().getX(),Units.inchesToMeters(5)),
             yControl.calculate(photonvision.getBestTarget().getBestCameraToTarget().getY(),0)
             ),
             0,
             true
         );
-        photonvision.setCubePipeline();
-        //TODO: Find optimal joint angles
-        if (photonvision.hasTargets()) {
-            //Reach mid row
-            arm.reach(new double[]{Math.PI/4,Math.PI/4,Math.PI/4});
-        } else {
-            //Reach high row
-            arm.reach(new double[]{Math.PI/4,Math.PI/4,Math.PI/4});
-        }
+        arm.reach(photonvision.getBestTarget().getBestCameraToTarget().getTranslation());
     }
+    
 }
