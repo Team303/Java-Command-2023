@@ -33,7 +33,7 @@ public class GlobalDeadbandFilter {
         return applyDeadband(value,lowerBound,1,1);
     }
     public double applyDeadband(double value, double lowerBound, double scale) {
-        return applyDeadband(value,lowerBound,1,1);
+        return applyDeadband(value,lowerBound,1,scale);
     }
 
     
