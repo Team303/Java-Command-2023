@@ -3,6 +3,7 @@ package com.team303.robot.commands.arm;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.PhotonvisionModule;
 import com.team303.robot.subsystems.SwerveSubsystem;
+import com.team303.robot.subsystems.PhotonvisionModule.PhotonPipeline;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,9 +24,10 @@ public class ReachGroundConeCommand extends CommandBase {
         yControl = new PIDController(0.01,0,0);
     }
 
+    @Override
     public void execute() {
-        if (photonvision.getPipelineIndex() != 1) {
-            photonvision.setConePipeline();
+        if (photonvision.getPipeline() != PhotonPipeline.CONE) {
+            photonvision.setPipeline(PhotonPipeline.CONE);
         }
         //TODO: Find optimal distance for drivetrain from cone
         swerve.drive(

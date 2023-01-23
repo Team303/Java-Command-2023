@@ -10,6 +10,8 @@ public class DefaultIKControlCommand extends CommandBase {
         public DefaultIKControlCommand() {
         addRequirements(ArmSubsystem.getArm());
     }
+
+    @Override
     public void execute() {
         ArmSubsystem.getArm().reach(
             new Translation3d(

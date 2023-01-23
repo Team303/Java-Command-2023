@@ -32,7 +32,11 @@ public class PhotonvisionModule extends SubsystemBase {
     private final PhotonCamera camera;
     private static PhotonvisionModule instance = new PhotonvisionModule();
    // public static final GenericEntry TARGET_CORNERS = PHOTONVISION_TAB.add("ID Corners", 0).getEntry();
-
+    public enum PhotonPipeline {
+        CUBE,
+        CONE,
+        APRILTAG;
+    }
     private PhotonvisionModule() {
        camera = new PhotonCamera("photovision");
     }
@@ -66,17 +70,11 @@ public class PhotonvisionModule extends SubsystemBase {
     public void getImages() {
         getPhotonvision().getCamera().takeOutputSnapshot();
     }
-    public void setCubePipeline() {
-        getPhotonvision().getCamera().setPipelineIndex(0);
+    public void setPipeline(PhotonPipeline pipelineName) {
+        getPhotonvision().getCamera().setPipelineIndex(pipelineName.ordinal());
     }
-    public void setConePipeline() {
-        getPhotonvision().getCamera().setPipelineIndex(1);
-    }
-    public void setAprilTagPipeline() {
-        getPhotonvision().getCamera().setPipelineIndex(2);
-    }
-    public int getPipelineIndex() {
-        return getPhotonvision().getCamera().getPipelineIndex();
+    public PhotonPipeline getPipeline() {
+        return PhotonPipeline.values()[getPhotonvision().getCamera().getPipelineIndex()];
     }
 
     public double getDistanceToTarget() {

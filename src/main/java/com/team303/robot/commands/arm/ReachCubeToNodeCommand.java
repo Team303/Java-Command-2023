@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 import com.team303.robot.subsystems.PhotonvisionModule;
+import com.team303.robot.subsystems.PhotonvisionModule.PhotonPipeline;;
 
 public class ReachCubeToNodeCommand extends CommandBase {
     private static final ArmSubsystem arm = ArmSubsystem.getArm();
@@ -22,9 +23,11 @@ public class ReachCubeToNodeCommand extends CommandBase {
         xControl = new PIDController(0.01,0,0);
         yControl = new PIDController(0.01,0,0);
     }
+
+    @Override
     public void execute() {
-        if (photonvision.getPipelineIndex() != 2) {
-            photonvision.setAprilTagPipeline();
+        if (photonvision.getPipeline() != PhotonPipeline.APRILTAG) {
+            photonvision.setPipeline(PhotonPipeline.APRILTAG);
         }
         //TODO: Find optimal distance from drivetrain to node
         swerve.drive(
@@ -35,7 +38,7 @@ public class ReachCubeToNodeCommand extends CommandBase {
             0,
             true
         );
-        photonvision.setCubePipeline();
+        photonvision.setPipeline(PhotonPipeline.CUBE);
         //TODO: Find optimal joint angles
         if (photonvision.hasTargets()) {
             //Reach mid row

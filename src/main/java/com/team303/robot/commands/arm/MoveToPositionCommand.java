@@ -14,6 +14,8 @@ public class MoveToPositionCommand extends CommandBase {
         this.elbowAngle = elbowAngle;
         this.clawAngle = clawAngle;
     }
+
+    @Override
     public void execute() {
         ArmSubsystem.getArm().reach(
             new double[]{shoulderAngle,elbowAngle,clawAngle}

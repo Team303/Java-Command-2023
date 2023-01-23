@@ -8,6 +8,8 @@ public class ExtendToIntakeCommand extends CommandBase {
     public ExtendToIntakeCommand() {
         addRequirements(ArmSubsystem.getArm());
     }
+
+    @Override
     public void execute() {
         ArmSubsystem.getArm().reach(
             //TODO: Find optimal angles

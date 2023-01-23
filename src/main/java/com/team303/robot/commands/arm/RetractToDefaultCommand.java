@@ -8,6 +8,7 @@ public class RetractToDefaultCommand extends CommandBase {
     public RetractToDefaultCommand() {
         addRequirements(ArmSubsystem.getArm());
     }
+    @Override
     public void execute() {
         ArmSubsystem.getArm().reach(
             //TODO: Find optimal angles

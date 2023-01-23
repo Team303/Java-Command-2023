@@ -3,6 +3,7 @@ package com.team303.robot.commands.arm;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.PhotonvisionModule;
 import com.team303.robot.subsystems.SwerveSubsystem;
+import com.team303.robot.subsystems.PhotonvisionModule.PhotonPipeline;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,10 +23,11 @@ public class ReachGroundCubeCommand extends CommandBase {
         xControl = new PIDController(0.01,0,0);
         yControl = new PIDController(0.01,0,0);
     }
-
+    
+    @Override
     public void execute() {
-        if (photonvision.getPipelineIndex() != 0) {
-            photonvision.setCubePipeline();
+        if (photonvision.getPipeline() != PhotonPipeline.CUBE) {
+            photonvision.setPipeline(PhotonPipeline.CUBE);
         }
         //TODO: Find optimal distance for drivetrain from cube
         swerve.drive(

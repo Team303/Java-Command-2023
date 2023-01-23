@@ -221,6 +221,19 @@ public class SwerveSubsystem extends SubsystemBase {
 	public Pose2d getPose() {
 		return pose;
 	}
+	
+	public SwerveDriveOdometry getOdometry() {
+		return odometry;
+	}
+	
+	public SwerveModulePosition[] getModulePositions() {
+		return new SwerveModulePosition[] {
+            leftFrontModule.getPosition(),
+            leftBackModule.getPosition(),
+            rightFrontModule.getPosition(),
+            rightBackModule.getPosition(),
+            };		
+	}
 
 	//get average encoders
 
