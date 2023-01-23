@@ -269,7 +269,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
 
-		if (translation.getNorm()<=Units.inchesToMeters(1.0/60) || rotation<=1) {
+		if (translation.getNorm()<=Units.inchesToMeters(1.0/60) || Math.abs(rotation)<=1) {
 			System.out.println("Deadband applied, drive not performed");
 			return;
 		}
@@ -294,7 +294,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
 
-		if (translation.getNorm()<=Units.inchesToMeters(1.0/60) || rotation<=1) {
+		if (translation.getNorm()<=Units.inchesToMeters(1.0/60) || Math.abs(rotation)<=1) {
 			System.out.println("Deadband applied, drive not performed");
 			return;
 		}
