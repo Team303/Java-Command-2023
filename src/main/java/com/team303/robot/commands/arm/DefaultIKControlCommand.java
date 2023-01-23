@@ -16,9 +16,9 @@ public class DefaultIKControlCommand extends CommandBase {
     public void execute() {
         ArmSubsystem.getArm().reach(
             new Translation3d(
-                DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftX()), 
+                DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftX(),DEADBAND_FILTER.getLowerBound()), 
                 0.0,
-                DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftY())
+                DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftY(),DEADBAND_FILTER.getLowerBound())
             )
         );
 

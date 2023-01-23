@@ -22,10 +22,10 @@ public class DefaultDrive extends CommandBase {
     public void execute() {
         SwerveSubsystem.getSwerve().drive(
             new Translation2d(
-                DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getX()) * Swerve.MAX_VELOCITY, 
-                DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getY()) * Swerve.MAX_VELOCITY
+                DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getX(),DEADBAND_FILTER.getLowerBound()) * Swerve.MAX_VELOCITY, 
+                DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getY(),DEADBAND_FILTER.getLowerBound()) * Swerve.MAX_VELOCITY
             ), 
-            DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY()),
+            DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY(),DEADBAND_FILTER.getLowerBound()),
             fieldOriented
         );
     }

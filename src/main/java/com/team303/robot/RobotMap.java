@@ -3,7 +3,7 @@
 package com.team303.robot;
 
 import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
-import com.team303.robot.util.GlobalDeadbandFilter;
+import com.team303libs.math.GlobalDeadbandFilter;
 
 import edu.wpi.first.wpilibj.util.Color;
 
