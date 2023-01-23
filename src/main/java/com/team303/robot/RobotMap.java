@@ -51,34 +51,22 @@ public final class RobotMap {
 		public static final boolean RIGHT_BACK_SPARK_INVERTED = false;
 
 		/*Drive Train Dimentions*/
-		public static final double TRACKWIDTH = 15;
-		public static final double WHEELBASE = 15;
+		public static final double TRACKWIDTH = 0.75;
+		public static final double WHEELBASE = 0.75;
 		public static final double ROTATION_CONSTANT = 2/Math.hypot(TRACKWIDTH, WHEELBASE);
 
 		/* Motor Encoder Calculations */
-		public static final double WHEEL_DIAMTER = 6; // Diameter in inches
+		public static final double WHEEL_DIAMTER = 0.1524; // Diameter in meters
 		public static final int ENCODER_COUNTS_PER_REV = 4096; // ctre CANCoder
 		public static final double DRIVE_GEAR_RATIO = 12.75; // Toughbox mini 12.75:1
 		public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for each encoder unit
+		public static final double MAX_VELOCITY = 4.4196;
+		public static final double MAX_ACCELERATION = 3; //Meters per second
+		public static final double MAX_RPS = 183.33; // Max rotations per second
 
 		/* Starting Position */
 		public static final double STARTING_X = 0;
 		public static final double STARTING_Y = 0;
-
-		/* Voltage Constants */
-		public static final double VOLTS = 0;
-		public static final double VOLTS_SECONDS_PER_METER = 0;
-		public static final double VOLTS_SECONDS_PER_METER_SQUARED = 0;
-
-		static {
-			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
-			double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
-			double axelRotationsPerMotorRotation = 1 / DRIVE_GEAR_RATIO;
-
-			DISTANCE_PER_ENCODER_PULSE = motorRotationsPerEncoderPulse
-					* axelRotationsPerMotorRotation
-					* wheelCircumference;
-		}
 
 		/* Default Module Configurations */
 		public static final MechanicalConfiguration MK4I_L2_LEFT_FRONT = new MechanicalConfiguration(
@@ -112,6 +100,16 @@ public final class RobotMap {
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);
+
+		static {
+			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
+			double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
+			double axelRotationsPerMotorRotation = 1 / MK4I_L2_LEFT_FRONT.getDriveReduction();
+
+			DISTANCE_PER_ENCODER_PULSE = motorRotationsPerEncoderPulse
+					* axelRotationsPerMotorRotation
+					* wheelCircumference;
+		}
 	}
 
 	public static final class Arm {
