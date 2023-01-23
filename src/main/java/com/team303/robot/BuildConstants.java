@@ -5,7 +5,7 @@ package com.team303.robot;
  */
 public final class BuildConstants {
   public static final String MAVEN_GROUP = "";
-  public static final String MAVEN_NAME = "Java-Robot-2023-Imported2";
+  public static final String MAVEN_NAME = "Java-Robot-2023";
   public static final String VERSION = "unspecified";
   public static final int GIT_REVISION = 32;
   public static final String GIT_SHA = "7c219ba9d55220ba5ca8187db535ea9ff892b48f";

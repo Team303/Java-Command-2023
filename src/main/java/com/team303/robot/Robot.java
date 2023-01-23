@@ -5,11 +5,12 @@ import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
+import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.led.LEDSolidColor;
-//import com.team303.robot.subsystems.ArmSubsystem;
+import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -42,9 +43,12 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import com.team303.robot.subsystems.LimelightModule;
 
 
 public class Robot extends LoggedRobot {
+
+	public static final ShuffleboardTab LIMELIGHT_TAB = Shuffleboard.getTab("limelight");
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
@@ -52,6 +56,7 @@ public class Robot extends LoggedRobot {
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
+	private static final XboxController XBOX_CONTROLLER = new XboxController(0);
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -76,6 +81,10 @@ public class Robot extends LoggedRobot {
 
 	public static Joystick getLeftJoyStick() {
 		return leftJoystick;
+	}
+
+	public static XboxController getXbox() {
+		return XBOX_CONTROLLER;
 	}
 
 	public static NetworkTableInstance getNetworkTableInstance() {
@@ -136,14 +145,15 @@ public class Robot extends LoggedRobot {
 
 		//set default commands
 		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
+		ArmSubsystem.getArm().setDefaultCommand(new DefaultIKControlCommand());
 
 		//add Autos to Shuffleboard
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
-		if (Robot.isReal())
-			CameraServer.startAutomaticCapture();
+		//if (Robot.isReal())
+			//CameraServer.startAutomaticCapture();
 
 		logger.start();
 	}
@@ -230,6 +240,11 @@ public class Robot extends LoggedRobot {
 		 * robot's periodic
 		 * block in order for anything in the Command-based framework to work.
 		 */
+
+		SmartDashboard.putNumber("X crosshair", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Y crosshair", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Num Targets", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Target Area", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
 
 		try {
 			CommandScheduler.getInstance().run();
