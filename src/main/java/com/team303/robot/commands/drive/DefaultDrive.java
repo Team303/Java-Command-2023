@@ -1,11 +1,13 @@
 package com.team303.robot.commands.drive;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.Robot;
 import com.team303.robot.subsystems.SwerveSubsystem;
-import edu.wpi.first.math.geometry.Translation2d;
 import com.team303.robot.RobotMap.Swerve;
+import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DefaultDrive extends CommandBase {
 
@@ -20,10 +22,10 @@ public class DefaultDrive extends CommandBase {
     public void execute() {
         SwerveSubsystem.getSwerve().drive(
             new Translation2d(
-                Robot.getRightJoyStick().getX() * Swerve.MAX_VELOCITY, 
-                Robot.getRightJoyStick().getY() * Swerve.MAX_VELOCITY
+                DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getX()) * Swerve.MAX_VELOCITY, 
+                DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getY()) * Swerve.MAX_VELOCITY
             ), 
-            Robot.getLeftJoyStick().getY(),
+            DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY()),
             fieldOriented
         );
     }
