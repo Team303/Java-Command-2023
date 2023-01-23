@@ -9,10 +9,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Arm;
+import com.team303.robot.subsystems.PhotonvisionModule.PhotonPipeline;
 import com.team303libs.kinematics.IKWrapper;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -129,7 +132,6 @@ public class ArmSubsystem extends SubsystemBase {
 	public double[] getJointResolutions() {
 		return new double[]{shoulderJoint.shoulderEncoder.getCountsPerRevolution(),elbowJoint.elbowEncoder.getCountsPerRevolution(),clawJoint.clawEncoder.getCountsPerRevolution()};
 	}
-
 
 	@Override
 	public void periodic() {

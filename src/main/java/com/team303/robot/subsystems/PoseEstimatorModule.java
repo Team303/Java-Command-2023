@@ -4,6 +4,9 @@ package com.team303.robot.subsystems;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -36,7 +39,7 @@ public class PoseEstimatorModule extends SubsystemBase {
     
     private static final SwerveSubsystem swerve = SwerveSubsystem.getSwerve();
     private static final PhotonvisionModule photonvision = PhotonvisionModule.getPhotonvision();
-    private final AprilTagFieldLayout aprilTagField;
+    public final AprilTagFieldLayout aprilTagField;
     public static final ShuffleboardTab tab = Shuffleboard.getTab("Pose Estimation");
 
     private final Field2d field2d = new Field2d();
@@ -45,10 +48,13 @@ public class PoseEstimatorModule extends SubsystemBase {
     private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5,0.5,Units.degreesToRadians(10));
     private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25,0.25,Units.degreesToRadians(5));
 
-    private double previousPipelineTimestamp = 0;
-    //TODO: Find linear transformatoin from camera to robot
+    //TODO: Find transformation from camera to robot
     private static final Transform3d CAMERA_TO_ROBOT_TRANSFORM = new Transform3d(new Translation3d(), new Rotation3d());
+    private static final Transform3d CAMERA_TO_ARM_TRANSFORM = new Transform3d(new Translation3d(), new Rotation3d());
+
+    public PhotonPoseEstimator visionPoseEstimator;
     public SwerveDrivePoseEstimator poseEstimator;
+    public static PoseEstimatorModule instance = new PoseEstimatorModule();
 
     public PoseEstimatorModule() {
         AprilTagFieldLayout initialLayout;
@@ -75,10 +81,14 @@ public class PoseEstimatorModule extends SubsystemBase {
         swerveStandardDeviations,
         photonStandardDeviations
         );
+        visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,photonvision.getCamera(),CAMERA_TO_ROBOT_TRANSFORM.inverse());
 
         tab.add("Pose", getFomattedPose()).withPosition(0, 0).withSize(2, 0);
         tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
     }
+    public static PoseEstimatorModule getPoseSubsystem() {
+		return instance;
+	}
     public Pose2d getRobotPose() {
         return poseEstimator.getEstimatedPosition();
     }
@@ -97,24 +107,23 @@ public class PoseEstimatorModule extends SubsystemBase {
         pose.getY(),
         pose.getRotation().getDegrees());
     }
+    public Translation3d getArmtoTargetTranslation(PhotonPipeline pipeline) {
+		Transform3d camToTarget = photonvision.getBestTarget().getBestCameraToTarget(); 
+        Pose3d camPose = new Pose3d(getRobotPose()).transformBy(CAMERA_TO_ROBOT_TRANSFORM.inverse());
+        Pose3d armPose = camPose.transformBy(CAMERA_TO_ARM_TRANSFORM);
+        return armPose.transformBy(camToTarget).getTranslation();
+	}
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return visionPoseEstimator.update();
+    }
 
     @Override
     public void periodic() {
-        PhotonPipelineResult pipelineResult = photonvision.getCamera().getLatestResult();
-        double resultTimestamp = pipelineResult.getTimestampSeconds();
-        if (resultTimestamp != previousPipelineTimestamp && pipelineResult.hasTargets() && photonvision.getPipeline() == PhotonPipeline.APRILTAG) {
-            previousPipelineTimestamp = resultTimestamp;
-            PhotonTrackedTarget target = pipelineResult.getBestTarget();
-            int fiducialId = target.getFiducialId();
-            // Get the tag pose from field layout - consider that the layout will be null if it failed to load
-            Optional<Pose3d> tagPose = aprilTagField == null ? Optional.empty() : aprilTagField.getTagPose(fiducialId);
-            if (target.getPoseAmbiguity() <= .2 && fiducialId >= 0 && tagPose.isPresent()) {
-                Pose3d targetPose = tagPose.get();
-                Transform3d camToTarget = target.getBestCameraToTarget();
-                Pose3d camPose = targetPose.transformBy(camToTarget.inverse());
-                Pose3d visionMeasurement = camPose.transformBy(CAMERA_TO_ROBOT_TRANSFORM);
-                poseEstimator.addVisionMeasurement(visionMeasurement.toPose2d(), resultTimestamp);
-            }
+        Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        if (result.isPresent()) {
+            EstimatedRobotPose visionPoseEstimate = result.get();
+            poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(), visionPoseEstimate.timestampSeconds);
         }
         poseEstimator.update(
         Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
