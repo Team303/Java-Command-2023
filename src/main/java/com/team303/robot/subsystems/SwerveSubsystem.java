@@ -31,14 +31,17 @@ import edu.wpi.first.wpilibj.Timer;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class SwerveSubsystem extends SubsystemBase {
 
 	/* odometry sim */
-	private final double DELAY_MS = 100.0;
+	private final double DELAY_MS = 5;
     private final double SECOND_TO_MS = 1000.0;
     private final Timer timer = new Timer();
-	private double last = 0;
+	private double timeElapsed = 0;
+	private double lastPeriodic = 0;
 
 	//private Rotation2d angle = new Rotation2d();
 	private double angle = 0;
@@ -187,7 +190,6 @@ public class SwerveSubsystem extends SubsystemBase {
 			}, 
 			new Pose2d()
 		);
-
 	}
 
 	//return instance of swerve subsystem
@@ -223,6 +225,10 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
 
+		if (DriverStation.getAlliance() == Alliance.Blue && Robot.isReal()) {
+			translation = new Translation2d(-translation.getX(), -translation.getY());
+		}
+
 		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
 		}
@@ -233,11 +239,16 @@ public class SwerveSubsystem extends SubsystemBase {
 			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 		}
 
+
 		drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 	}
 
 	public void offCenterDrive(Translation2d translation, double rotation, Translation2d centerOfRotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
+
+		if (DriverStation.getAlliance() == Alliance.Blue) {
+			translation = new Translation2d(-translation.getX(), -translation.getY());
+		}
 
 		if (fieldOriented) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
@@ -252,7 +263,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	//generic drive method
 
 	public void drive(SwerveModuleState[] state) {
-
+		chassisSpeeds = kinematics.toChassisSpeeds(state);
 		//map speed of swerve modules to voltage
 		leftFrontModule.set(state[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[0].angle.getRadians());
 		rightFrontModule.set(state[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, state[1].angle.getRadians());
@@ -267,18 +278,12 @@ public class SwerveSubsystem extends SubsystemBase {
 		rightBackModule.set(0, rightFrontModule.getSteerAngle());
 	}
 
-
 	@Override
 	public void periodic() {
-		SmartDashboard.putBoolean("Evaluate", false);
 
-		
-		SwerveModuleState[] current = kinematics.toSwerveModuleStates(chassisSpeeds);
-
+		SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
 		if (Robot.isReal()) {
 			//Update Pose
- 
-
 			pose = odometry.update(
 				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 				new SwerveModulePosition[] {
@@ -290,34 +295,34 @@ public class SwerveSubsystem extends SubsystemBase {
 			);
 		}
 		else {
+			timeElapsed = (timer.get() - lastPeriodic) * SECOND_TO_MS;
+			angle += chassisSpeeds.omegaRadiansPerSecond / SECOND_TO_MS * timeElapsed;
+			positions[0] += state[0].speedMetersPerSecond / SECOND_TO_MS * timeElapsed;
+			positions[1] += state[1].speedMetersPerSecond / SECOND_TO_MS * timeElapsed;
+			positions[2] += state[2].speedMetersPerSecond / SECOND_TO_MS * timeElapsed;
+			positions[3] += state[3].speedMetersPerSecond / SECOND_TO_MS * timeElapsed;
 
-			if ((timer.get() * SECOND_TO_MS) - last >= DELAY_MS) {
-				last = timer.get();
-				SmartDashboard.putBoolean("Evaluate", true);
-				angle += chassisSpeeds.omegaRadiansPerSecond / SECOND_TO_MS * DELAY_MS;
-				positions[0] += current[0].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
-				positions[1] += current[1].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
-				positions[2] += current[2].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
-				positions[3] += current[3].speedMetersPerSecond / SECOND_TO_MS * DELAY_MS;
-
-				//random 4 lol
-				pose = odometry.update(Rotation2d.fromRadians(angle * 4),
-				new SwerveModulePosition[] {
-					new SwerveModulePosition(positions[0], current[0].angle),
-					new SwerveModulePosition(positions[1], current[1].angle),
-					new SwerveModulePosition(positions[2], current[2].angle),
-					new SwerveModulePosition(positions[3], current[3].angle),
-				});
-
-			}
+			pose = odometry.update(Rotation2d.fromRadians(angle),
+			new SwerveModulePosition[] {
+				new SwerveModulePosition(positions[0], state[0].angle),
+				new SwerveModulePosition(positions[1], state[1].angle),
+				new SwerveModulePosition(positions[2], state[2].angle),
+				new SwerveModulePosition(positions[3], state[3].angle),
+			});
 		}
+
+		lastPeriodic = timer.get();
 
 		//Update ShuffleBoard
 		DRIVE_ENCODER_ENTRY.setDouble(getEncoderDistance());
 		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(leftFrontModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(leftBackModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightFrontModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightBackModule.getSteerAngle());
+		LEFT_BACK_STEER_ANGLE_ENTRY.setDouble(leftBackModule.getSteerAngle());
+		RIGHT_FRONT_STEER_ANGLE_ENTRY.setDouble(rightFrontModule.getSteerAngle());
+		RIGHT_BACK_STEER_ANGLE_ENTRY.setDouble(rightBackModule.getSteerAngle());
+		SmartDashboard.putNumber("front left velocity", state[0].speedMetersPerSecond);
+		SmartDashboard.putNumber("front right velocity", state[1].speedMetersPerSecond);
+		SmartDashboard.putNumber("back left velocity", state[2].speedMetersPerSecond);
+		SmartDashboard.putNumber("back right velocity", state[3].speedMetersPerSecond);
 		NAVX_ANGLE_ENTRY.setDouble(Robot.getNavX().getAngle());
 		NAVX_RATE_ENTRY.setDouble(Robot.getNavX().getRate());
 		POSITION_X_ENTRY.setDouble(pose.getX());
