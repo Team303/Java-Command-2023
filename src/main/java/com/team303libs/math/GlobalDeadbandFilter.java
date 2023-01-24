@@ -20,7 +20,7 @@ public class GlobalDeadbandFilter {
     }
 
     public double applyDeadband(double value, double lowerBound, double upperBound, double scale) {
-        if (Math.abs(value) < lowerBound || Math.abs(value) > upperBound) {
+        if (Math.abs(value) < lowerBound && Math.abs(value) > upperBound) {
         System.out.println("Global deadband applied");
         return 0;
         }
