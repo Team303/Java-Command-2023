@@ -9,9 +9,9 @@ import com.team303.robot.Robot;
 import com.team303.robot.RobotMap;
 import com.team303.robot.subsystems.ClawSubsystem;
 
-public class Openclaw extends CommandBase
+public class OpenClaw extends CommandBase
 {
-    public Openclaw()
+    public OpenClaw()
     {
     
     }

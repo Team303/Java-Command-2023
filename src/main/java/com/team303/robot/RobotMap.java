@@ -102,10 +102,6 @@ public final class RobotMap {
             false
     	);
 
-		/* Starting Position */
-		public static final double STARTING_X = 0;
-		public static final double STARTING_Y = 0;
-
 
 		static {
 			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
