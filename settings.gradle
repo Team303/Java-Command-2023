@@ -25,3 +25,6 @@ pluginManagement {
         }
     }
 }
+
+include 'robot'
+include 'team303libs'
