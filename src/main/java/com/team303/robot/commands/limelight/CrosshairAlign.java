@@ -21,13 +21,8 @@ public class CrosshairAlign extends CommandBase {
 
     public CrosshairAlign() {
         addRequirements(swerve);
-<<<<<<< HEAD:src/main/java/frc/robot/commands/limelight/CrosshairAlign.java
-        PIDController xControl = new PIDController(0.01, 0, 0);
-        PIDController yControl = new PIDController(0.01, 0, 0);
-=======
         xControl = new PIDController(0.01, 0, 0);
         yControl = new PIDController(0.01, 0, 0);
->>>>>>> 2d0d1cc3dfea4c9da8bc085cfdd6816885dc4404:src/main/java/com/team303/robot/commands/limelight/CrosshairAlign.java
     }
 
     @Override
