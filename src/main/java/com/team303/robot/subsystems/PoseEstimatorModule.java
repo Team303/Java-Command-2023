@@ -7,11 +7,8 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.team303.robot.Robot;
-import com.team303.robot.subsystems.PhotonvisionModule.PhotonPipeline;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -107,7 +104,7 @@ public class PoseEstimatorModule extends SubsystemBase {
         pose.getY(),
         pose.getRotation().getDegrees());
     }
-    public Translation3d getArmtoTargetTranslation(PhotonPipeline pipeline) {
+    public Translation3d getArmtoTargetTranslation() {
 		Transform3d camToTarget = photonvision.getBestTarget().getBestCameraToTarget(); 
         Pose3d camPose = new Pose3d(getRobotPose()).transformBy(CAMERA_TO_ROBOT_TRANSFORM.inverse());
         Pose3d armPose = camPose.transformBy(CAMERA_TO_ARM_TRANSFORM);

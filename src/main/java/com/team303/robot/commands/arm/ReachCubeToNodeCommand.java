@@ -45,7 +45,7 @@ public class ReachCubeToNodeCommand extends CommandBase {
             0,
             true
         );
-        Translation3d armToAprilTag = poseEstimator.getArmtoTargetTranslation(PhotonPipeline.APRILTAG);
+        Translation3d armToAprilTag = poseEstimator.getArmtoTargetTranslation();
         photonvision.setPipeline(PhotonPipeline.CUBE);
         //TODO: Find optimal high row pitch angle threshold to check for already-present cubes
         if (photonvision.hasTargets() && photonvision.getBestTarget().getPitch() >= 60) {

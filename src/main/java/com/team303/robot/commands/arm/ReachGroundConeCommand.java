@@ -40,7 +40,7 @@ public class ReachGroundConeCommand extends CommandBase {
             0,
             true
         );
-        Translation3d armToCone = poseEstimator.getArmtoTargetTranslation(PhotonPipeline.CONE);
+        Translation3d armToCone = poseEstimator.getArmtoTargetTranslation();
         //TODO: Find optimal part of cone to grab
         arm.reach(armToCone.plus(new Translation3d()));
     }

@@ -24,7 +24,7 @@ public class GlobalDeadbandFilter {
         System.out.println("Global deadband applied");
         return 0;
         }
-        return scale*(Math.abs(value)/value) * (Math.abs(value)-lowerBound) / (upperBound-lowerBound);
+        return scale * Math.signum(value) * (Math.abs(value)-lowerBound) / (upperBound-lowerBound);
     }
     public double applyDeadband(double value, double[] bounds) {
         return applyDeadband(value,bounds[0],bounds[1],1);

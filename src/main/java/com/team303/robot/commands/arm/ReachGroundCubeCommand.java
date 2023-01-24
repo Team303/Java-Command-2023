@@ -41,7 +41,7 @@ public class ReachGroundCubeCommand extends CommandBase {
             0,
             true
         );
-        Translation3d armToCube = poseEstimator.getArmtoTargetTranslation(PhotonPipeline.CUBE);
+        Translation3d armToCube = poseEstimator.getArmtoTargetTranslation();
         arm.reach(armToCube.plus(new Translation3d(Units.inchesToMeters(-4.25),0.0,0.0)));
     }
     
