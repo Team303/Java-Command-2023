@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.geometry.Rotation2d;
+
+import java.util.HashMap;
 import java.util.List;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -63,6 +65,7 @@ public class Robot extends LoggedRobot {
 
 	/* Shuffleboard Choosers */
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
+	public static HashMap<String, Command> eventMap = new HashMap<>();
 
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
@@ -109,6 +112,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
+		
 		Logger logger = Logger.getInstance();
 
 		// Record metadata
@@ -146,7 +150,8 @@ public class Robot extends LoggedRobot {
 		//set default commands
 		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
 		ArmSubsystem.getArm().setDefaultCommand(new DefaultIKControlCommand());
-
+		//Place event markers here
+		//eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		//add Autos to Shuffleboard
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();

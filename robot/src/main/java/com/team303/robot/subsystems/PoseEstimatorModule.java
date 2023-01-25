@@ -8,13 +8,18 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import com.team303.robot.Robot;
+
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -30,6 +35,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PoseEstimatorModule extends SubsystemBase {
@@ -114,6 +122,27 @@ public class PoseEstimatorModule extends SubsystemBase {
         visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return visionPoseEstimator.update();
     }
+    public static Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+		return new SequentialCommandGroup(
+			new InstantCommand(() -> {
+			// Reset odometry for the first path you run during auto
+			if(isFirstPath){
+				swerve.resetOdometry(traj.getInitialHolonomicPose());
+			}
+			}),
+			new PPSwerveControllerCommand(
+				traj, 
+				getPoseSubsystem()::getRobotPose, // Pose supplier
+				swerve.getKinematics(), // SwerveDriveKinematics
+				new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+				new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+				new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+				swerve::drive, // Module states consumer
+				true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+				swerve 
+			)
+		); 
+	} 
 
     @Override
     public void periodic() {

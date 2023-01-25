@@ -116,9 +116,9 @@ public class ArmSubsystem extends SubsystemBase {
 		double elbowFeedback = elbowJoint.elbowControl.calculate(Units.rotationsToRadians(elbowJoint.elbowEncoder.getPosition()),elbowJoint.elbowControl.getGoal());
 		double clawFeedback = clawJoint.clawControl.calculate(Units.rotationsToRadians(clawJoint.clawEncoder.getPosition()),clawJoint.clawControl.getGoal());
 
-		shoulderJoint.shoulderMotor.setVoltage(shoulderFeedForward+shoulderFeedback);
-		elbowJoint.elbowMotor.setVoltage(elbowFeedForward+elbowFeedback);
-		clawJoint.clawMotor.setVoltage(clawFeedForward+clawFeedback);
+		shoulderJoint.shoulderMotor.set(shoulderFeedForward+shoulderFeedback);
+		elbowJoint.elbowMotor.set(elbowFeedForward+elbowFeedback);
+		clawJoint.clawMotor.set(clawFeedForward+clawFeedback);
 	}
 
 	public void resetEncoders() {

@@ -12,6 +12,8 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -42,6 +44,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -238,6 +243,13 @@ public class SwerveSubsystem extends SubsystemBase {
 	public SwerveDriveOdometry getOdometry() {
 		return odometry;
 	}
+	public void resetOdometry() {
+		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), new Pose2d());
+	}
+	public void resetOdometry(Pose2d pose) {
+		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
+
+	}
 	
 	public SwerveModulePosition[] getModulePositions() {
 		return new SwerveModulePosition[] {
@@ -325,6 +337,8 @@ public class SwerveSubsystem extends SubsystemBase {
 		leftBackModule.set(0, leftBackModule.getSteerAngle());
 		rightBackModule.set(0, rightFrontModule.getSteerAngle());
 	}
+	// Assuming this method is part of a drivetrain subsystem that provides the necessary methods
+	
 
 	@Override
 	public void periodic() {
