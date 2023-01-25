@@ -102,6 +102,7 @@ public final class RobotMap {
             false
     	);
 
+
 		static {
 			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
 			double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
