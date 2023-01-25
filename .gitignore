@@ -137,8 +137,11 @@ $RECYCLE.BIN/
 ### Gradle ###
 .gradle
 /build/
-robot/build/
-team303libs/build/
+/robot/build/
+/kinematics/build/
+/math/build/
+
+
 
 
 # Ignore Gradle GUI config
