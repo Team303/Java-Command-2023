@@ -85,7 +85,7 @@ public class PoseTracker extends SubsystemBase {
         visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
                 Robot.photonvision.getCamera(), CAMERA_TO_ROBOT_TRANSFORM.inverse());
 
-        tab.add("Pose", getFomattedPose()).withPosition(0, 0).withSize(2, 0);
+        tab.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
         tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
     }
 
@@ -101,7 +101,8 @@ public class PoseTracker extends SubsystemBase {
                 newPose);
     }
 
-    private String getFomattedPose() {
+    @Override
+    public String toString() {
         var pose = getRobotPose();
         return String.format("(%.2f, %.2f) %.2f degrees",
                 pose.getX(),
