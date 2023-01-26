@@ -89,10 +89,6 @@ public class Robot extends LoggedRobot {
 		return XBOX_CONTROLLER;
 	}
 
-	public static NetworkTableInstance getNetworkTableInstance() {
-		return inst;
-	}
-
 	/**
 	 * Defines all the options for the autonomous delay
 	 */

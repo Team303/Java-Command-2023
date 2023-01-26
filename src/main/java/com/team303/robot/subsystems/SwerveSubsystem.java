@@ -207,14 +207,25 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withSteerEncoderPort(Swerve.RIGHT_BACK_STEER_CANCODER_ID)
 				.build();
 
-		odometry = new SwerveDriveOdometry(
-				kinematics, Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+		if (Robot.isReal()) {
+			odometry = new SwerveDriveOdometry(
+					kinematics, Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+					new SwerveModulePosition[] {
+							leftFrontModule.getPosition(),
+							leftBackModule.getPosition(),
+							rightFrontModule.getPosition(),
+							rightBackModule.getPosition(),
+					}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+		} else {
+			odometry = new SwerveDriveOdometry(
+				kinematics, Rotation2d.fromDegrees(0),
 				new SwerveModulePosition[] {
-						leftFrontModule.getPosition(),
-						leftBackModule.getPosition(),
-						rightFrontModule.getPosition(),
-						rightBackModule.getPosition(),
+						new SwerveModulePosition(0, new Rotation2d()),
+						new SwerveModulePosition(0, new Rotation2d()),
+						new SwerveModulePosition(0, new Rotation2d()),
+						new SwerveModulePosition(0, new Rotation2d())
 				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+		}
 
 		poseEstimator = new SwerveDrivePoseEstimator(
 				kinematics,
@@ -283,10 +294,14 @@ public class SwerveSubsystem extends SubsystemBase {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
 
-		if (translation.getNorm() <= Units.inchesToMeters(1.0 / 60) || Math.abs(rotation) <= 1) {
-			System.out.println("Deadband applied, drive not performed");
-			return;
+		if (translation.getNorm() <= Units.inchesToMeters(1.0 / 60)) {
+			translation = new Translation2d();
 		}
+
+		if ( Math.abs(rotation) <= 1) {
+			rotation = 0.0;
+		}
+
 		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
 					Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
@@ -308,10 +323,18 @@ public class SwerveSubsystem extends SubsystemBase {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
 
-		if (translation.getNorm() <= Units.inchesToMeters(1.0 / 60) || Math.abs(rotation) <= 1) {
-			System.out.println("Deadband applied, drive not performed");
-			return;
+		if (DriverStation.getAlliance() == Alliance.Blue && Robot.isReal()) {
+			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
+
+		if (translation.getNorm() <= Units.inchesToMeters(1.0 / 60)) {
+			translation = new Translation2d();
+		}
+		
+		if ( Math.abs(rotation) <= 1) {
+			rotation = 0.0;
+		}
+
 		if (fieldOriented) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
 					Rotation2d.fromDegrees(Robot.getNavX().getAngle()));

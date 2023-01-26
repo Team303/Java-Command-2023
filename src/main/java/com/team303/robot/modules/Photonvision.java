@@ -16,12 +16,13 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Photonvision extends SubsystemBase {
 
     public static final ShuffleboardTab PHOTONVISION_TAB = Shuffleboard.getTab("PhotonVision");
 
-    public static final NetworkTable photonvision = Robot.getNetworkTableInstance().getTable("PhotonVision");
+    public static final NetworkTable photonvision = NetworkTableInstance.getDefault().getTable("PhotonVision");
 
     public static final GenericEntry APRILTAG_ID = PHOTONVISION_TAB.add("April ID", 0).getEntry();
     public static final GenericEntry TARGET_AMBIGUITY = PHOTONVISION_TAB.add("ID Ambiguity", 0).getEntry();
@@ -29,7 +30,9 @@ public class Photonvision extends SubsystemBase {
     public static final GenericEntry TARGET_PITCH = PHOTONVISION_TAB.add("ID Pitch", 0).getEntry();
     public static final GenericEntry TARGET_SKEW = PHOTONVISION_TAB.add("ID Skew", 0).getEntry();
 
-    private final PhotonCamera camera;
+    private static PhotonCamera camera = new PhotonCamera("photovision");
+
+    public static PhotonTrackedTarget target;
 
     public enum PhotonPipeline {
         CUBE,
@@ -37,47 +40,51 @@ public class Photonvision extends SubsystemBase {
         APRILTAG;
     }
 
-    public Photonvision() {
-        camera = new PhotonCamera("photovision");
+    public static PhotonCamera getCamera() {
+        return camera;
     }
 
-    public PhotonCamera getCamera() {
-        return this.camera;
+    public static PhotonPipelineResult getLatestResult() {
+        return camera.getLatestResult();
     }
 
-    public PhotonPipelineResult getLatestResult() {
-        return this.camera.getLatestResult();
+    public static Boolean hasTargets() {
+        return getLatestResult().hasTargets();
     }
 
-    public Boolean hasTargets() {
-        return this.getLatestResult().hasTargets();
+    public static List<PhotonTrackedTarget> getTargetList() {
+        return getLatestResult().getTargets();
     }
 
-    public List<PhotonTrackedTarget> getTargetList() {
-        return this.getLatestResult().getTargets();
+    public static PhotonTrackedTarget getBestTarget() {
+        if (hasTargets()) {
+            return getLatestResult().getBestTarget();
+        }
+        return null;
     }
 
-    public PhotonTrackedTarget getBestTarget() {
-        return this.getLatestResult().getBestTarget();
+    public static void takeImage() {
+        getCamera().takeInputSnapshot();
     }
 
-    public void takeImage() {
-        this.getCamera().takeInputSnapshot();
+    public static void getImages() {
+        camera.takeOutputSnapshot();
     }
 
-    public void getImages() {
-        this.camera.takeOutputSnapshot();
+    public static void setPipeline(PhotonPipeline pipelineName) {
+        camera.setPipelineIndex(pipelineName.ordinal());
     }
 
-    public void setPipeline(PhotonPipeline pipelineName) {
-        this.camera.setPipelineIndex(pipelineName.ordinal());
+    public static PhotonPipeline getPipeline() {
+        return PhotonPipeline.values()[camera.getPipelineIndex()];
     }
 
-    public PhotonPipeline getPipeline() {
-        return PhotonPipeline.values()[this.camera.getPipelineIndex()];
-    }
+    public static double getDistanceToTarget() {
 
-    public double getDistanceToTarget() {
+        if (!hasTargets()) {
+            return Double.NaN;
+        } 
+
         int id = getBestTarget().getFiducialId();
         if (id != 4 || id != 5) {
             return PhotonUtils.calculateDistanceToTargetMeters(
@@ -92,12 +99,16 @@ public class Photonvision extends SubsystemBase {
                     PhotonvisionConstants.CAMERA_PITCH_RADIANS,
                     Units.degreesToRadians(getBestTarget().getPitch()));
         }
-
     }
 
     @Override
     public void periodic() {
-        PhotonTrackedTarget target = getBestTarget();
+        target = getBestTarget();
+
+        if (target == null) {
+            return;
+        }
+        
         APRILTAG_ID.setInteger(target.getFiducialId());
         TARGET_AMBIGUITY.setDouble(target.getPoseAmbiguity());
         TARGET_YAW.setDouble(target.getYaw());
