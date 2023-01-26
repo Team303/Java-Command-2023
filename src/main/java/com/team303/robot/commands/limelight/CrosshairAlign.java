@@ -23,7 +23,7 @@ public class CrosshairAlign extends CommandBase {
         swerve.drive(
                 new Translation2d(
                         xControl.calculate(limelight.getHorizontalCrosshairOffestAngle(), 0),
-                        yControl.calculate(limelight.getVerticalCrosshairOfssetAngle(), 0)),
+                        yControl.calculate(limelight.getVerticalCrosshairOffsetAngle(), 0)),
                 0,
                 true);
     }

@@ -36,7 +36,7 @@ public class Limelight extends SubsystemBase {
         return limelight.getEntry("tx").getDouble(0);
     }
 
-    public double getVerticalCrosshairOfssetAngle() {
+    public double getVerticalCrosshairOffsetAngle() {
         return limelight.getEntry("ty").getDouble(0);
     }
 
@@ -46,6 +46,10 @@ public class Limelight extends SubsystemBase {
 
     public double getTargetArea() {
         return limelight.getEntry("ta").getDouble(0);
+    }
+
+    public double getSkewArea() {
+        return limelight.getEntry("ts").getDouble(0);
     }
 
     @Override

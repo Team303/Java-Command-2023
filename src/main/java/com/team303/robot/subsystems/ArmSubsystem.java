@@ -82,6 +82,8 @@ public class ArmSubsystem extends SubsystemBase {
 		armKinematics.setSegmentInitialDirection(1, 0f);
 		armKinematics.setSegmentInitialDirection(2, (float) -Math.PI / 4);
 		armKinematics.initializeArm();
+		armKinematics.setSolveDistanceThreshold(5f);
+		armKinematics.setMaxIterationAttempts(500);
 
 		// TODO: Find joint gear ratios
 		shoulderJoint.shoulderEncoder.setPositionConversionFactor(1);
@@ -100,10 +102,6 @@ public class ArmSubsystem extends SubsystemBase {
 	public void reach(Translation3d translation) {
 		armKinematics.solveTargetIK(translation);
 		// Units of error are inches
-		if (armKinematics.getIKPositionError() >= 5) {
-			System.out.println("Exception: Target out of range.");
-			return;
-		}
 		reach(armKinematics.getIKAnglesRadians());
 	}
 

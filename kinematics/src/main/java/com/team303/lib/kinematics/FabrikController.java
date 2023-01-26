@@ -49,6 +49,13 @@ public class FabrikController {
 
     public void setSegmentLengths() {
         int x = 0;
+        float lengthSum = 0.0f;
+        for (float f : segmentLength.values()) {
+            lengthSum += f;
+        }
+        if (lengthSum != armLength) {
+            throw new RuntimeException("Invalid lengths: Segment lengths do not add up to arm length");
+        }
         for (float i : segmentRatio.values()) {
             segmentLength.put(x, i * armLength);
             x++;
@@ -103,6 +110,19 @@ public class FabrikController {
                     segmentAngleConstraint.get(i)[0], segmentAngleConstraint.get(i)[1]);
         }
         structure.addChain(chain);
+    }
+    public void setMaxIterationAttempts(int maxIterations) {
+        chain.setMaxIterationAttempts(maxIterations);
+    }
+
+    public void getMaxIterationAttempts() {
+        chain.getMaxIterationAttempts();
+    }
+    public void setSolveDistanceThreshold(float toleranceInches) {
+        chain.setSolveDistanceThreshold(toleranceInches);
+    }
+    public void getSolveDistanceThreshold() {
+        chain.getSolveDistanceThreshold();
     }
 
     public void solveTargetIK(Translation3d target) {
