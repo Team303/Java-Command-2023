@@ -1,4 +1,4 @@
-package com.team303.robot.subsystems;
+package com.team303.robot.modules;
 
 import java.util.List;
 
@@ -17,11 +17,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class PhotonvisionModule extends SubsystemBase {
-    
+public class Photonvision extends SubsystemBase {
+
     public static final ShuffleboardTab PHOTONVISION_TAB = Shuffleboard.getTab("PhotonVision");
-    
-    public static final NetworkTable photonvision = Robot.getNetworkTableInstance().getTable("PhotonVision"); 
+
+    public static final NetworkTable photonvision = Robot.getNetworkTableInstance().getTable("PhotonVision");
 
     public static final GenericEntry APRILTAG_ID = PHOTONVISION_TAB.add("April ID", 0).getEntry();
     public static final GenericEntry TARGET_AMBIGUITY = PHOTONVISION_TAB.add("ID Ambiguity", 0).getEntry();
@@ -30,69 +30,69 @@ public class PhotonvisionModule extends SubsystemBase {
     public static final GenericEntry TARGET_SKEW = PHOTONVISION_TAB.add("ID Skew", 0).getEntry();
 
     private final PhotonCamera camera;
-    private static PhotonvisionModule instance = new PhotonvisionModule();
-   // public static final GenericEntry TARGET_CORNERS = PHOTONVISION_TAB.add("ID Corners", 0).getEntry();
+
     public enum PhotonPipeline {
         CUBE,
         CONE,
         APRILTAG;
     }
-    private PhotonvisionModule() {
-       camera = new PhotonCamera("photovision");
+
+    public Photonvision() {
+        camera = new PhotonCamera("photovision");
     }
-    public static PhotonvisionModule getPhotonvision() {
-        return instance;
-    }
+
     public PhotonCamera getCamera() {
-        return getPhotonvision().camera;
+        return this.camera;
     }
 
     public PhotonPipelineResult getLatestResult() {
-        return getPhotonvision().getCamera().getLatestResult();
+        return this.camera.getLatestResult();
     }
 
     public Boolean hasTargets() {
-        return getPhotonvision().getLatestResult().hasTargets();
+        return this.getLatestResult().hasTargets();
     }
 
     public List<PhotonTrackedTarget> getTargetList() {
-        return getPhotonvision().getLatestResult().getTargets();
+        return this.getLatestResult().getTargets();
     }
 
     public PhotonTrackedTarget getBestTarget() {
-        return getPhotonvision().getLatestResult().getBestTarget();
+        return this.getLatestResult().getBestTarget();
     }
 
     public void takeImage() {
-        getPhotonvision().getCamera().takeInputSnapshot();
+        this.getCamera().takeInputSnapshot();
     }
 
     public void getImages() {
-        getPhotonvision().getCamera().takeOutputSnapshot();
+        this.camera.takeOutputSnapshot();
     }
+
     public void setPipeline(PhotonPipeline pipelineName) {
-        getPhotonvision().getCamera().setPipelineIndex(pipelineName.ordinal());
+        this.camera.setPipelineIndex(pipelineName.ordinal());
     }
+
     public PhotonPipeline getPipeline() {
-        return PhotonPipeline.values()[getPhotonvision().getCamera().getPipelineIndex()];
+        return PhotonPipeline.values()[this.camera.getPipelineIndex()];
     }
 
     public double getDistanceToTarget() {
         int id = getBestTarget().getFiducialId();
         if (id != 4 || id != 5) {
             return PhotonUtils.calculateDistanceToTargetMeters(
-                PhotonvisionConstants.CAMERA_HEIGHT_METERS, 
-                PhotonvisionConstants.GRID_TARGET_HEIGHT_METERS,
-                PhotonvisionConstants.CAMERA_PITCH_RADIANS,
-                Units.degreesToRadians(getBestTarget().getPitch()));
+                    PhotonvisionConstants.CAMERA_HEIGHT_METERS,
+                    PhotonvisionConstants.GRID_TARGET_HEIGHT_METERS,
+                    PhotonvisionConstants.CAMERA_PITCH_RADIANS,
+                    Units.degreesToRadians(getBestTarget().getPitch()));
         } else {
             return PhotonUtils.calculateDistanceToTargetMeters(
-                PhotonvisionConstants.CAMERA_HEIGHT_METERS, 
-                PhotonvisionConstants.DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS,
-                PhotonvisionConstants.CAMERA_PITCH_RADIANS,
-                Units.degreesToRadians(getBestTarget().getPitch()));
+                    PhotonvisionConstants.CAMERA_HEIGHT_METERS,
+                    PhotonvisionConstants.DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS,
+                    PhotonvisionConstants.CAMERA_PITCH_RADIANS,
+                    Units.degreesToRadians(getBestTarget().getPitch()));
         }
-        
+
     }
 
     @Override

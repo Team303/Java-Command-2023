@@ -4,20 +4,20 @@
 
 package com.team303.robot.commands.led;
 
-import com.team303.robot.Robot;
-import com.team303.robot.subsystems.LEDSubsystem;
+import static com.team303.robot.Robot.leds;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
 public class LEDRainbowRotate extends CommandBase {
 	private int hue = 0;
 
 	public LEDRainbowRotate() {
-		addRequirements(LEDSubsystem.getLED());
+		addRequirements(leds);
 	}
 
 	@Override
 	public void initialize() {
-		LEDSubsystem.getLED().clear();
+		leds.clear();
 	}
 
 	@Override
@@ -26,17 +26,17 @@ public class LEDRainbowRotate extends CommandBase {
 		int hue = this.hue++;
 
 		// for each singlar LED a assign a color
-		for (var i = 0; i < LEDSubsystem.getLED().ledBuffer.getLength(); i++) {
-			LEDSubsystem.getLED().ledBuffer.setHSV(i, (hue + i) % 180, 255, 10);
+		for (var i = 0; i < leds.ledBuffer.getLength(); i++) {
+			leds.ledBuffer.setHSV(i, (hue + i) % 180, 255, 10);
 		}
 
 		// send the color to be used by the LEDSubsystem
-		LEDSubsystem.getLED().writeData();
+		leds.writeData();
 	}
 
 	@Override
 	public void end(boolean interrupted) {
-		LEDSubsystem.getLED().clear();
+		leds.clear();
 	}
 
 	@Override

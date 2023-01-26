@@ -4,8 +4,7 @@
 
 package com.team303.robot.commands.led;
 
-import com.team303.robot.Robot;
-import com.team303.robot.subsystems.LEDSubsystem;
+import static com.team303.robot.Robot.leds;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -15,7 +14,7 @@ public class LEDLeftRight extends CommandBase {
 	private Color right;
 
 	public LEDLeftRight(Color left, Color right) {
-		addRequirements(LEDSubsystem.getLED());
+		addRequirements(leds);
 
 		this.left = left;
 		this.right = right;
@@ -23,24 +22,24 @@ public class LEDLeftRight extends CommandBase {
 
 	@Override
 	public void initialize() {
-		LEDSubsystem.getLED().clear();
+		leds.clear();
 	}
 
 	@Override
 	public void execute() {
-		int bufferLen = LEDSubsystem.getLED().ledBuffer.getLength() / 2;
+		int bufferLen = leds.ledBuffer.getLength() / 2;
 
 		for (int i = 0; i < bufferLen; i++) {
-			LEDSubsystem.getLED().ledBuffer.setLED(i, this.left);
-			LEDSubsystem.getLED().ledBuffer.setLED(bufferLen + i, this.right);
+			leds.ledBuffer.setLED(i, this.left);
+			leds.ledBuffer.setLED(bufferLen + i, this.right);
 		}
 
-		LEDSubsystem.getLED().writeData();
+		leds.writeData();
 	}
 
 	@Override
 	public void end(boolean interrupted) {
-		LEDSubsystem.getLED().clear();
+		leds.clear();
 	}
 
 	@Override

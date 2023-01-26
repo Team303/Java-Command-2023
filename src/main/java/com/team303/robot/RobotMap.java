@@ -3,7 +3,7 @@
 package com.team303.robot;
 
 import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
-import com.team303.lib.math.GlobalDeadbandFilter;
+import com.team303.lib.math.DeadbandFilter;
 
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -153,7 +153,7 @@ public final class RobotMap {
 
 		public static final double DEADBAND_UPPERBOUND = 1;
 		public static final double DEADBAND_LOWERBOUND = 0.05;
-		public static final GlobalDeadbandFilter DEADBAND_FILTER = new GlobalDeadbandFilter(DEADBAND_LOWERBOUND, DEADBAND_UPPERBOUND);
+		public static final DeadbandFilter DEADBAND_FILTER = new DeadbandFilter(DEADBAND_LOWERBOUND, DEADBAND_UPPERBOUND);
 	}
 
 	public static final class LED {

@@ -1,19 +1,11 @@
 package com.team303.robot.autonomous;
 
-import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.Robot;
-import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutonomousProgram {

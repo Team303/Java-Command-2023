@@ -1,7 +1,6 @@
 package com.team303.robot.commands.led;
 
-import com.team303.robot.Robot;
-import com.team303.robot.subsystems.LEDSubsystem;
+import static com.team303.robot.Robot.leds;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -11,7 +10,7 @@ public class LEDFade extends CommandBase {
 	private boolean backwards = false;
 
 	public LEDFade() {
-		addRequirements(LEDSubsystem.getLED());
+		addRequirements(leds);
 	}
 
 	@Override
@@ -20,12 +19,12 @@ public class LEDFade extends CommandBase {
 		backwards = false;
 
 		// for each singlar LED a assign a initial color
-		for (var i = 0; i < LEDSubsystem.getLED().ledBuffer.getLength(); i++) {
-			LEDSubsystem.getLED().ledBuffer.setRGB(i, 0, 0, blue);
+		for (var i = 0; i < leds.ledBuffer.getLength(); i++) {
+			leds.ledBuffer.setRGB(i, 0, 0, blue);
 		}
 
 		// send the color to be used by the LEDSubsystem
-		LEDSubsystem.getLED().writeData();
+		leds.writeData();
 
 	}
 
@@ -47,12 +46,12 @@ public class LEDFade extends CommandBase {
 		}
 
 		// for each singlar LED a assign a color
-		for (var i = 0; i < LEDSubsystem.getLED().ledBuffer.getLength(); i++) {
-			LEDSubsystem.getLED().ledBuffer.setRGB(i, 0, 0, blue);
+		for (var i = 0; i < leds.ledBuffer.getLength(); i++) {
+			leds.ledBuffer.setRGB(i, 0, 0, blue);
 		}
 
 		// send the color to be used by the LEDSubsystem
-		LEDSubsystem.getLED().writeData();
+		leds.writeData();
 
 	}
 
@@ -60,14 +59,14 @@ public class LEDFade extends CommandBase {
 	public void end(boolean interrupted) {
 
 		// At the end do it all over agin but set it all back to black/off
-		for (var i = 0; i < LEDSubsystem.getLED().ledBuffer.getLength(); i++) {
-			LEDSubsystem.getLED().ledBuffer.setRGB(i, 0, 0, 0);
+		for (var i = 0; i < leds.ledBuffer.getLength(); i++) {
+			leds.ledBuffer.setRGB(i, 0, 0, 0);
 		}
 
 		blue = 0;
 		backwards = false;
 
-		LEDSubsystem.getLED().writeData();
+		leds.writeData();
 	}
 
 	@Override

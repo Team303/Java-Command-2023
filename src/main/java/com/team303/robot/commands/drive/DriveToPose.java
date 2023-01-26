@@ -4,7 +4,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPoint;
-import com.team303.robot.subsystems.PoseEstimatorModule;
+import com.team303.robot.modules.PoseTracker;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -21,7 +21,7 @@ public class DriveToPose extends CommandBase {
 
     @Override
     public void execute() {
-        PoseEstimatorModule.followTrajectoryCommand(trajectory, false);
+        PoseTracker.followTrajectoryCommand(trajectory, false);
     }
     
 }

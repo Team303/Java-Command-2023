@@ -1,6 +1,5 @@
 package com.team303.robot.commands.claw;
 
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
@@ -9,29 +8,25 @@ import com.team303.robot.Robot;
 import com.team303.robot.RobotMap;
 import com.team303.robot.subsystems.ClawSubsystem;
 
-public class CloseClaw extends CommandBase
-{
-    public CloseClaw()
-    {
+public class CloseClaw extends CommandBase {
     
+    public CloseClaw() {
+
     }
 
     @Override
-    public void initialize() 
-    {
-        
-	}
+    public void initialize() {
 
-    @Override
-    public void execute()
-    {
-        
-    }
-    @Override
-    public boolean isFinished()
-    {
-        return true; 
     }
 
+    @Override
+    public void execute() {
+
+    }
+
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
 
 }

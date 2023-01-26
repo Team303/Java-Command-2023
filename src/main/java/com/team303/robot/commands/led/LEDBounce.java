@@ -4,8 +4,7 @@
 
 package com.team303.robot.commands.led;
 
-import com.team303.robot.Robot;
-import com.team303.robot.subsystems.LEDSubsystem;
+import static com.team303.robot.Robot.leds;
 
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -19,25 +18,25 @@ public class LEDBounce extends CommandBase {
 	private Color color;
 
 	public LEDBounce(Color color) {
-		addRequirements(LEDSubsystem.getLED());
+		addRequirements(leds);
 
 		this.color = color;
 	}
 
 	@Override
 	public void initialize() {
-		LEDSubsystem.getLED().clear();
+		leds.clear();
 	}
 
 	@Override
 	public void execute() {
-		int bufferLen = LEDSubsystem.getLED().ledBuffer.getLength() / 2;
+		int bufferLen = leds.ledBuffer.getLength() / 2;
 
 		for (int i = 0; i < LED_COUNT; i++)
-			LEDSubsystem.getLED().ledBuffer.setLED(index + i, new Color(0, 0, 0));
+			leds.ledBuffer.setLED(index + i, new Color(0, 0, 0));
 
 		for (int i = 0; i < LED_COUNT; i++)
-			LEDSubsystem.getLED().ledBuffer.setLED(bufferLen * 2 - index - i - 1, new Color(0, 0, 0));
+			leds.ledBuffer.setLED(bufferLen * 2 - index - i - 1, new Color(0, 0, 0));
 
 		if (backwards) {
 			index--;
@@ -52,17 +51,17 @@ public class LEDBounce extends CommandBase {
 		}
 
 		for (int i = 0; i < LED_COUNT; i++)
-			LEDSubsystem.getLED().ledBuffer.setLED(index + i, this.color);
+			leds.ledBuffer.setLED(index + i, this.color);
 
 		for (int i = 0; i < LED_COUNT; i++)
-			LEDSubsystem.getLED().ledBuffer.setLED(bufferLen * 2 - index - i - 1, this.color);
+			leds.ledBuffer.setLED(bufferLen * 2 - index - i - 1, this.color);
 
-		LEDSubsystem.getLED().writeData();
+		leds.writeData();
 	}
 
 	@Override
 	public void end(boolean interrupted) {
-		LEDSubsystem.getLED().clear();
+		leds.clear();
 	}
 
 	@Override

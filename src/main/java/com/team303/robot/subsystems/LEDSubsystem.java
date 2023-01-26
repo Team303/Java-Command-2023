@@ -23,8 +23,6 @@ public class LEDSubsystem extends SubsystemBase {
 	 */
 	public final AddressableLEDBuffer ledBuffer;
 
-	private static LEDSubsystem instance = new LEDSubsystem();
-
 	public LEDSubsystem() {
 		// Create the buffer for writing pixel data
 		this.ledBuffer = new AddressableLEDBuffer(LED.BUFFER_LENGTH);
@@ -49,13 +47,6 @@ public class LEDSubsystem extends SubsystemBase {
 		}
 
 		this.arduino = arduino;
-	}
-
-	public static LEDSubsystem getLED() {
-		if (instance == null) {
-			return new LEDSubsystem();
-		}
-		return instance;
 	}
 
 	/**

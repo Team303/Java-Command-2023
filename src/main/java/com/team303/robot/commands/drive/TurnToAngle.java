@@ -1,34 +1,33 @@
 package com.team303.robot.commands.drive;
 
-import edu.wpi.first.wpilibj2.command.PIDCommand;
+import static com.team303.robot.Robot.swerve;
+
 import com.team303.robot.Robot;
-import com.team303.robot.subsystems.SwerveSubsystem;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 public class TurnToAngle extends PIDCommand {
 
-    public TurnToAngle(double angle)
-    {
+    public TurnToAngle(double angle) {
         super(new PIDController(0.01, 0, 0),
-            ()->Robot.getNavX().getAngle(),
-            angle,
-            (output) -> SwerveSubsystem.getSwerve().drive(new Translation2d(0, 0), output,true),
-            SwerveSubsystem.getSwerve()
-        );
-    
+                () -> Robot.getNavX().getAngle(),
+                angle,
+                (output) -> swerve.drive(new Translation2d(0, 0), output, true),
+                swerve);
 
-    getController().setTolerance(0, 0);
+        getController().setTolerance(0, 0);
     }
 
     @Override
-	public void initialize() {
-		SwerveSubsystem.getSwerve().setEncoderDistance();
-		//Robot.getNavX().reset();
-	}
+    public void initialize() {
+        swerve.setEncoderDistance();
+        // Robot.getNavX().reset();
+    }
 
-	@Override
-	public boolean isFinished() {
-		return getController().atSetpoint();
-	}
+    @Override
+    public boolean isFinished() {
+        return getController().atSetpoint();
+    }
 }

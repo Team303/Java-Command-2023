@@ -1,5 +1,12 @@
 package com.team303.robot;
 
+import java.util.HashMap;
+
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
@@ -10,10 +17,13 @@ import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.led.LEDSolidColor;
+import com.team303.robot.modules.Limelight;
+import com.team303.robot.modules.Photonvision;
+import com.team303.robot.modules.PoseTracker;
 import com.team303.robot.subsystems.ArmSubsystem;
+import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,34 +33,23 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.geometry.Rotation2d;
-
-import java.util.HashMap;
-import java.util.List;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import com.team303.robot.subsystems.LimelightModule;
-
 
 public class Robot extends LoggedRobot {
 
-	public static final ShuffleboardTab LIMELIGHT_TAB = Shuffleboard.getTab("limelight");
+	/* Robot Subsystems */
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final LEDSubsystem leds = new LEDSubsystem();
+
+	/* Robot Subsystems */
+	public static final Photonvision photonvision = new Photonvision();
+	public static final Limelight limelight = new Limelight();
+	public static final PoseTracker poseTracker = new PoseTracker();
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
@@ -72,7 +71,7 @@ public class Robot extends LoggedRobot {
 
 	private static final NetworkTableInstance inst = NetworkTableInstance.getDefault();;
 
-	/*Getter Methods*/
+	/* Getter Methods */
 
 	public static AHRS getNavX() {
 		return navX;
@@ -107,12 +106,11 @@ public class Robot extends LoggedRobot {
 	}
 
 	// The command configured to run during auto
-	private Command autonomousCommand;
-;
+	private Command autonomousCommand;;
 
 	@Override
 	public void robotInit() {
-		
+
 		Logger logger = Logger.getInstance();
 
 		// Record metadata
@@ -121,25 +119,25 @@ public class Robot extends LoggedRobot {
 		logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
 		logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
 		logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+
 		switch (BuildConstants.DIRTY) {
 			case 0:
-			logger.recordMetadata("GitDirty", "All changes committed");
-			break;
+				logger.recordMetadata("GitDirty", "All changes committed");
+				break;
 			case 1:
-			logger.recordMetadata("GitDirty", "Uncomitted changes");
-			break;
+				logger.recordMetadata("GitDirty", "Uncomitted changes");
+				break;
 			default:
-			logger.recordMetadata("GitDirty", "Unknown");
-			break;
+				logger.recordMetadata("GitDirty", "Unknown");
+				break;
 		}
 
-		    // Set up data receivers & replay source
+		// Set up data receivers & replay source
 		if (Robot.isReal()) {
 			// Running on a real robot, log to a USB stick
 			logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
 			logger.addDataReceiver(new NT4Publisher());
-		}
-		else {
+		} else {
 			logger.addDataReceiver(new WPILOGWriter(""));
 			logger.addDataReceiver(new NT4Publisher());
 		}
@@ -147,19 +145,16 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
-		//set default commands
-		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
-		ArmSubsystem.getArm().setDefaultCommand(new DefaultIKControlCommand());
-		//Place event markers here
-		//eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-		//add Autos to Shuffleboard
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
+
+		// Place event markers here
+		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+		// add Autos to Shuffleboard
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
-		//if (Robot.isReal())
-			//CameraServer.startAutomaticCapture();
-
 		logger.start();
 	}
 
@@ -190,7 +185,7 @@ public class Robot extends LoggedRobot {
 
 		// Match LEDs color to team
 		CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
-		
+
 	}
 
 	@Override
@@ -207,26 +202,21 @@ public class Robot extends LoggedRobot {
 
 	}
 
-	
 	@Override
 	public void simulationInit() {
 
-		//set default commands
-		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
+		// set default commands
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 
-		//Path Weaver Trajectory
+		// Path Weaver Trajectory
 		try {
 			Trajectory trajectory = FollowTrajectory.convert("output/Test.wpilib.json");
+
 			// Push the trajectory to Field2d.
 			SwerveSubsystem.field.getObject("traj").setTrajectory(trajectory);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override 
-	public void simulationPeriodic() {
-
 	}
 
 	/*
@@ -246,15 +236,11 @@ public class Robot extends LoggedRobot {
 		 * block in order for anything in the Command-based framework to work.
 		 */
 
-		SmartDashboard.putNumber("X crosshair", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
-		SmartDashboard.putNumber("Y crosshair", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
-		SmartDashboard.putNumber("Num Targets", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
-		SmartDashboard.putNumber("Target Area", LimelightModule.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("X crosshair", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Y crosshair", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
 
-		try {
-			CommandScheduler.getInstance().run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		CommandScheduler.getInstance().run();
 	}
 }
