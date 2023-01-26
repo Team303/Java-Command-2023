@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -75,7 +76,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	 * public static final GenericEntry DRIVE_ENCODER_ENTRY =
 	 * DRIVEBASE_TAB.add("Average Encoders", 0).getEntry();
 	 */
-	public static final NetworkTable swerveTable = Robot.getNetworkTableInstance().getTable("swerve");
+	public static final NetworkTable swerveTable = NetworkTableInstance.getDefault().getTable("swerve");
 
 	public static final DoublePublisher NAVX_ANGLE_PUB = swerveTable.getDoubleTopic("NavX Angle").publish();
 	public static final DoublePublisher NAVX_RATE_PUB = swerveTable.getDoubleTopic("NavX Rate").publish();
