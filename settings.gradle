@@ -26,6 +26,7 @@ pluginManagement {
     }
 }
 
-include 'robot'
+rootProject.name = 'team303-robot'
+
 include 'kinematics'
 include 'math'

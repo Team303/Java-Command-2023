@@ -7,12 +7,16 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "bin/": true,
     "**/.classpath": true,
     "**/.project": true,
     "**/.settings": true,
     "**/.factorypath": true,
-    "**/*~": true
+    "**/*~": true,
+    "**/bin": true,
+    "**/build": true,
+    "gradle": true,
+    ".wpilib": true,
+    ".gradle": true,
   },
   "java.test.config": [
     {
