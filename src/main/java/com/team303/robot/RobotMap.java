@@ -16,27 +16,21 @@ public final class RobotMap {
 	public static final class Swerve {
 
 		/* CAN IDs of Drive Motors */
-		public static final int LEFT_FRONT_DRIVE_ID = 1;
-		public static final int LEFT_BACK_DRIVE_ID = 2;
-		public static final int RIGHT_FRONT_DRIVE_ID = 3;
-		public static final int RIGHT_BACK_DRIVE_ID = 4;
+		public static final int LEFT_FRONT_DRIVE_ID = 2;
+		public static final int LEFT_BACK_DRIVE_ID = 5;
+		public static final int RIGHT_FRONT_DRIVE_ID = 8;
+		public static final int RIGHT_BACK_DRIVE_ID = 11;
 
-		/*Drive Encoder CAN IDs*/
-		public static final int LEFT_FRONT_DRIVE_CANCODER_ID = 13;
-		public static final int LEFT_BACK_DRIVE_CANCODER_ID = 14;
-		public static final int RIGHT_FRONT_DRIVE_CANCODER_ID = 15;
-		public static final int RIGHT_BACK_DRIVE_CANCODER_ID = 16;
-
-		/*CAN IDs of turn Motors*/
-		public static final int LEFT_FRONT_STEER_ID = 5;
-		public static final int LEFT_BACK_STEER_ID = 6;
+		/*CAN IDs of steer Motors*/
+		public static final int LEFT_FRONT_STEER_ID = 1;
+		public static final int LEFT_BACK_STEER_ID = 4;
 		public static final int RIGHT_FRONT_STEER_ID = 7;
-		public static final int RIGHT_BACK_STEER_ID = 8;
+		public static final int RIGHT_BACK_STEER_ID = 10;
 
 		/*Steer Encoder CAN IDs */
-		public static final int LEFT_FRONT_STEER_CANCODER_ID = 9;
-		public static final int LEFT_BACK_STEER_CANCODER_ID = 10;
-		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 11;
+		public static final int LEFT_FRONT_STEER_CANCODER_ID = 3;
+		public static final int LEFT_BACK_STEER_CANCODER_ID = 6;
+		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 9;
 		public static final int RIGHT_BACK_STEER_CANCODER_ID = 12;
 
 		/*Steer Motor Offset*/
@@ -52,8 +46,8 @@ public final class RobotMap {
 		public static final boolean RIGHT_BACK_SPARK_INVERTED = false;
 
 		/*Drive Train Dimentions*/
-		public static final double TRACKWIDTH = 0.75;
-		public static final double WHEELBASE = 0.75;
+		public static final double TRACKWIDTH = 0.762;
+		public static final double WHEELBASE = 0.762;
 		public static final double ROTATION_CONSTANT = 2/Math.hypot(TRACKWIDTH, WHEELBASE);
 
 		/* Motor Encoder Calculations */
