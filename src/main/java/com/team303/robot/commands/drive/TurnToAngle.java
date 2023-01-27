@@ -21,12 +21,6 @@ public class TurnToAngle extends PIDCommand {
     }
 
     @Override
-    public void initialize() {
-        swerve.setEncoderDistance();
-        // Robot.getNavX().reset();
-    }
-
-    @Override
     public boolean isFinished() {
         return getController().atSetpoint();
     }

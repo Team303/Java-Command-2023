@@ -34,11 +34,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import com.revrobotics.RelativeEncoder;
 
 public class SwerveSubsystem extends SubsystemBase {
 
 	/* odometry sim */
-	private final double DELAY_MS = 5;
 	private final double SECOND_TO_MS = 1000.0;
 	private final Timer timer = new Timer();
 	private double timeElapsed = 0;
@@ -90,7 +90,6 @@ public class SwerveSubsystem extends SubsystemBase {
 			.publish();
 	public static final DoublePublisher RIGHT_BACK_STEER_ANGLE_PUB = swerveTable
 			.getDoubleTopic("Back Right Steer Angle").publish();
-	public static final DoublePublisher DRIVE_ENCODER_PUB = swerveTable.getDoubleTopic("Average Encoders").publish();
 	public static final DoublePublisher LEFT_FRONT_VEL_PUB = swerveTable.getDoubleTopic("Front Left Velocity")
 			.publish();
 	public static final DoublePublisher LEFT_BACK_VEL_PUB = swerveTable.getDoubleTopic("Back Left Velocity").publish();
@@ -102,18 +101,17 @@ public class SwerveSubsystem extends SubsystemBase {
 	// SIM", field);
 
 	/* Swerve Modules */
-
 	private final SwerveModule leftFrontModule;
 	private final SwerveModule rightFrontModule;
 	private final SwerveModule leftBackModule;
 	private final SwerveModule rightBackModule;
-
-	/* Drive Encoders */
-
-	private final CANCoder leftFrontEncoder;
-	private final CANCoder leftBackEncoder;
-	private final CANCoder rightFrontEncoder;
-	private final CANCoder rightBackEncoder;
+	
+	/* Encoders */
+	/*
+	private final RelativeEncoder leftFrontEncoder;
+	private final RelativeEncoder leftBackEncoder;
+	private final RelativeEncoder rightFrontEncoder;
+	private final RelativeEncoder rightBackEncoder;*/
 
 	/* Chasis Speeds */
 	private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -139,29 +137,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		SmartDashboard.putData("FIELD SIM", field);
 
-		leftFrontEncoder = new CANCoder(Swerve.LEFT_FRONT_DRIVE_CANCODER_ID);
-		leftBackEncoder = new CANCoder(Swerve.LEFT_BACK_DRIVE_CANCODER_ID);
-		rightFrontEncoder = new CANCoder(Swerve.RIGHT_FRONT_DRIVE_CANCODER_ID);
-		rightBackEncoder = new CANCoder(Swerve.RIGHT_BACK_DRIVE_CANCODER_ID);
-
 		kinematics = new SwerveDriveKinematics(
 				new Translation2d(Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
 				new Translation2d(Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0),
 				new Translation2d(-Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
 				new Translation2d(-Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0));
-		/*
-		 * leftFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0,
-		 * 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-		 * leftBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0,
-		 * 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-		 * rightFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0,
-		 * 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-		 * rightBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0,
-		 * 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-		 */
-
-		if (Robot.isReal()) {
-		}
 
 		leftFrontModule = new MkSwerveModuleBuilder()
 				.withLayout(
@@ -169,7 +149,7 @@ public class SwerveSubsystem extends SubsystemBase {
 								.withSize(2, 4)
 								.withPosition(4, 0))
 				.withGearRatio(Swerve.MK4I_L2_LEFT_FRONT)
-				.withDriveMotor(MotorType.FALCON, Swerve.LEFT_FRONT_DRIVE_ID)
+				.withDriveMotor(MotorType.NEO, Swerve.LEFT_FRONT_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.LEFT_FRONT_STEER_ID)
 				.withSteerEncoderPort(Swerve.LEFT_FRONT_STEER_CANCODER_ID)
 				.build();
@@ -180,7 +160,7 @@ public class SwerveSubsystem extends SubsystemBase {
 								.withSize(2, 4)
 								.withPosition(4, 0))
 				.withGearRatio(Swerve.MK4I_L2_LEFT_BACK)
-				.withDriveMotor(MotorType.FALCON, Swerve.LEFT_BACK_DRIVE_ID)
+				.withDriveMotor(MotorType.NEO, Swerve.LEFT_BACK_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.LEFT_BACK_STEER_ID)
 				.withSteerEncoderPort(Swerve.LEFT_BACK_STEER_CANCODER_ID)
 				.build();
@@ -191,7 +171,7 @@ public class SwerveSubsystem extends SubsystemBase {
 								.withSize(2, 4)
 								.withPosition(4, 0))
 				.withGearRatio(Swerve.MK4I_L2_RIGHT_FRONT)
-				.withDriveMotor(MotorType.FALCON, Swerve.RIGHT_FRONT_DRIVE_ID)
+				.withDriveMotor(MotorType.NEO, Swerve.RIGHT_FRONT_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.RIGHT_FRONT_STEER_ID)
 				.withSteerEncoderPort(Swerve.RIGHT_FRONT_STEER_CANCODER_ID)
 				.build();
@@ -202,7 +182,7 @@ public class SwerveSubsystem extends SubsystemBase {
 								.withSize(2, 4)
 								.withPosition(4, 0))
 				.withGearRatio(Swerve.MK4I_L2_RIGHT_BACK)
-				.withDriveMotor(MotorType.FALCON, Swerve.RIGHT_BACK_DRIVE_ID)
+				.withDriveMotor(MotorType.NEO, Swerve.RIGHT_BACK_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.RIGHT_BACK_STEER_ID)
 				.withSteerEncoderPort(Swerve.RIGHT_BACK_STEER_CANCODER_ID)
 				.build();
@@ -270,21 +250,6 @@ public class SwerveSubsystem extends SubsystemBase {
 				rightFrontModule.getPosition(),
 				rightBackModule.getPosition(),
 		};
-	}
-
-	// get average encoders
-
-	public double getEncoderDistance() {
-		return (leftFrontEncoder.getPosition() + leftBackEncoder.getPosition() + rightFrontEncoder.getPosition()
-				+ rightBackEncoder.getPosition()) / 4.0;
-	}
-
-	// reset encoders
-	public void setEncoderDistance() {
-		leftFrontEncoder.setPosition(0);
-		leftBackEncoder.setPosition(0);
-		rightFrontEncoder.setPosition(0);
-		rightBackEncoder.setPosition(0);
 	}
 
 	public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
@@ -415,7 +380,6 @@ public class SwerveSubsystem extends SubsystemBase {
 		LEFT_BACK_STEER_ANGLE_PUB.set(state[1].speedMetersPerSecond);
 		RIGHT_FRONT_STEER_ANGLE_PUB.set(state[2].speedMetersPerSecond);
 		RIGHT_BACK_STEER_ANGLE_PUB.set(state[3].speedMetersPerSecond);
-		DRIVE_ENCODER_PUB.set(getEncoderDistance());
 
 		// field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
