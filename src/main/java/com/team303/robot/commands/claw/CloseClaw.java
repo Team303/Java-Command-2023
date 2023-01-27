@@ -12,7 +12,7 @@ public class CloseClaw extends CommandBase
 {
     public CloseClaw()
     {
-    addRequirements(ClawSubsystem.getClaw());
+    addRequirements();
     } 
 
     @Override

@@ -9,6 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.PhotonvisionConstants;
+import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
@@ -86,7 +87,7 @@ public class Photonvision extends SubsystemBase {
         } 
 
         int id = getBestTarget().getFiducialId();
-        if (id != 4 || id != 5) {
+        if (id != ALLIANCE_SUBSTATION_ID) {
             return PhotonUtils.calculateDistanceToTargetMeters(
                     PhotonvisionConstants.CAMERA_HEIGHT_METERS,
                     PhotonvisionConstants.GRID_TARGET_HEIGHT_METERS,

@@ -68,7 +68,19 @@ public class Robot extends LoggedRobot {
 
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
-	
+	public static enum SubstationFiducialID {
+		RED(5),
+		BLUE(4);
+
+		public final int fiducialId;
+
+		private SubstationFiducialID(int fiducialId) {
+			this.fiducialId = fiducialId;
+		}
+	}
+	public static final int ALLIANCE_SUBSTATION_ID = DriverStation.getAlliance() == Alliance.Blue ? SubstationFiducialID.RED.fiducialId : SubstationFiducialID.BLUE.fiducialId;
+	private static final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+
 	/* Getter Methods */
 
 	public static AHRS getNavX() {
