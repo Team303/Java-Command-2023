@@ -15,53 +15,82 @@ public class ClawSubsystem extends SubsystemBase {
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
 
 	private final CANSparkMax clawCanSparkMax = new CANSparkMax(19, MotorType.kBrushless);
+	private final CANSparkMax rotateCANSparkMax = new CANSparkMax(19, MotorType.kBrushless);
 	private final RelativeEncoder clawEncoder;
+	private final RelativeEncoder rotateEncoder;
 	public final GroundedDigitalInput outerLeft;
 	public final GroundedDigitalInput outerRight;
 	public final GroundedDigitalInput innerLeft;
 	public final GroundedDigitalInput innerRight;
 
-	// private final int encoderGo;
+	public ClawSubsystem() 
+    	{
+	clawCanSparkMax.setInverted(true);
+	clawCanSparkMax.setIdleMode(IdleMode.kBrake);
+	clawEncoder = clawCanSparkMax.getEncoder();
+	rotateEncoder = rotateCANSparkMax.getEncoder();
 
-	public ClawSubsystem(int encoderRotations) {
-		clawCanSparkMax.setInverted(true);
-		clawCanSparkMax.setIdleMode(IdleMode.kBrake);
-		clawEncoder = clawCanSparkMax.getEncoder();
+	// limit switches
+	outerLeft = new GroundedDigitalInput(6);
+	outerRight = new GroundedDigitalInput(9);
+	innerLeft = new GroundedDigitalInput(15);
+	innerRight = new GroundedDigitalInput(22);
 
-		// limit switches
-		outerLeft = new GroundedDigitalInput(6);
-		outerRight = new GroundedDigitalInput(9);
-		innerLeft = new GroundedDigitalInput(15);
-		innerRight = new GroundedDigitalInput(22);
+    
+    	}
 
-		// encoderRotations = encoder
-
-	}
-
-	// claw motor getter among us imposter mode
+	//claw motor getter among us imposter mode
 	public CANSparkMax getClawCanSparkMax() {
 		return clawCanSparkMax;
 	}
+	
+	private static ClawSubsystem instance = new ClawSubsystem();
 
-	// limits
+        //return instance of claw subsystem
+	public static ClawSubsystem getClaw() {
+		return instance;
+	}
+
+	
+	//limits
 	public boolean outerLimitReached() {
 		return outerLeft.get() || outerRight.get();
 	}
-
+	
 	public boolean innerLimitReached() {
 		return innerRight.get() || innerLeft.get();
 	}
 
-	public void close(double speed) {
-		if ((outerLimitReached() && speed < 0) || (innerLimitReached() && speed > 0)) {
-			// climbMotor.set(0);
+        public void claw(double speed) {
+		if ((outerLimitReached() && speed < 0) || (innerLimitReached() && speed > 0)) 
+        	{
+			clawCanSparkMax.set(0);
 			return;
 		}
-		// climbMotor.set(speed);
+		clawCanSparkMax.set(speed);
+        }
+
+	public void rotate(double speed) {
+		rotateCANSparkMax.set(speed);
+	}
+        
+        public boolean getEncoderPos(double encoderLimit) {
+        	return clawEncoder.getPosition() == encoderLimit;
+        }
+
+	public boolean getRotate(double rotateLimit) {
+		return rotateEncoder.getPosition() == rotateLimit;
 	}
 
-	@Override
-	public void periodic() {
+        public void resetEncoders() {
+        	clawEncoder.setPosition(0.0);
+		rotateEncoder.setPosition(0.0);
+        }
+		
 
+	@Override
+	public void periodic() 
+    	{
+	 
 	}
 }

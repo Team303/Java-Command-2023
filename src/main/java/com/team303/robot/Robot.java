@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import com.team303.robot.subsystems.ClawSubsystem;
 
 public class Robot extends LoggedRobot {
 
@@ -45,6 +46,7 @@ public class Robot extends LoggedRobot {
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final LEDSubsystem leds = new LEDSubsystem();
+	public static final ClawSubsystem claw = new ClawSubsystem();
 
 	/* Robot Subsystems */
 	public static final Photonvision photonvision = new Photonvision();
