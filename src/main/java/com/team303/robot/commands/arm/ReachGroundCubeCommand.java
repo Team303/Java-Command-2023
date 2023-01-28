@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import com.team303.robot.modules.Photonvision.CameraName;
 
 public class ReachGroundCubeCommand extends CommandBase {
 
@@ -26,15 +27,15 @@ public class ReachGroundCubeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (photonvision.getPipeline() != PhotonPipeline.CUBE) {
-            photonvision.setPipeline(PhotonPipeline.CUBE);
+        if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.CUBE) {
+            photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CUBE);
         }
         // TODO: Find optimal distance for drivetrain from cube
         swerve.drive(
                 new Translation2d(
-                        xControl.calculate(photonvision.getBestTarget().getBestCameraToTarget().getX(),
+                        xControl.calculate(photonvision.getBestTarget(CameraName.CAM1).getBestCameraToTarget().getX(),
                                 Units.inchesToMeters(5)),
-                        yControl.calculate(photonvision.getBestTarget().getBestCameraToTarget().getY(), 0)),
+                        yControl.calculate(photonvision.getBestTarget(CameraName.CAM1).getBestCameraToTarget().getY(), 0)),
                 0,
                 true);
         Translation3d armToCube = poseTracker.getArmtoTargetTranslation();

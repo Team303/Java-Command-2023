@@ -1,6 +1,6 @@
 package com.team303.robot.commands.drive;
 
-import static com.team303.robot.Robot.swerve;
+import com.team303.robot.Robot;
 
 import java.io.FileNotFoundException;
 
@@ -37,14 +37,14 @@ public class FollowTrajectory extends SwerveControllerCommand {
     public FollowTrajectory(String directory, ProfiledPIDController angleController) throws FileNotFoundException {
         super(
                 convert(directory),
-                swerve::getPose,
-                swerve.getKinematics(),
+                Robot.swerve::getPose,
+                Robot.swerve.getKinematics(),
                 new HolonomicDriveController(
                         new PIDController(0.1, 0.0, 0.0),
                         new PIDController(0.1, 0.0, 0.0),
                         angleController),
-                swerve::drive,
-                swerve);
+                Robot.swerve::drive,
+                Robot.swerve);
         angleController.enableContinuousInput(-Math.PI, Math.PI);
     }
 

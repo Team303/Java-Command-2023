@@ -242,10 +242,11 @@ public class Robot extends LoggedRobot {
 		 * block in order for anything in the Command-based framework to work.
 		 */
 
+		/* 
 		SmartDashboard.putNumber("X crosshair", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
-		SmartDashboard.putNumber("Y crosshair", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
-		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
-		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
+		SmartDashboard.putNumber("Y crosshair", Limelight.getLimelight().getEntry("ty").getDouble(0.0));
+		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tv").getDouble(0.0));
+		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("ta").getDouble(0.0));*/
 
 		CommandScheduler.getInstance().run();
 	}

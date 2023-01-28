@@ -16,10 +16,10 @@ public final class RobotMap {
 	public static final class Swerve {
 
 		/* CAN IDs of Drive Motors */
-		public static final int LEFT_FRONT_DRIVE_ID = 2;
-		public static final int LEFT_BACK_DRIVE_ID = 5;
-		public static final int RIGHT_FRONT_DRIVE_ID = 8;
-		public static final int RIGHT_BACK_DRIVE_ID = 11;
+		public static final int LEFT_FRONT_DRIVE_ID = 3;
+		public static final int LEFT_BACK_DRIVE_ID = 6;
+		public static final int RIGHT_FRONT_DRIVE_ID = 9;
+		public static final int RIGHT_BACK_DRIVE_ID = 12;
 
 		/*CAN IDs of steer Motors*/
 		public static final int LEFT_FRONT_STEER_ID = 1;
@@ -28,10 +28,10 @@ public final class RobotMap {
 		public static final int RIGHT_BACK_STEER_ID = 10;
 
 		/*Steer Encoder CAN IDs */
-		public static final int LEFT_FRONT_STEER_CANCODER_ID = 3;
-		public static final int LEFT_BACK_STEER_CANCODER_ID = 6;
-		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 9;
-		public static final int RIGHT_BACK_STEER_CANCODER_ID = 12;
+		public static final int LEFT_FRONT_STEER_CANCODER_ID = 2;
+		public static final int LEFT_BACK_STEER_CANCODER_ID = 5;
+		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 8;
+		public static final int RIGHT_BACK_STEER_CANCODER_ID = 11;
 
 		/*Steer Motor Offset*/
 		public static final double LEFT_FRONT_STEER_OFFSET= 0.0;

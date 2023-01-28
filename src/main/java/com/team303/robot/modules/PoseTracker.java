@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.team303.robot.modules.Photonvision.CameraName;
 
 public class PoseTracker extends SubsystemBase {
 
@@ -83,7 +84,7 @@ public class PoseTracker extends SubsystemBase {
                 swerveStandardDeviations,
                 photonStandardDeviations);
         visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-                Robot.photonvision.getCamera(), CAMERA_TO_ROBOT_TRANSFORM.inverse());
+                Robot.photonvision.getCamera(CameraName.CAM1), CAMERA_TO_ROBOT_TRANSFORM.inverse());
 
         tab.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
         tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
@@ -111,7 +112,7 @@ public class PoseTracker extends SubsystemBase {
     }
 
     public Translation3d getArmtoTargetTranslation() {
-        Transform3d camToTarget = Robot.photonvision.getBestTarget().getBestCameraToTarget();
+        Transform3d camToTarget = Robot.photonvision.getBestTarget(CameraName.CAM1).getBestCameraToTarget();
         Pose3d camPose = new Pose3d(getRobotPose()).transformBy(CAMERA_TO_ROBOT_TRANSFORM.inverse());
         Pose3d armPose = camPose.transformBy(CAMERA_TO_ARM_TRANSFORM);
         return armPose.transformBy(camToTarget).getTranslation();

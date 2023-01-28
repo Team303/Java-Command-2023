@@ -31,82 +31,87 @@ public class Photonvision extends SubsystemBase {
     public static final GenericEntry TARGET_PITCH = PHOTONVISION_TAB.add("ID Pitch", 0).getEntry();
     public static final GenericEntry TARGET_SKEW = PHOTONVISION_TAB.add("ID Skew", 0).getEntry();
 
-    private static PhotonCamera camera = new PhotonCamera("photovision");
+    private static PhotonCamera[] camera = {
+        new PhotonCamera("photonvision"), 
+        new PhotonCamera("photonvision2")};
 
     public static PhotonTrackedTarget target;
 
-    public enum PhotonPipeline {
+    public static enum PhotonPipeline {
         CUBE,
         CONE,
         APRILTAG;
     }
 
-    public static PhotonCamera getCamera() {
-        return camera;
+    public static enum CameraName {
+        CAM1,
+        CAM2
     }
 
-    public static PhotonPipelineResult getLatestResult() {
-        return camera.getLatestResult();
+    public PhotonCamera getCamera(CameraName name) {
+        return camera[name.ordinal()];
     }
 
-    public static Boolean hasTargets() {
-        return getLatestResult().hasTargets();
+    public PhotonPipelineResult getLatestResult(CameraName name) {
+        return camera[name.ordinal()].getLatestResult();
     }
 
-    public static List<PhotonTrackedTarget> getTargetList() {
-        return getLatestResult().getTargets();
+    public Boolean hasTargets(CameraName name) {
+        return getLatestResult(name).hasTargets();
     }
 
-    public static PhotonTrackedTarget getBestTarget() {
-        if (hasTargets()) {
-            return getLatestResult().getBestTarget();
+    public List<PhotonTrackedTarget> getTargetList(CameraName name) {
+        return getLatestResult(name).getTargets();
+    }
+
+    public PhotonTrackedTarget getBestTarget(CameraName name) {
+        if (hasTargets(name)) {
+            return getLatestResult(name).getBestTarget();
         }
         return null;
     }
 
-    public static void takeImage() {
-        getCamera().takeInputSnapshot();
+    public void takeImage(CameraName name) {
+        getCamera(name).takeInputSnapshot();
     }
 
-    public static void getImages() {
-        camera.takeOutputSnapshot();
+    public void getImages(CameraName name) {
+        getCamera(name).takeOutputSnapshot();
     }
 
-    public static void setPipeline(PhotonPipeline pipelineName) {
-        camera.setPipelineIndex(pipelineName.ordinal());
+    public void setPipeline(CameraName name, PhotonPipeline pipelineName) {
+        getCamera(name).setPipelineIndex(pipelineName.ordinal());
     }
 
-    public static PhotonPipeline getPipeline() {
-        return PhotonPipeline.values()[camera.getPipelineIndex()];
+    public PhotonPipeline getPipeline(CameraName name) {
+        return PhotonPipeline.values()[getCamera(name).getPipelineIndex()];
     }
 
-    public static double getDistanceToTarget() {
+    public double getDistanceToTarget() {
 
-        if (!hasTargets()) {
+        if (!hasTargets(CameraName.CAM1)) {
             return Double.NaN;
         } 
 
-        int id = getBestTarget().getFiducialId();
+        int id = getBestTarget(CameraName.CAM1).getFiducialId();
         if (id != ALLIANCE_SUBSTATION_ID) {
             return PhotonUtils.calculateDistanceToTargetMeters(
                     PhotonvisionConstants.CAMERA_HEIGHT_METERS,
                     PhotonvisionConstants.GRID_TARGET_HEIGHT_METERS,
                     PhotonvisionConstants.CAMERA_PITCH_RADIANS,
-                    Units.degreesToRadians(getBestTarget().getPitch()));
+                    Units.degreesToRadians(getBestTarget(CameraName.CAM1).getPitch()));
         } else {
             return PhotonUtils.calculateDistanceToTargetMeters(
                     PhotonvisionConstants.CAMERA_HEIGHT_METERS,
                     PhotonvisionConstants.DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS,
                     PhotonvisionConstants.CAMERA_PITCH_RADIANS,
-                    Units.degreesToRadians(getBestTarget().getPitch()));
+                    Units.degreesToRadians(getBestTarget(CameraName.CAM1).getPitch()));
         }
     }
 
     @Override
     public void periodic() {
-        target = getBestTarget();
-
-        if (target == null) {
+        if (getBestTarget(CameraName.CAM1) == null) {
             return;
         }
         

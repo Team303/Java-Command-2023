@@ -4,7 +4,7 @@ import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
 import static com.team303.robot.Robot.arm;
 import static com.team303.robot.Robot.photonvision;
 import static com.team303.robot.Robot.poseTracker;
-import static com.team303.robot.Robot.swerve;
+import com.team303.robot.Robot;
 import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
 
 import com.team303.robot.Robot;
@@ -14,19 +14,20 @@ import com.team303.robot.modules.Photonvision.PhotonPipeline;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import com.team303.robot.modules.Photonvision.CameraName;
 
 public class DefaultDrive extends CommandBase {
 
     boolean fieldOriented;
 
     public DefaultDrive(boolean fieldOriented) {
-        addRequirements(swerve);
+        addRequirements(Robot.swerve);
         this.fieldOriented = fieldOriented;
     }
 
     @Override
     public void execute() {
-        swerve.drive(
+        Robot.swerve.drive(
                 new Translation2d(
                         DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getX(), DEADBAND_FILTER.getLowerBound())
                                 * Swerve.MAX_VELOCITY,
@@ -34,14 +35,14 @@ public class DefaultDrive extends CommandBase {
                                 * Swerve.MAX_VELOCITY),
                 DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY(), DEADBAND_FILTER.getLowerBound()),
                 fieldOriented);
-    if (photonvision.getPipeline() != PhotonPipeline.APRILTAG) {
-        photonvision.setPipeline(PhotonPipeline.APRILTAG);
+    if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.APRILTAG) {
+        photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.APRILTAG);
     }
     //TODO: Find good area threshold
-    if (photonvision.getBestTarget().getFiducialId() == ALLIANCE_SUBSTATION_ID && photonvision.getBestTarget().getArea() >= 1) {
-        photonvision.setPipeline(PhotonPipeline.CUBE);
-        if (!photonvision.hasTargets()) {
-            photonvision.setPipeline(PhotonPipeline.CONE);
+    if (photonvision.getBestTarget(CameraName.CAM1).getFiducialId() == ALLIANCE_SUBSTATION_ID && photonvision.getBestTarget(CameraName.CAM1).getArea() >= 1) {
+        photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CUBE);
+        if (!photonvision.hasTargets(CameraName.CAM1)) {
+            photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CONE);
         }
         Translation3d armToPiece = poseTracker.getArmtoTargetTranslation();
         //TODO: Find optimal part of cone to grab

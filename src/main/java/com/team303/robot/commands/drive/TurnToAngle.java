@@ -1,6 +1,6 @@
 package com.team303.robot.commands.drive;
 
-import static com.team303.robot.Robot.swerve;
+import com.team303.robot.Robot;
 
 import com.team303.robot.Robot;
 
@@ -14,8 +14,8 @@ public class TurnToAngle extends PIDCommand {
         super(new PIDController(0.01, 0, 0),
                 () -> Robot.getNavX().getAngle(),
                 angle,
-                (output) -> swerve.drive(new Translation2d(0, 0), output, true),
-                swerve);
+                (output) -> Robot.swerve.drive(new Translation2d(0, 0), output, true),
+                Robot.swerve);
 
         getController().setTolerance(0, 0);
     }

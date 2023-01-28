@@ -1,6 +1,6 @@
 package com.team303.robot.commands.drive;
 
-import static com.team303.robot.Robot.swerve;
+import com.team303.robot.Robot;
 
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap;
@@ -20,8 +20,8 @@ public class Autolevel extends PIDCommand {
                 GYRO_PID_CONTROLLER,
                 () -> -Robot.getNavX().getRawGyroY(),
                 gyro,
-                (output) -> swerve.drive(new Translation2d(0, output), 0.0, true),
-                swerve);
+                (output) -> Robot.swerve.drive(new Translation2d(0, output), 0.0, true),
+                Robot.swerve);
 
         getController().setTolerance(2, 0);
         getController().enableContinuousInput(-Swerve.MAX_VELOCITY, Swerve.MAX_VELOCITY);

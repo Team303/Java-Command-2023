@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap;
 import com.team303.robot.subsystems.ClawSubsystem;
+/*
 public class CloseClaw extends CommandBase
 {
     public CloseClaw()
@@ -32,4 +33,4 @@ public class CloseClaw extends CommandBase
     }
 
 
-}
+}*/
