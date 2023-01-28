@@ -1,4 +1,4 @@
-/*package com.team303.robot.commands.claw;
+package com.team303.robot.commands.claw;
 
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -41,4 +41,4 @@ public class RotateClaw extends CommandBase {
 
 
 
-}*/
+}
