@@ -14,30 +14,26 @@ public class OpenClaw extends CommandBase
 
     private static double encoderPos;
 
-    public OpenClaw(double e)
-    {
+    public OpenClaw(double e) {
         addRequirements(Robot.claw);
         encoderPos = e;
     }
 
     @Override
-    public void end(boolean inerrupted   ) 
+    public void end(boolean inerrupted) 
     {
         Robot.claw.claw(0.0);
         Robot.claw.resetEncoders();
 	}
 
     @Override
-    public void execute()
-    {
+    public void execute() {
         Robot.claw.claw(-1);
     }
+
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         
         return Robot.claw.outerLimitReached() || Robot.claw.getEncoderPos(encoderPos); 
     }
-
-
 }

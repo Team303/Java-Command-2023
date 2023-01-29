@@ -21,24 +21,17 @@ public class RotateClaw extends CommandBase {
     }
 
     @Override
-    public void end(boolean inerrupted) 
-    {
+    public void end(boolean inerrupted) {
         Robot.claw.claw(0.0);
         Robot.claw.resetEncoders();
 	}
 
     @Override
-    public void execute()
-    {
+    public void execute() {
         Robot.claw.rotate(speed);
     }
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return Robot.claw.getRotate(rotateLimit); 
     }
-
-
-
-
 }
