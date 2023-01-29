@@ -127,9 +127,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public static final double MAX_VOLTAGE = 12.0;
 
-	public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
+	/*public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
 			SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
-			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
+			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;*/
+			
+	public static final double MAX_VELOCITY_METERS_PER_SECOND = Swerve.MAX_VELOCITY;
 
 	public SwerveSubsystem() {
 

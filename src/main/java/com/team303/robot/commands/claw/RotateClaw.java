@@ -15,7 +15,7 @@ public class RotateClaw extends CommandBase {
     private static double speed;
 
     public RotateClaw(double r, double s) {
-        addRequirements(claw);
+        addRequirements(Robot.claw);
         rotateLimit = r;
         speed = s;
     }
@@ -23,19 +23,19 @@ public class RotateClaw extends CommandBase {
     @Override
     public void end(boolean inerrupted) 
     {
-        claw.claw(0.0);
-        claw.resetEncoders();
+        Robot.claw.claw(0.0);
+        Robot.claw.resetEncoders();
 	}
 
     @Override
     public void execute()
     {
-        claw.rotate(speed);
+        Robot.claw.rotate(speed);
     }
     @Override
     public boolean isFinished()
     {
-        return claw.getRotate(rotateLimit); 
+        return Robot.claw.getRotate(rotateLimit); 
     }
 
 

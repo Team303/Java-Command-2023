@@ -74,7 +74,7 @@ public class ArmSubsystem extends SubsystemBase {
 		armKinematics.setArmLength(84f);
 		armKinematics.setSegmentLengthRatio(0, 35 / 84f);
 		armKinematics.setSegmentLengthRatio(1, 35 / 84f);
-		armKinematics.setSegmentLengthRatio(2, 12 / 84f);
+		armKinematics.setSegmentLengthRatio(2, 14 / 84f);
 		armKinematics.setSegmentLengths();
 		armKinematics.setAngleConstraint(0, 45, 45);
 		armKinematics.setAngleConstraint(1, 135, 135);

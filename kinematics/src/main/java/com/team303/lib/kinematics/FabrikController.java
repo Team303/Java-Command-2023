@@ -2,6 +2,7 @@ package com.team303.lib.kinematics;
 
 import java.util.HashMap;
 
+import au.edu.federation.utils.Utils;
 import au.edu.federation.caliko.FabrikBone2D;
 import au.edu.federation.caliko.FabrikChain2D;
 import au.edu.federation.caliko.FabrikChain2D.BaseboneConstraintType2D;
@@ -30,7 +31,11 @@ public class FabrikController {
     }
 
     public void setSegmentLengthRatio(int segmentIndex, float ratio) {
+        if (armLength == Float.NaN) {
+            throw new RuntimeException("Arm Length not set");
+        }
         segmentRatio.put(segmentIndex, ratio);
+        segmentLength.put(segmentIndex, ratio*armLength);
     }
 
     public float[] getSegmentLengthRatios() {
@@ -53,6 +58,8 @@ public class FabrikController {
         for (float f : segmentLength.values()) {
             lengthSum += f;
         }
+        System.out.printf("Arm Length: %f\n", armLength);
+        System.out.printf("Segment Length %f\n", lengthSum);
         if (lengthSum != armLength) {
             throw new RuntimeException("Invalid lengths: Segment lengths do not add up to arm length");
         }
@@ -105,7 +112,7 @@ public class FabrikController {
         chain.addBone(base);
         chain.setBaseboneConstraintType(BaseboneConstraintType2D.GLOBAL_ABSOLUTE);
         chain.setBaseboneConstraintUV(segmentInitialDirection.get(0));
-        for (int i = 0; i < segmentLength.size(); i++) {
+        for (int i = 1; i < segmentLength.size(); i++) {
             chain.addConsecutiveConstrainedBone(segmentInitialDirection.get(i), segmentLength.get(i),
                     segmentAngleConstraint.get(i)[0], segmentAngleConstraint.get(i)[1]);
         }

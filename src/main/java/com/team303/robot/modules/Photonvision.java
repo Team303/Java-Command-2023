@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import org.photonvision.targeting.TargetCorner;
+import edu.wpi.first.math.geometry.Transform3d;
 
 public class Photonvision extends SubsystemBase {
 
@@ -35,8 +37,6 @@ public class Photonvision extends SubsystemBase {
         new PhotonCamera("photonvision"), 
         new PhotonCamera("photonvision2")};
 
-    public static PhotonTrackedTarget target;
-
     public static enum PhotonPipeline {
         CUBE,
         CONE,
@@ -47,6 +47,11 @@ public class Photonvision extends SubsystemBase {
         CAM1,
         CAM2
     }
+
+    public static enum ConePosition {
+        Up,
+        Down
+    } 
 
     public PhotonCamera getCamera(CameraName name) {
         return camera[name.ordinal()];
@@ -71,6 +76,18 @@ public class Photonvision extends SubsystemBase {
         return null;
     }
 
+    public List<TargetCorner> getRectCorners(CameraName name) {
+        return getBestTarget(name).getMinAreaRectCorners();
+    }
+
+    public List<TargetCorner> getCorners(CameraName name) {
+        return getBestTarget(name).getDetectedCorners();
+    }
+
+    public Transform3d getPosition(CameraName name) {
+        return getBestTarget(name).getBestCameraToTarget();
+    }
+
     public void takeImage(CameraName name) {
         getCamera(name).takeInputSnapshot();
     }
@@ -87,8 +104,19 @@ public class Photonvision extends SubsystemBase {
         return PhotonPipeline.values()[getCamera(name).getPipelineIndex()];
     }
 
-    public double getDistanceToTarget() {
+    
+    public ConePosition getConePosiition(CameraName name) {
+        
+        List<TargetCorner> corners = getRectCorners(name);
+        
+        for (TargetCorner corner : corners) {
+            
+            System.out.println(corner.toString());
+        }
+        return ConePosition.Up;
+    }
 
+    public double getDistanceToTarget() {
         if (!hasTargets(CameraName.CAM1)) {
             return Double.NaN;
         } 
@@ -115,10 +143,10 @@ public class Photonvision extends SubsystemBase {
             return;
         }
         
-        APRILTAG_ID.setInteger(target.getFiducialId());
-        TARGET_AMBIGUITY.setDouble(target.getPoseAmbiguity());
-        TARGET_YAW.setDouble(target.getYaw());
-        TARGET_PITCH.setDouble(target.getPitch());
-        TARGET_SKEW.setDouble(target.getSkew());
+        APRILTAG_ID.setInteger(getBestTarget(CameraName.CAM1).getFiducialId());
+        TARGET_AMBIGUITY.setDouble(getBestTarget(CameraName.CAM1).getPoseAmbiguity());
+        TARGET_YAW.setDouble(getBestTarget(CameraName.CAM1).getYaw());
+        TARGET_PITCH.setDouble(getBestTarget(CameraName.CAM1).getPitch());
+        TARGET_SKEW.setDouble(getBestTarget(CameraName.CAM1).getSkew());
     }
 }
