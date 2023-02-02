@@ -22,14 +22,14 @@ public final class RobotMap {
 		public static final int RIGHT_BACK_DRIVE_ID = 12;
 
 		/*CAN IDs of steer Motors*/
-		public static final int LEFT_FRONT_STEER_ID = 1;
-		public static final int LEFT_BACK_STEER_ID = 4;
+		public static final int LEFT_FRONT_STEER_ID = 4;
+		public static final int LEFT_BACK_STEER_ID = 13;
 		public static final int RIGHT_FRONT_STEER_ID = 7;
 		public static final int RIGHT_BACK_STEER_ID = 10;
 
 		/*Steer Encoder CAN IDs */
-		public static final int LEFT_FRONT_STEER_CANCODER_ID = 2;
-		public static final int LEFT_BACK_STEER_CANCODER_ID = 5;
+		public static final int LEFT_FRONT_STEER_CANCODER_ID = 5;
+		public static final int LEFT_BACK_STEER_CANCODER_ID = 2;
 		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 8;
 		public static final int RIGHT_BACK_STEER_CANCODER_ID = 11;
 

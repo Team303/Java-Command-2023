@@ -12,16 +12,9 @@ import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
-import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
-import com.team303.robot.commands.led.LEDSolidColor;
-import com.team303.robot.modules.Limelight;
-import com.team303.robot.modules.Photonvision;
-import com.team303.robot.modules.PoseTracker;
-import com.team303.robot.subsystems.ArmSubsystem;
-import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -38,28 +31,20 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import com.team303.robot.subsystems.ClawSubsystem;
 
 public class Robot extends LoggedRobot {
-
-	/* Robot Subsystems */
-	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem();
-	public static final LEDSubsystem leds = new LEDSubsystem();
-	public static final ClawSubsystem claw = new ClawSubsystem();
-
-	/* Robot Subsystems */
-	public static final Photonvision photonvision = new Photonvision();
-	public static final Limelight limelight = new Limelight();
-	public static final PoseTracker poseTracker = new PoseTracker();
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 
+	/* Robot Subsystems */
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+
+
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
-	private static final XboxController XBOX_CONTROLLER = new XboxController(0);
+	private static final XboxController xboxController = new XboxController(0);
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -98,7 +83,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	public static XboxController getXbox() {
-		return XBOX_CONTROLLER;
+		return xboxController;
 	}
 
 	/**
@@ -154,7 +139,6 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
@@ -182,7 +166,7 @@ public class Robot extends LoggedRobot {
 		}
 
 		// Match LEDs color to team
-		CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
+		//CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
 	}
 
 	@Override
@@ -192,14 +176,14 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 
 		// Match LEDs color to team
-		CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
+		//CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
 
 	}
 
 	@Override
 	public void disabledInit() {
 		// Change LED color to signify disabled state
-		CommandScheduler.getInstance().schedule(new LEDSolidColor(LED.DISABLED_COLOR));
+		//CommandScheduler.getInstance().schedule(new LEDSolidColor(LED.DISABLED_COLOR));
 	}
 
 	@Override
