@@ -4,13 +4,11 @@ package com.team303.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix.sensors.CANCoder;
-import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
-import com.swervedrivespecialties.swervelib.MotorType;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.SwerveModule;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
+import com.team303.swervelib.MkSwerveModuleBuilder;
+import com.team303.swervelib.MotorType;
+import com.team303.swervelib.SwerveModule;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -33,8 +32,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import com.revrobotics.RelativeEncoder;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -131,8 +128,6 @@ public class SwerveSubsystem extends SubsystemBase {
 			SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
 			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;*/
 			
-	public static final double MAX_VELOCITY_METERS_PER_SECOND = Swerve.MAX_VELOCITY;
-
 	public SwerveSubsystem() {
 
 		timer.start();
@@ -140,10 +135,10 @@ public class SwerveSubsystem extends SubsystemBase {
 		SmartDashboard.putData("FIELD SIM", field);
 
 		kinematics = new SwerveDriveKinematics(
-				new Translation2d(Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
-				new Translation2d(Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0),
+				new Translation2d(-Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0),
 				new Translation2d(-Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
-				new Translation2d(-Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0));
+				new Translation2d(Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
+				new Translation2d(Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0));
 
 		leftFrontModule = new MkSwerveModuleBuilder()
 				.withLayout(
@@ -154,7 +149,10 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withDriveMotor(MotorType.NEO, Swerve.LEFT_FRONT_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.LEFT_FRONT_STEER_ID)
 				.withSteerEncoderPort(Swerve.LEFT_FRONT_STEER_CANCODER_ID)
+				.withSteerOffset(Swerve.LEFT_FRONT_STEER_OFFSET)
 				.build();
+
+				
 
 		leftBackModule = new MkSwerveModuleBuilder()
 				.withLayout(
@@ -165,6 +163,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withDriveMotor(MotorType.NEO, Swerve.LEFT_BACK_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.LEFT_BACK_STEER_ID)
 				.withSteerEncoderPort(Swerve.LEFT_BACK_STEER_CANCODER_ID)
+				.withSteerOffset(Swerve.LEFT_BACK_STEER_OFFSET)
 				.build();
 
 		rightFrontModule = new MkSwerveModuleBuilder()
@@ -176,6 +175,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withDriveMotor(MotorType.NEO, Swerve.RIGHT_FRONT_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.RIGHT_FRONT_STEER_ID)
 				.withSteerEncoderPort(Swerve.RIGHT_FRONT_STEER_CANCODER_ID)
+				.withSteerOffset(Swerve.RIGHT_FRONT_STEER_OFFSET)
 				.build();
 
 		rightBackModule = new MkSwerveModuleBuilder()
@@ -187,6 +187,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withDriveMotor(MotorType.NEO, Swerve.RIGHT_BACK_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.RIGHT_BACK_STEER_ID)
 				.withSteerEncoderPort(Swerve.RIGHT_BACK_STEER_CANCODER_ID)
+				.withSteerOffset(Swerve.RIGHT_BACK_STEER_OFFSET)
 				.build();
 
 		if (Robot.isReal()) {
@@ -194,9 +195,9 @@ public class SwerveSubsystem extends SubsystemBase {
 					kinematics, Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
-							leftBackModule.getPosition(),
 							rightFrontModule.getPosition(),
 							rightBackModule.getPosition(),
+							leftBackModule.getPosition(),
 					}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 		} else {
 			odometry = new SwerveDriveOdometry(
@@ -248,15 +249,15 @@ public class SwerveSubsystem extends SubsystemBase {
 	public SwerveModulePosition[] getModulePositions() {
 		return new SwerveModulePosition[] {
 				leftFrontModule.getPosition(),
-				leftBackModule.getPosition(),
 				rightFrontModule.getPosition(),
 				rightBackModule.getPosition(),
+				leftBackModule.getPosition(),
 		};
 	}
 
 	public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
-
+		/*
 		if (DriverStation.getAlliance() == Alliance.Blue && Robot.isReal()) {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
@@ -267,13 +268,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if ( Math.abs(rotation) <= 1) {
 			rotation = 0.0;
-		}
+		} */
 
 		if (fieldOriented && Robot.isReal()) {
-			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-					Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), -rotation,
+					Rotation2d.fromDegrees(-Robot.getNavX().getAngle()));
 		} else if (fieldOriented && !Robot.isReal()) {
-			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), -rotation,
 					Rotation2d.fromRadians(angle));
 		} else {
 			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
@@ -317,21 +318,21 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void drive(SwerveModuleState[] state) {
 		chassisSpeeds = kinematics.toChassisSpeeds(state);
 		// map speed of swerve modules to voltage
-		leftFrontModule.set(state[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+		leftFrontModule.set(state[0].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[0].angle.getRadians());
-		rightFrontModule.set(state[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+		rightFrontModule.set(state[1].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[1].angle.getRadians());
-		leftBackModule.set(state[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+		rightBackModule.set(state[2].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[2].angle.getRadians());
-		rightBackModule.set(state[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+		leftBackModule.set(state[3].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[3].angle.getRadians());
 	}
 
 	public void stop() {
 		leftFrontModule.set(0, leftFrontModule.getSteerAngle());
-		rightFrontModule.set(0, rightBackModule.getSteerAngle());
+		rightFrontModule.set(0, rightFrontModule.getSteerAngle());
+		rightBackModule.set(0, rightBackModule.getSteerAngle());
 		leftBackModule.set(0, leftBackModule.getSteerAngle());
-		rightBackModule.set(0, rightFrontModule.getSteerAngle());
 	}
 	// Assuming this method is part of a drivetrain subsystem that provides the
 	// necessary methods
@@ -346,9 +347,9 @@ public class SwerveSubsystem extends SubsystemBase {
 					Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
-							leftBackModule.getPosition(),
 							rightFrontModule.getPosition(),
 							rightBackModule.getPosition(),
+							leftBackModule.getPosition(),
 					});
 		} else {
 			timeElapsed = (timer.get() - lastPeriodic) * SECOND_TO_MS;
@@ -377,11 +378,11 @@ public class SwerveSubsystem extends SubsystemBase {
 		LEFT_FRONT_STEER_ANGLE_PUB.set(leftFrontModule.getSteerAngle());
 		LEFT_BACK_STEER_ANGLE_PUB.set(leftBackModule.getSteerAngle());
 		RIGHT_FRONT_STEER_ANGLE_PUB.set(rightFrontModule.getSteerAngle());
-		RIGHT_BACK_STEER_ANGLE_PUB.set(leftBackModule.getSteerAngle());
+		RIGHT_BACK_STEER_ANGLE_PUB.set(rightBackModule.getSteerAngle());
 		LEFT_FRONT_STEER_ANGLE_PUB.set(state[0].speedMetersPerSecond);
-		LEFT_BACK_STEER_ANGLE_PUB.set(state[1].speedMetersPerSecond);
-		RIGHT_FRONT_STEER_ANGLE_PUB.set(state[2].speedMetersPerSecond);
-		RIGHT_BACK_STEER_ANGLE_PUB.set(state[3].speedMetersPerSecond);
+		RIGHT_FRONT_STEER_ANGLE_PUB.set(state[1].speedMetersPerSecond);
+		RIGHT_BACK_STEER_ANGLE_PUB.set(state[2].speedMetersPerSecond);
+		LEFT_BACK_STEER_ANGLE_PUB.set(state[3].speedMetersPerSecond);
 
 		// field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));

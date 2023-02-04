@@ -52,6 +52,7 @@ def includeDesktopSupport = false
 dependencies {
     implementation project(':kinematics')
     implementation project(':math')
+    implementation project(':swerve-lib')
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()

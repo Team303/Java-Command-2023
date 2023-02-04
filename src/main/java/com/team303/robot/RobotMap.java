@@ -2,8 +2,8 @@
 
 package com.team303.robot;
 
-import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
 import com.team303.lib.math.DeadbandFilter;
+import com.team303.swervelib.MechanicalConfiguration;
 
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -16,34 +16,28 @@ public final class RobotMap {
 	public static final class Swerve {
 
 		/* CAN IDs of Drive Motors */
-		public static final int LEFT_FRONT_DRIVE_ID = 3;
-		public static final int LEFT_BACK_DRIVE_ID = 6;
+		public static final int LEFT_FRONT_DRIVE_ID = 6;
+		public static final int LEFT_BACK_DRIVE_ID = 3;
 		public static final int RIGHT_FRONT_DRIVE_ID = 9;
 		public static final int RIGHT_BACK_DRIVE_ID = 12;
 
-		/*CAN IDs of steer Motors*/
+		/* CAN IDs of steer Motors */
 		public static final int LEFT_FRONT_STEER_ID = 4;
 		public static final int LEFT_BACK_STEER_ID = 13;
 		public static final int RIGHT_FRONT_STEER_ID = 7;
 		public static final int RIGHT_BACK_STEER_ID = 10;
 
-		/*Steer Encoder CAN IDs */
+		/* Steer Encoder CAN IDs */
 		public static final int LEFT_FRONT_STEER_CANCODER_ID = 5;
 		public static final int LEFT_BACK_STEER_CANCODER_ID = 2;
 		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 8;
 		public static final int RIGHT_BACK_STEER_CANCODER_ID = 11;
 
-		/*Steer Motor Offset*/
-		public static final double LEFT_FRONT_STEER_OFFSET= 0.0;
-		public static final double RIGHT_FRONT_STEER_OFFSET = 0.0;
-		public static final double LEFT_BACK_STEER_OFFSET = 0.0;
-		public static final double RIGHT_BACK_STEER_OFFSET = 0.0;
-
-		/* Drivebase Motor Inversion */
-		public static final boolean LEFT_FRONT_SPARK_INVERTED = true;
-		public static final boolean LEFT_BACK_SPARK_INVERTED = true;
-		public static final boolean RIGHT_FRONT_SPARK_INVERTED = false;
-		public static final boolean RIGHT_BACK_SPARK_INVERTED = false;
+		/* Steer Motor Offset */
+		public static final double LEFT_FRONT_STEER_OFFSET = Math.toRadians(-20.62);
+		public static final double RIGHT_FRONT_STEER_OFFSET = Math.toRadians(-68.5);
+		public static final double LEFT_BACK_STEER_OFFSET = Math.toRadians(-23.5);
+		public static final double RIGHT_BACK_STEER_OFFSET = Math.toRadians(-208.3);
 
 		/*Drive Train Dimentions*/
 		public static final double TRACKWIDTH = 0.762;
@@ -67,7 +61,7 @@ public final class RobotMap {
 		public static final MechanicalConfiguration MK4I_L2_LEFT_FRONT = new MechanicalConfiguration(
             0.10033,
             (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
-            true,
+            false,
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);
@@ -83,7 +77,7 @@ public final class RobotMap {
 		public static final MechanicalConfiguration MK4I_L2_RIGHT_FRONT = new MechanicalConfiguration(
             0.10033,
             (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
-            true,
+            false,
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);
@@ -91,7 +85,7 @@ public final class RobotMap {
 		public static final MechanicalConfiguration MK4I_L2_RIGHT_BACK = new MechanicalConfiguration(
             0.10033,
             (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
-            true,
+            false,
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);

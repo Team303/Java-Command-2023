@@ -30,21 +30,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class Robot extends LoggedRobot {
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
-
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
-	private static final XboxController xboxController = new XboxController(0);
+	private static final CommandXboxController xboxController = new CommandXboxController(IOConstants.OPERATOR_CONTROLLER);
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -82,7 +82,7 @@ public class Robot extends LoggedRobot {
 		return leftJoystick;
 	}
 
-	public static XboxController getXbox() {
+	public static CommandXboxController getXbox() {
 		return xboxController;
 	}
 
@@ -191,7 +191,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-
+		xboxController.y().onTrue(new InstantCommand(navX::reset));
 	}
 
 	@Override
