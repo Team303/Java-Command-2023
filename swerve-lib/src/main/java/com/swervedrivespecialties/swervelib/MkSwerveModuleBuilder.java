@@ -21,8 +21,7 @@ public class MkSwerveModuleBuilder {
                 .withMotionMagic(configuration.getSteerMMkV(), configuration.getSteerMMkA(),
                         configuration.getSteerMMkS())
                 .withCurrentLimit(configuration.getSteerCurrentLimit())
-                .build(new CanCoderFactoryBuilder()
-                        .withReadingUpdatePeriod(100)
+                .build(new CanCoderFactoryBasicBuilder()
                         .build());
     }
 
@@ -38,8 +37,7 @@ public class MkSwerveModuleBuilder {
                 .withVoltageCompensation(configuration.getNominalVoltage())
                 .withPidConstants(configuration.getSteerKP(), configuration.getSteerKI(), configuration.getSteerKD())
                 .withCurrentLimit(configuration.getSteerCurrentLimit())
-                .build(new CanCoderFactoryBuilder()
-                        .withReadingUpdatePeriod(100)
+                .build(new CanCoderFactoryBasicBuilder()
                         .build());
     }
 

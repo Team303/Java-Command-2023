@@ -44,14 +44,14 @@ public class Robot extends LoggedRobot {
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem();
-	public static final LEDSubsystem leds = new LEDSubsystem();
-	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final ArmSubsystem arm = null; //new ArmSubsystem();
+	public static final LEDSubsystem leds = null; //new LEDSubsystem();
+	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
 	/* Robot Subsystems */
-	public static final Photonvision photonvision = new Photonvision();
-	public static final Limelight limelight = new Limelight();
-	public static final PoseTracker poseTracker = new PoseTracker();
+	public static final Photonvision photonvision = null; // new Photonvision();
+	public static final Limelight limelight = null; // new Limelight();
+	public static final PoseTracker poseTracker = null; //new PoseTracker();
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
@@ -154,7 +154,7 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
+		//Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
@@ -182,7 +182,7 @@ public class Robot extends LoggedRobot {
 		}
 
 		// Match LEDs color to team
-		CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
+		//CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
 	}
 
 	@Override
@@ -192,14 +192,14 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 
 		// Match LEDs color to team
-		CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
+		//CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
 
 	}
 
 	@Override
 	public void disabledInit() {
 		// Change LED color to signify disabled state
-		CommandScheduler.getInstance().schedule(new LEDSolidColor(LED.DISABLED_COLOR));
+		//CommandScheduler.getInstance().schedule(new LEDSolidColor(LED.DISABLED_COLOR));
 	}
 
 	@Override

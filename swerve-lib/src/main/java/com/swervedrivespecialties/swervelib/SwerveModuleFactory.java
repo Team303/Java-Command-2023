@@ -143,7 +143,8 @@ public class SwerveModuleFactory<DC, SC> {
             if (steerAngle < 0.0) {
                 steerAngle += 2.0 * Math.PI;
             }
-
+            //System.out.println("drive Angle: " + driveVoltage);
+            //System.out.println("steer Angle: " + steerAngle);
             driveController.setReferenceVoltage(driveVoltage);
             steerController.setReferenceAngle(steerAngle);
         }

@@ -40,7 +40,8 @@ public class Autonomous {
     // This will load the file "FullAuto.path" and generate it with a max velocity
     // of 4 m/s and a max acceleration of 3 m/s^2
     // for every path in the group
-    static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto", new PathConstraints(4, 3));
+
+   // static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto", new PathConstraints(4, 3));
 
     private static SwerveAutoBuilder autoBuilder;
     // This is just an example event map. It would be better to have a constant,
@@ -70,7 +71,7 @@ public class Autonomous {
                        // commands
         );
         /* Start with back against hub */
-
+        /* 
         create(
                 "Follow Trajectory",
                 () -> {
@@ -99,5 +100,6 @@ public class Autonomous {
                 "DriveWait",
                 () -> new SequentialCommandGroup(
                         new DriveWait(10)));
+        */
     }
 }

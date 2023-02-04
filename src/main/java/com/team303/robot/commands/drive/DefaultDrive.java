@@ -35,9 +35,12 @@ public class DefaultDrive extends CommandBase {
                                 * Swerve.MAX_VELOCITY),
                 DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY(), DEADBAND_FILTER.getLowerBound()),
                 fieldOriented);
+    } 
+    /* 
     if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.APRILTAG) {
         photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.APRILTAG);
-    }
+    }*/
+    /* 
     //TODO: Find good area threshold
     if (photonvision.getBestTarget(CameraName.CAM1).getFiducialId() == ALLIANCE_SUBSTATION_ID && photonvision.getBestTarget(CameraName.CAM1).getArea() >= 1) {
         photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CUBE);
@@ -49,7 +52,7 @@ public class DefaultDrive extends CommandBase {
         arm.reach(armToPiece.plus(new Translation3d()));
     //FIXME: Change when we introduce more cameras
     //FIXME: Change when we create autonomous driving during teleop and move it to the autonomous part
-    }
+    }*/
         
-    }
+    
 }

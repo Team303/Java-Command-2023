@@ -30,3 +30,4 @@ rootProject.name = 'team303-robot'
 
 include 'kinematics'
 include 'math'
+include 'swerve-lib'

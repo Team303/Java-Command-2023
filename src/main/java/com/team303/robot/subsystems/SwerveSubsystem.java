@@ -256,7 +256,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
-
+		/*
 		if (DriverStation.getAlliance() == Alliance.Blue && Robot.isReal()) {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
@@ -267,7 +267,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if ( Math.abs(rotation) <= 1) {
 			rotation = 0.0;
-		}
+		} */
 
 		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
