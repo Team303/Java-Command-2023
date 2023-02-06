@@ -15,6 +15,7 @@ import com.team303.robot.autonomous.AutonomousProgram;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
+import com.team303.robot.commands.drive.TurnToAngle;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -33,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import com.team303.robot.commands.drive.Autolevel;
 
 public class Robot extends LoggedRobot {
 
@@ -144,6 +146,7 @@ public class Robot extends LoggedRobot {
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		// add Autos to Shuffleboard
 		Autonomous.init();
+		System.out.println("Auton Init");
 		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
@@ -192,13 +195,17 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		xboxController.y().onTrue(new InstantCommand(navX::reset));
+		xboxController.a().onTrue(new Autolevel(0));
+		xboxController.a().onFalse(new DefaultDrive(true));
+		xboxController.b().onTrue(new TurnToAngle(90));
+		xboxController.b().onFalse(new DefaultDrive(true));
 	}
 
 	@Override
 	public void simulationInit() {
 
 		// set default commands
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(false));
 
 		// Path Weaver Trajectory
 		try {

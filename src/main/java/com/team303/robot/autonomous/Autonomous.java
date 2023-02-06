@@ -6,6 +6,7 @@ import static com.team303.robot.autonomous.AutonomousProgram.create;
 import java.util.List;
 import com.team303.robot.Robot;
 import com.team303.robot.commands.drive.DriveWait;
+import com.team303.robot.commands.drive.TurnToAngle;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -44,5 +45,12 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
 
     public static void init() {
+        System.out.println("Create autos");
+        create("NavX Test", () -> 
+            new SequentialCommandGroup(
+                new TurnToAngle(90),
+                new TurnToAngle(0)
+            )
+        );
     }
 }

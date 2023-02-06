@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.GenericEntry;
+import com.team303.robot.Robot;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -50,6 +52,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	/* ShuffleBoard */
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
+
+	public static final GenericEntry NAVX_ANGLE = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
 	// public static final ShuffleboardTab FIELD_TAB =
 	// Shuffleboard.getTab("Drivebase");
 
@@ -371,6 +375,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		lastPeriodic = timer.get();
 
 		// Update ShuffleBoard
+		/* 
 		NAVX_ANGLE_PUB.set(Robot.getNavX().getAngle());
 		NAVX_RATE_PUB.set(Robot.getNavX().getRate());
 		POS_X_PUB.set(pose.getX());
@@ -382,7 +387,11 @@ public class SwerveSubsystem extends SubsystemBase {
 		LEFT_FRONT_STEER_ANGLE_PUB.set(state[0].speedMetersPerSecond);
 		RIGHT_FRONT_STEER_ANGLE_PUB.set(state[1].speedMetersPerSecond);
 		RIGHT_BACK_STEER_ANGLE_PUB.set(state[2].speedMetersPerSecond);
-		LEFT_BACK_STEER_ANGLE_PUB.set(state[3].speedMetersPerSecond);
+		LEFT_BACK_STEER_ANGLE_PUB.set(state[3].speedMetersPerSecond);*/
+
+		//System.out.println((Robot.getNavX().getAngle() % 360.0) * (100.0/390.0));
+		System.out.println((Robot.getNavX().getAngle() % 360.0));
+		
 
 		// field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));

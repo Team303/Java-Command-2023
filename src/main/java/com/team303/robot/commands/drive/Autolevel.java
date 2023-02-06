@@ -13,18 +13,16 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 public class Autolevel extends PIDCommand {
 
-    private static final PIDController GYRO_PID_CONTROLLER = new PIDController(0.01, 0, 0);
-
     public Autolevel(double gyro) {
         super(
-                GYRO_PID_CONTROLLER,
-                () -> -Robot.getNavX().getRawGyroY(),
+                new PIDController(0.1, 0, 0),
+                () -> -Robot.getNavX().getPitch(),
                 gyro,
                 (output) -> Robot.swerve.drive(new Translation2d(0, output), 0.0, true),
                 Robot.swerve);
 
         getController().setTolerance(2, 0);
-        getController().enableContinuousInput(-Swerve.MAX_VELOCITY, Swerve.MAX_VELOCITY);
+        getController().enableContinuousInput(-180, 180);
     }
-} //ARYA IS LAME 4 REALSIES
+}
 

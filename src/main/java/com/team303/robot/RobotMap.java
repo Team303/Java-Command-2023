@@ -34,7 +34,7 @@ public final class RobotMap {
 		public static final int RIGHT_BACK_STEER_CANCODER_ID = 11;
 
 		/* Steer Motor Offset */
-		public static final double LEFT_FRONT_STEER_OFFSET = Math.toRadians(-20.62);
+		public static final double LEFT_FRONT_STEER_OFFSET = Math.toRadians(-21.62);
 		public static final double RIGHT_FRONT_STEER_OFFSET = Math.toRadians(-68.5);
 		public static final double LEFT_BACK_STEER_OFFSET = Math.toRadians(-23.5);
 		public static final double RIGHT_BACK_STEER_OFFSET = Math.toRadians(-208.3);

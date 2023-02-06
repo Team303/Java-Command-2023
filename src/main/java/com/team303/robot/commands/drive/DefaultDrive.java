@@ -30,7 +30,7 @@ public class DefaultDrive extends CommandBase {
                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
                         DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
-                DEADBAND_FILTER.applyDeadband(Robot.getXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 2,
+                DEADBAND_FILTER.applyDeadband(Robot.getXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
                 fieldOriented);
     }
     /*
