@@ -355,7 +355,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		lastPeriodic = timer.get();
 
 		//System.out.println((Robot.getNavX().getAngle() % 360.0) * (100.0/390.0));
-		//System.out.println((Robot.getNavX().getAngle() % 360.0));
+		System.out.println("Angle: " + (Robot.getNavX().getAngle() % 360.0));
 		
 
 		// field.setRobotPose(odometry.getPoseMeters());

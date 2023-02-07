@@ -205,7 +205,7 @@ public class Robot extends LoggedRobot {
 	public void simulationInit() {
 
 		// set default commands
-		Robot.swerve.setDefaultCommand(new DefaultDrive(false));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 
 		// Path Weaver Trajectory
 		try {
