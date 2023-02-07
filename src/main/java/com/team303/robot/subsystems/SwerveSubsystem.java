@@ -106,13 +106,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	private final SwerveModule rightFrontModule;
 	private final SwerveModule leftBackModule;
 	private final SwerveModule rightBackModule;
-	
-	/* Encoders */
-	/*
-	private final RelativeEncoder leftFrontEncoder;
-	private final RelativeEncoder leftBackEncoder;
-	private final RelativeEncoder rightFrontEncoder;
-	private final RelativeEncoder rightBackEncoder;*/
 
 	/* Chasis Speeds */
 	private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -124,7 +117,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	SwerveDriveOdometry odometry;
 
 	private Pose2d pose = new Pose2d();
-	private SwerveDrivePoseEstimator poseEstimator;
 
 	public static final double MAX_VOLTAGE = 12.0;
 
@@ -155,8 +147,6 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withSteerEncoderPort(Swerve.LEFT_FRONT_STEER_CANCODER_ID)
 				.withSteerOffset(Swerve.LEFT_FRONT_STEER_OFFSET)
 				.build();
-
-				
 
 		leftBackModule = new MkSwerveModuleBuilder()
 				.withLayout(
@@ -213,17 +203,6 @@ public class SwerveSubsystem extends SubsystemBase {
 						new SwerveModulePosition(0, new Rotation2d())
 				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 		}
-
-		poseEstimator = new SwerveDrivePoseEstimator(
-				kinematics,
-				new Rotation2d(),
-				new SwerveModulePosition[] {
-						new SwerveModulePosition(0.0, new Rotation2d()),
-						new SwerveModulePosition(0.0, new Rotation2d()),
-						new SwerveModulePosition(0.0, new Rotation2d()),
-						new SwerveModulePosition(0.0, new Rotation2d()),
-				},
-				new Pose2d());
 	}
 
 	// return kinematics instance
@@ -344,7 +323,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 
-		SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
+		
 		if (Robot.isReal()) {
 			// Update Pose
 			pose = odometry.update(
@@ -356,6 +335,7 @@ public class SwerveSubsystem extends SubsystemBase {
 							leftBackModule.getPosition(),
 					});
 		} else {
+			SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
 			timeElapsed = (timer.get() - lastPeriodic) * SECOND_TO_MS;
 			angle += chassisSpeeds.omegaRadiansPerSecond / SECOND_TO_MS * timeElapsed;
 			positions[0] += state[0].speedMetersPerSecond / SECOND_TO_MS * timeElapsed;
@@ -374,23 +354,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		lastPeriodic = timer.get();
 
-		// Update ShuffleBoard
-		/* 
-		NAVX_ANGLE_PUB.set(Robot.getNavX().getAngle());
-		NAVX_RATE_PUB.set(Robot.getNavX().getRate());
-		POS_X_PUB.set(pose.getX());
-		POS_Y_PUB.set(pose.getY());
-		LEFT_FRONT_STEER_ANGLE_PUB.set(leftFrontModule.getSteerAngle());
-		LEFT_BACK_STEER_ANGLE_PUB.set(leftBackModule.getSteerAngle());
-		RIGHT_FRONT_STEER_ANGLE_PUB.set(rightFrontModule.getSteerAngle());
-		RIGHT_BACK_STEER_ANGLE_PUB.set(rightBackModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_PUB.set(state[0].speedMetersPerSecond);
-		RIGHT_FRONT_STEER_ANGLE_PUB.set(state[1].speedMetersPerSecond);
-		RIGHT_BACK_STEER_ANGLE_PUB.set(state[2].speedMetersPerSecond);
-		LEFT_BACK_STEER_ANGLE_PUB.set(state[3].speedMetersPerSecond);*/
-
 		//System.out.println((Robot.getNavX().getAngle() % 360.0) * (100.0/390.0));
-		System.out.println((Robot.getNavX().getAngle() % 360.0));
+		//System.out.println((Robot.getNavX().getAngle() % 360.0));
 		
 
 		// field.setRobotPose(odometry.getPoseMeters());

@@ -7,7 +7,24 @@ import java.util.List;
 import com.team303.robot.Robot;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.TurnToAngle;
+import org.json.simple.parser.JSONParser;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.auto.PIDConstants;
+import org.json.simple.JSONArray;
+import java.io.FileReader;
+import java.nio.file.Files;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.team303.robot.RobotMap;
+import com.team303.robot.RobotMap.Swerve;
+import java.io.File;
+import java.io.FileNotFoundException;
 
+import edu.wpi.first.wpilibj.Filesystem;
+import java.nio.file.Path;
+import java.util.Iterator;
+import com.team303.robot.commands.drive.FollowTrajectory;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
@@ -43,14 +60,64 @@ public class Autonomous {
     // Create the AutoBuilder. This only needs to be created once when robot code
     // starts, not every time you want to create an auto command. A good place to
     // put this is in RobotContainer along with your subsystems.
+    static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
+
+    //static Path dir = Filesystem.getDeployDirectory().toPath().resolve("");
+    //static Iterator<Path> files = dir.iterator();
+    
+
+    private static SwerveAutoBuilder autoBuilder;
+
 
     public static void init() {
-        System.out.println("Create autos");
+
+        autoBuilder = new SwerveAutoBuilder(
+            swerve::getPose, // Pose2d supplier
+            swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
+            swerve.getKinematics(), // SwerveDriveKinematics
+            new PIDConstants(5, 0.0, 0.0), // PID constants to correct for translation error (used to create the X
+                                             // and Y
+                                             // PID controllers)
+            new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the
+                                             // rotation
+                                             // controller)
+            swerve::drive, // Module states consumer used to output to the drive subsystem
+            Robot.eventMap,
+            true, // Should the path be automatically mirrored depending on alliance color.
+                  // Optional, defaults to true
+            swerve // The drive subsystem. Used to properly set the requirements of path following
+                   // commands
+            );
+
+        create("New Path", () -> autoBuilder.fullAuto(pathGroup));
+
+        create("New", () -> {
+            try {
+                return new FollowTrajectory("output/New.wpilib.json");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return new DriveWait(15);
+            }});
+        
         create("NavX Test", () -> 
             new SequentialCommandGroup(
                 new TurnToAngle(90),
                 new TurnToAngle(0)
             )
         );
+    }
+
+    public static double getPathRunTime(String path) {
+        JSONParser parser = new JSONParser();
+        try {     
+            Object obj = parser.parse(new FileReader(path));
+            JSONArray jsonArray =  (JSONArray) obj;
+            Double runTime = (Double) jsonArray.get(jsonArray.lastIndexOf("time"));
+            System.out.printf("The run time for the path of \"%s\" takes %f seconds", path, runTime);
+            return runTime;
+        } catch (Exception e){
+            System.out.println(e.getLocalizedMessage());
+        }
+        return 0.0;
     }
 }

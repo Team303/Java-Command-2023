@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DefaultDrive extends CommandBase {
 
-    private static final double MAX_DRIVE_SPEED = 1;
-
     boolean fieldOriented;
 
     public DefaultDrive(boolean fieldOriented) {
@@ -27,9 +25,9 @@ public class DefaultDrive extends CommandBase {
         Robot.swerve.drive(
                 new Translation2d(
                         DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
-                                * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
+                                * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED,
                         DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
-                                * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
+                                * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED),
                 DEADBAND_FILTER.applyDeadband(Robot.getXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
                 fieldOriented);
     }
