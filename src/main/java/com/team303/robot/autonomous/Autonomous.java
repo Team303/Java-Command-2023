@@ -13,17 +13,12 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.auto.PIDConstants;
 import org.json.simple.JSONArray;
 import java.io.FileReader;
-import java.nio.file.Files;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
-import com.team303.robot.RobotMap;
 import com.team303.robot.RobotMap.Swerve;
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import edu.wpi.first.wpilibj.Filesystem;
-import java.nio.file.Path;
-import java.util.Iterator;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -52,20 +47,21 @@ public class Autonomous {
     // This will load the file "FullAuto.path" and generate it with a max velocity
     // of 4 m/s and a max acceleration of 3 m/s^2
     // for every path in the group
+    // global event map
 
     // This is just an example event map. It would be better to have a constant,
-    // global event map
     // in your code that will be used by all path following commands.
 
     // Create the AutoBuilder. This only needs to be created once when robot code
     // starts, not every time you want to create an auto command. A good place to
     // put this is in RobotContainer along with your subsystems.
-    static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
+    //static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
 
     //static Path dir = Filesystem.getDeployDirectory().toPath().resolve("");
     //static Iterator<Path> files = dir.iterator();
-    
-
+    private static File dir = new File(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toString());
+    private static File[] directoryListing = dir.listFiles();
+    private static List<PathPlannerTrajectory> pathGroup;
     private static SwerveAutoBuilder autoBuilder;
 
 
@@ -89,7 +85,12 @@ public class Autonomous {
                    // commands
             );
 
-        create("New Path", () -> autoBuilder.fullAuto(pathGroup));
+        for (File file : directoryListing) {
+            String name = file.getName();
+            pathGroup = PathPlanner.loadPathGroup(file.getName().substring(0, name.indexOf(".")), new PathConstraints(4, Swerve.MAX_VELOCITY));
+            create(file.getName(), () -> autoBuilder.fullAuto(pathGroup));
+        }
+        //create("New Path", () -> autoBuilder.fullAuto(pathGroup));
 
         create("New", () -> {
             try {
