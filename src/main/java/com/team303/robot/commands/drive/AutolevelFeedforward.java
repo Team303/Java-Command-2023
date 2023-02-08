@@ -10,11 +10,11 @@ import com.team303.robot.Robot;
 public class AutolevelFeedforward extends CommandBase {
     private final PIDController FeedbackController = new PIDController(0.5,0,0);
     private final SimpleMotorFeedforward FeedforwardController = new SimpleMotorFeedforward(
-        1, 3);
+        0.00, 0.00);
     
     public AutolevelFeedforward() {
-        FeedbackController.enableContinuousInput(-Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED, 
-            Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED);
+        FeedbackController.enableContinuousInput(-Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED * 0.25, 
+            Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED * 0.25);
         FeedbackController.setTolerance(2, 0);
         addRequirements(Robot.swerve);
     }
@@ -22,8 +22,9 @@ public class AutolevelFeedforward extends CommandBase {
     @Override
     public void execute() {
         Robot.swerve.drive(new Translation2d(0,
-            FeedbackController.calculate(-Robot.getNavX().getPitch(), 0)
-            + FeedforwardController.calculate(-Robot.getNavX().getPitch())), 
+            FeedbackController.calculate(Robot.getNavX().getPitch(), 0)
+            + FeedforwardController.calculate(Robot.getNavX().getPitch())), 
             0, true);
     }
 }
+

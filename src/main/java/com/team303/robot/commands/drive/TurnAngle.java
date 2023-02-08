@@ -13,11 +13,12 @@ public class TurnAngle extends PIDCommand {
                 Robot.getNavX().getAngle() + angle,
                 (output) -> Robot.swerve.drive(new Translation2d(0, 0), output, true),
                 Robot.swerve);
-        getController().setTolerance(0, 0);
+        getController().setTolerance(2, 0);
     }
 
     @Override
     public boolean isFinished() {
+        System.out.println("Finished!!!\n\n\n\n");
         return getController().atSetpoint();
     }
 }

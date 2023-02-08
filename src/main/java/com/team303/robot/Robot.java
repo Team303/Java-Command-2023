@@ -34,6 +34,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import com.team303.robot.commands.drive.AutolevelFeedforward;
+
+import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.AutolevelPID;
 
 public class Robot extends LoggedRobot {
@@ -195,7 +198,8 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		xboxController.y().onTrue(new InstantCommand(navX::reset));
-		xboxController.a().onTrue(new AutolevelPID(0));
+		xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
+		xboxController.a().onTrue(new AutolevelFeedforward());
 		xboxController.a().onFalse(new DefaultDrive(true));
 		xboxController.b().onTrue(new TurnToAngle(90));
 		xboxController.b().onFalse(new DefaultDrive(true));

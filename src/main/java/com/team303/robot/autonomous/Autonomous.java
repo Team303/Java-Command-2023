@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import edu.wpi.first.wpilibj.Filesystem;
 import com.team303.robot.commands.drive.FollowTrajectory;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
@@ -85,12 +87,16 @@ public class Autonomous {
                    // commands
             );
 
+        /* 
         for (File file : directoryListing) {
             String name = file.getName();
-            pathGroup = PathPlanner.loadPathGroup(file.getName().substring(0, name.indexOf(".")), new PathConstraints(4, Swerve.MAX_VELOCITY));
+            pathGroup = PathPlanner.loadPathGroup(name.substring(0, name.lastIndexOf(".")), new PathConstraints(4, Swerve.MAX_VELOCITY));
             create(file.getName(), () -> autoBuilder.fullAuto(pathGroup));
-        }
+        }*/
         //create("New Path", () -> autoBuilder.fullAuto(pathGroup));
+
+        pathGroup = PathPlanner.loadPathGroup("Top to Cone", new PathConstraints(4, Swerve.MAX_VELOCITY));
+        create("Top to Cone", () -> autoBuilder.fullAuto(pathGroup));
 
         create("New", () -> {
             try {
@@ -100,11 +106,18 @@ public class Autonomous {
                 return new DriveWait(15);
             }});
         
-        create("NavX Test", () -> 
-            new SequentialCommandGroup(
-                new TurnToAngle(90),
-                new TurnToAngle(0)
-            )
+        create("NavX Test", () -> {
+            try {
+                return new SequentialCommandGroup(
+                    new InstantCommand(Robot.getNavX()::reset),
+                    new TurnToAngle(180),
+                    new FollowTrajectory("output/New.wpilib.json")
+                );
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return new DriveWait(15);
+            }
+        }
         );
     }
 

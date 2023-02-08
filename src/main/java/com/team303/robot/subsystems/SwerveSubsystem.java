@@ -53,7 +53,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
 
+
 	public static final GenericEntry NAVX_ANGLE = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
+	public static final GenericEntry NAVX_Y_VELOCITY = DRIVEBASE_TAB.add("Y velocity", 0).getEntry();
+	public static final GenericEntry NAVX_ACCELERATION = DRIVEBASE_TAB.add("acceleration", 0).getEntry();
+	
 	// public static final ShuffleboardTab FIELD_TAB =
 	// Shuffleboard.getTab("Drivebase");
 
@@ -226,7 +230,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public void resetOdometry(Pose2d pose) {
 		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
-
 	}
 
 	public SwerveModulePosition[] getModulePositions() {
@@ -355,11 +358,15 @@ public class SwerveSubsystem extends SubsystemBase {
 		lastPeriodic = timer.get();
 
 		//System.out.println((Robot.getNavX().getAngle() % 360.0) * (100.0/390.0));
-		System.out.println("Angle: " + (Robot.getNavX().getAngle() % 360.0));
-		
+		//System.out.println("Angle: " + (Robot.getNavX().getAngle() % 360.0));
+		NAVX_ANGLE.setDouble(Robot.getNavX().getAngle() % 360, 0);
+		NAVX_Y_VELOCITY.setDouble(Robot.getNavX().getRawGyroZ(), 0);
+		NAVX_ACCELERATION.setDouble(Robot.getNavX().getRawAccelX());
+		System.out.println(Robot.getNavX().getRawAccelX());
 
 		// field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
+		Logger.getInstance().recordOutput("Acceleration", Robot.getNavX().getWorldLinearAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
 	}
 }

@@ -17,7 +17,8 @@ public final class RobotMap {
 
 		/* CAN IDs of Drive Motors */
 		public static final int LEFT_FRONT_DRIVE_ID = 6;
-		public static final int LEFT_BACK_DRIVE_ID = 3;
+		public
+		static final int LEFT_BACK_DRIVE_ID = 3;
 		public static final int RIGHT_FRONT_DRIVE_ID = 9;
 		public static final int RIGHT_BACK_DRIVE_ID = 12;
 
