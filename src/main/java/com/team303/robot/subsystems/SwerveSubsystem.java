@@ -194,8 +194,9 @@ public class SwerveSubsystem extends SubsystemBase {
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
 							rightFrontModule.getPosition(),
-							rightBackModule.getPosition(),
 							leftBackModule.getPosition(),
+							rightBackModule.getPosition(),
+							
 					}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 		} else {
 			odometry = new SwerveDriveOdometry(
@@ -225,7 +226,15 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void resetOdometry() {
-		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), new Pose2d());
+
+		SwerveModulePosition[] newSwervePositions = {
+			new SwerveModulePosition(),
+			new SwerveModulePosition(),
+			new SwerveModulePosition(),
+			new SwerveModulePosition()
+		};
+
+		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions , new Pose2d());
 	}
 
 	public void resetOdometry(Pose2d pose) {
@@ -236,8 +245,8 @@ public class SwerveSubsystem extends SubsystemBase {
 		return new SwerveModulePosition[] {
 				leftFrontModule.getPosition(),
 				rightFrontModule.getPosition(),
-				rightBackModule.getPosition(),
 				leftBackModule.getPosition(),
+				rightBackModule.getPosition(),
 		};
 	}
 
@@ -308,17 +317,17 @@ public class SwerveSubsystem extends SubsystemBase {
 				state[0].angle.getRadians());
 		rightFrontModule.set(state[1].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[1].angle.getRadians());
-		rightBackModule.set(state[2].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
+		leftBackModule.set(state[2].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[2].angle.getRadians());
-		leftBackModule.set(state[3].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
+		rightBackModule.set(state[3].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[3].angle.getRadians());
 	}
 
 	public void stop() {
 		leftFrontModule.set(0, leftFrontModule.getSteerAngle());
 		rightFrontModule.set(0, rightFrontModule.getSteerAngle());
-		rightBackModule.set(0, rightBackModule.getSteerAngle());
 		leftBackModule.set(0, leftBackModule.getSteerAngle());
+		rightBackModule.set(0, rightBackModule.getSteerAngle());
 	}
 	// Assuming this method is part of a drivetrain subsystem that provides the
 	// necessary methods
@@ -329,14 +338,23 @@ public class SwerveSubsystem extends SubsystemBase {
 		
 		if (Robot.isReal()) {
 			// Update Pose
-			pose = odometry.update(
+			/*pose = odometry.update(
 					Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 					new SwerveModulePosition[] {
-							leftFrontModule.getPosition(),
-							rightFrontModule.getPosition(),
-							rightBackModule.getPosition(),
-							leftBackModule.getPosition(),
-					});
+							new SwerveModulePosition(-leftFrontModule.getDriveDistance(), Rotation2d.fromRadians(leftFrontModule.getSteerAngle())),
+							new SwerveModulePosition(-rightFrontModule.getDriveDistance(), Rotation2d.fromRadians(rightFrontModule.getSteerAngle())),
+							new SwerveModulePosition(-rightBackModule.getDriveDistance(), Rotation2d.fromRadians(rightBackModule.getSteerAngle())),
+							new SwerveModulePosition(-leftBackModule.getDriveDistance(), Rotation2d.fromRadians(leftBackModule.getSteerAngle())),
+					});*/
+
+			pose = odometry.update(
+				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+				new SwerveModulePosition[] {
+						leftFrontModule.getPosition(),
+						rightFrontModule.getPosition(),
+						leftBackModule.getPosition(),
+						rightBackModule.getPosition(),
+				});
 		} else {
 			SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
 			timeElapsed = (timer.get() - lastPeriodic) * SECOND_TO_MS;
@@ -366,7 +384,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		// field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
-		Logger.getInstance().recordOutput("Acceleration", Robot.getNavX().getWorldLinearAccelX());
+		Logger.getInstance().recordOutput("Acceleration X", Robot.getNavX().getWorldLinearAccelX());
+		Logger.getInstance().recordOutput("Acceleration Y", Robot.getNavX().getWorldLinearAccelY());
+		Logger.getInstance().recordOutput("Acceleration Z", Robot.getNavX().getWorldLinearAccelZ());
+		Logger.getInstance().recordOutput("Velocity X", Robot.getNavX().getVelocityX());
+		Logger.getInstance().recordOutput("Raw Acceleration", Robot.getNavX().getRawAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
 	}
 }
