@@ -137,8 +137,8 @@ public class SwerveSubsystem extends SubsystemBase {
 		kinematics = new SwerveDriveKinematics(
 				new Translation2d(-Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0),
 				new Translation2d(-Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
-				new Translation2d(Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
-				new Translation2d(Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0));
+				new Translation2d(Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0),
+				new Translation2d(Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0));
 
 		leftFrontModule = new MkSwerveModuleBuilder()
 				.withLayout(
@@ -226,15 +226,28 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void resetOdometry() {
+		SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
+		SwerveModulePosition[] newSwervePositions;
 
-		SwerveModulePosition[] newSwervePositions = {
-			new SwerveModulePosition(),
-			new SwerveModulePosition(),
-			new SwerveModulePosition(),
-			new SwerveModulePosition()
-		};
+		if (Robot.isReal()) {
+			newSwervePositions = new SwerveModulePosition[] {
+				leftFrontModule.getPosition(),
+				rightFrontModule.getPosition(),
+				leftBackModule.getPosition(),
+				rightBackModule.getPosition()
+			};
+		} else {
+			newSwervePositions = new SwerveModulePosition[] {
+				new SwerveModulePosition(positions[0], state[0].angle),
+				new SwerveModulePosition(positions[1], state[1].angle),
+				new SwerveModulePosition(positions[2], state[2].angle),
+				new SwerveModulePosition(positions[3], state[3].angle)
+			};
+		}
+		System.out.println("Resetting");
 
-		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions , new Pose2d());
+		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions,
+			new Pose2d());
 	}
 
 	public void resetOdometry(Pose2d pose) {
@@ -380,7 +393,9 @@ public class SwerveSubsystem extends SubsystemBase {
 		NAVX_ANGLE.setDouble(Robot.getNavX().getAngle() % 360, 0);
 		NAVX_Y_VELOCITY.setDouble(Robot.getNavX().getRawGyroZ(), 0);
 		NAVX_ACCELERATION.setDouble(Robot.getNavX().getRawAccelX());
-		System.out.println(Robot.getNavX().getRawAccelX());
+		SmartDashboard.putNumber("Pitch acceleration", -Robot.getNavX().getRawAccelY());
+		SmartDashboard.putNumber("Pitch ", -Robot.getNavX().getPitch());
+		//System.out.println(Robot.getNavX().getRawAccelX());
 
 		// field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));

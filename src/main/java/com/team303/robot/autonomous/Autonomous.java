@@ -23,6 +23,7 @@ import com.team303.robot.commands.drive.FollowTrajectory;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import com.team303.robot.commands.drive.AutolevelFeedforward;
 
 /**
  * Quick guide to Comand Groups:
@@ -136,6 +137,10 @@ public class Autonomous {
             }
         }
         );
+
+        create("Autolevel", () -> 
+            new AutolevelFeedforward()
+         );
     }
 
     /* 
