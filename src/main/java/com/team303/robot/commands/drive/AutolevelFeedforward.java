@@ -22,12 +22,9 @@ public class AutolevelFeedforward extends CommandBase {
     @Override
     public void execute() {
         Robot.swerve.drive(new Translation2d(0,
-            (FeedbackController.calculate(-Robot.getNavX().getPitch() + Robot.getNavX().getRawAccelY() * 50, 0) 
-            + FeedforwardController.calculate(-Robot.getNavX().getPitch()) + Robot.getNavX().getRawAccelY() * 50) * 0.04), 
+            (FeedbackController.calculate(-Robot.getNavX().getPitch(), 0) 
+            + FeedforwardController.calculate(-Robot.getNavX().getPitch())) * 0.04), 
             0, true);
-
-        System.out.println((FeedbackController.calculate(-Robot.getNavX().getPitch() + Robot.getNavX().getRawAccelY() * 50, 0) 
-        + FeedforwardController.calculate(-Robot.getNavX().getPitch()) + Robot.getNavX().getRawAccelY() * 50) * 0.04);
     }
 
     @Override
