@@ -23,6 +23,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -45,8 +46,8 @@ public class Robot extends LoggedRobot {
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
-	public static final SwerveSubsystem swerve = null; // new SwerveSubsystem();
-	public static final Photonvision photonvision = new Photonvision();
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final Photonvision photonvision = null; // new Photonvision();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -145,14 +146,14 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		//configureButtonBindings();
 
-		//Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		// add Autos to Shuffleboard
-		//Autonomous.init();
+		Autonomous.init();
 		//System.out.println("Auton Init");
-		//AutonomousProgram.addAutosToShuffleboard();
+		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -200,7 +201,7 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		xboxController.y().onTrue(new InstantCommand(navX::reset));
-		//xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
+		xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
 		xboxController.a().onTrue(new AutolevelFeedforward());
 		xboxController.a().onFalse(new DefaultDrive(true));
 		xboxController.b().onTrue(new TurnToAngle(90));
@@ -209,9 +210,9 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void simulationInit() {
-
+		System.out.println(WPILibVersion.Version);
 		// set default commands
-		//Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 
 		// Path Weaver Trajectory
 		try {
