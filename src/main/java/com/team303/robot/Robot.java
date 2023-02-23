@@ -51,9 +51,9 @@ public class Robot extends LoggedRobot {
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
-	public static final SwerveSubsystem swerve = null; // new SwerveSubsystem();
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmTest arm = null; //new ArmTest();
-	public static final Photonvision photonvision = new Photonvision();
+	public static final Photonvision photonvision = null;// new Photonvision();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -152,16 +152,15 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
-		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.arm.setDefaultCommand(new MoveArm());
-		Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
+		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		// add Autos to Shuffleboard
-		// Autonomous.init();
-		// //System.out.println("Auton Init");
-		// AutonomousProgram.addAutosToShuffleboard();
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -216,12 +215,12 @@ public class Robot extends LoggedRobot {
 		// xboxController.b().onFalse(new DefaultDrive(true));
 
 
-		// new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
-		// new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
-		// new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
-		// new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
-		// new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
-		// new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
+		new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
+		new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
+		new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
+		new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
+		new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
+		new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
 	}
 
 	@Override

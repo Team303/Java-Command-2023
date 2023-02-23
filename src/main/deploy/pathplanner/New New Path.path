@@ -70,13 +70,5 @@
       }
     }
   ],
-  "markers": [
-    {
-      "position": 1.0327272727272312,
-      "names": [
-        "event",
-        "armup"
-      ]
-    }
-  ]
+  "markers": []
 }

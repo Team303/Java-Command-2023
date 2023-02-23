@@ -18,12 +18,20 @@ import com.pathplanner.lib.PathPlanner;
 import com.team303.robot.RobotMap.Swerve;
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import com.team303.robot.commands.drive.FollowTrajectory;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
+import com.team303.robot.commands.drive.DriveToPose;
+import com.team303.robot.subsystems.SwerveSubsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import java.util.HashMap;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 /**
  * Quick guide to Comand Groups:
@@ -70,6 +78,9 @@ public class Autonomous {
 
     public static void init() {
         
+        HashMap<String,Command> eventMap = new HashMap<>();
+        eventMap.put("armup", new PrintCommand("\n\n\n\n arm up\n\n\n"));
+
         autoBuilder = new SwerveAutoBuilder(
             swerve::getPose, // Pose2d supplier
             swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
@@ -81,7 +92,7 @@ public class Autonomous {
                                              // rotation
                                              // controller)
             swerve::drive, // Module states consumer used to output to the drive subsystem
-            Robot.eventMap,
+            eventMap,
             true, // Should the path be automatically mirrored depending on alliance color.
                   // Optional, defaults to true
             swerve // The drive subsystem. Used to properly set the requirements of path following
@@ -137,6 +148,8 @@ public class Autonomous {
             }
         }
         );
+
+        create("Drivepose", () -> SwerveSubsystem.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d())));
 
         create("Autolevel", () -> 
             new AutolevelFeedforward()

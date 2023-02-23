@@ -52,6 +52,10 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.GenericEntry;
 import com.team303.robot.Robot;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -65,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
     private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5));
 
-	public PhotonPoseEstimator visionPoseEstimator;
+	// public PhotonPoseEstimator visionPoseEstimator;
     public SwerveDrivePoseEstimator poseEstimator;
 
 
@@ -160,6 +164,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		timer.start();
 
+		// photonvision pose estimator
+		// visionPoseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.kBlueAllianceWallRightSide);
+
 		SmartDashboard.putData("FIELD SIM", field);
 
 		kinematics = new SwerveDriveKinematics(
@@ -236,6 +243,7 @@ public class SwerveSubsystem extends SubsystemBase {
 						new SwerveModulePosition(0, new Rotation2d())
 				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 		}
+		
 		AprilTagFieldLayout initialLayout;
 
         try {
@@ -260,8 +268,8 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Pose2d(),
 			swerveStandardDeviations,
 			photonStandardDeviations);
-	DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
-	DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
+			DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
+			DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
 	}
 
 	// return kinematics instance
@@ -301,7 +309,9 @@ public class SwerveSubsystem extends SubsystemBase {
 		System.out.println("Resetting");
 
 		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions,
-			new Pose2d());
+			new Pose2d(2,2, new Rotation2d()));
+		this.angle = 0;
+
 	}
 
 	public void resetOdometry(Pose2d pose) {
@@ -390,14 +400,14 @@ public class SwerveSubsystem extends SubsystemBase {
 				state[3].angle.getRadians());
 	}
 
-	    public Pose2d getRobotPose() {
+	public Pose2d getRobotPose() {
         return poseEstimator.getEstimatedPosition();
     }
 
-	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return visionPoseEstimator.update();
-    }
+	// public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    //     visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+    //     return visionPoseEstimator.update();
+    // }
 
     // Sets the pose estimation to a new pose
     public void setRobotPose(Pose2d newPose) {
@@ -414,29 +424,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 pose.getX(),
                 pose.getY(),
                 pose.getRotation().getDegrees());
-    }
-
-	
-	public static Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-		// Reset odometry for the first path you run during auto
-		if (isFirstPath) {
-			Robot.swerve.resetOdometry(traj.getInitialHolonomicPose());
-		}
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> {
-					new PPSwerveControllerCommand(
-                        traj,
-                        Robot.swerve::getRobotPose, // Pose supplier
-                        Robot.swerve.getKinematics(), // SwerveDriveKinematics
-                        new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0
-                                                    // will only use feedforwards.
-                        new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-                        new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving
-                                                    // them 0 will only use feedforwards.
-                        Robot.swerve::drive, // Module states consumer
-                        true, // Should the path be automatically mirrored depending on alliance color.
-                        Robot.swerve);
-                }));
     }
 
 	public void stop() {
@@ -480,12 +467,12 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
-		Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-        if (result.isPresent()) {
-            EstimatedRobotPose visionPoseEstimate = result.get();
-            poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-                    visionPoseEstimate.timestampSeconds);
-        }
+		// Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        // if (result.isPresent()) {
+        //     EstimatedRobotPose visionPoseEstimate = result.get();
+        //     poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+        //             visionPoseEstimate.timestampSeconds);
+        // }
         poseEstimator.update(
                 Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
                 Robot.swerve.getModulePositions());
@@ -510,5 +497,34 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.getInstance().recordOutput("Velocity X", Robot.getNavX().getVelocityX());
 		Logger.getInstance().recordOutput("Raw Acceleration", Robot.getNavX().getRawAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
+	}
+
+	public static CommandBase followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+		// Reset odometry for the first path you run during auto
+		if (isFirstPath) {
+			Robot.swerve.resetOdometry(traj.getInitialHolonomicPose());
+		}
+		return new PPSwerveControllerCommand(
+			traj,
+			Robot.swerve::getRobotPose, // Pose supplier
+			Robot.swerve.getKinematics(), // SwerveDriveKinematics
+			new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0
+										// will only use feedforwards.
+			new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+			new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving
+										// them 0 will only use feedforwards.
+			Robot.swerve::drive, // Module states consumer
+			true, // Should the path be automatically mirrored depending on alliance color.
+			Robot.swerve);
+	}
+	
+	public static CommandBase driveToPose(Pose2d startPose, Pose2d endPose) {
+			PathPlannerTrajectory trajectory = PathPlanner.generatePath(
+			new PathConstraints(4, 3), 
+			new PathPoint(startPose.getTranslation(), startPose.getRotation()), // position, heading
+			new PathPoint(endPose.getTranslation(), endPose.getRotation()) // position, heading
+		);
+	
+		return followTrajectoryCommand(trajectory, false);
 	}
 }

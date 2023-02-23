@@ -15,10 +15,10 @@ public class DriveToPose extends CommandBase {
      
     private PathPlannerTrajectory trajectory;
     public DriveToPose(Pose2d startPose, Pose2d endPose) {
-            trajectory = PathPlanner.generatePath(
-            new PathConstraints(4, 3), 
-            new PathPoint(startPose.getTranslation(), startPose.getRotation()), // position, heading
-            new PathPoint(endPose.getTranslation(), endPose.getRotation()) // position, heading
+                trajectory = PathPlanner.generatePath(
+                new PathConstraints(4, 3), 
+                new PathPoint(startPose.getTranslation(), startPose.getRotation()), // position, heading
+                new PathPoint(endPose.getTranslation(), endPose.getRotation()) // position, heading
             );
     }
 
