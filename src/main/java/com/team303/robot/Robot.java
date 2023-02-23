@@ -35,8 +35,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import com.team303.robot.commands.drive.AutolevelFeedforward;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import com.team303.robot.subsystems.ArmTest;
+import com.team303.robot.commands.MoveArm;
 import com.team303.robot.modules.Photonvision;
+import com.team303.robot.commands.drive.AutolevelFeedforward;
+import com.team303.robot.commands.arm.ReachCubeToNode;
+//import com.team303.robot.modules.Photonvision;
 
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.AutolevelPID;
@@ -46,8 +51,9 @@ public class Robot extends LoggedRobot {
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
-	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final Photonvision photonvision = null; // new Photonvision();
+	public static final SwerveSubsystem swerve = null; // new SwerveSubsystem();
+	public static final ArmTest arm = null; //new ArmTest();
+	public static final Photonvision photonvision = new Photonvision();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -144,16 +150,18 @@ public class Robot extends LoggedRobot {
 		}
 
 		// Configure the joystick and controller bindings
-		//configureButtonBindings();
+		configureButtonBindings();
 
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		// Robot.arm.setDefaultCommand(new MoveArm());
+		Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		// add Autos to Shuffleboard
-		Autonomous.init();
-		//System.out.println("Auton Init");
-		AutonomousProgram.addAutosToShuffleboard();
+		// Autonomous.init();
+		// //System.out.println("Auton Init");
+		// AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -200,19 +208,27 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		xboxController.y().onTrue(new InstantCommand(navX::reset));
-		xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
-		xboxController.a().onTrue(new AutolevelFeedforward());
-		xboxController.a().onFalse(new DefaultDrive(true));
-		xboxController.b().onTrue(new TurnToAngle(90));
-		xboxController.b().onFalse(new DefaultDrive(true));
+		// xboxController.y().onTrue(new InstantCommand(navX::reset));
+		// xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
+		// //xboxController.a().onTrue(new AutolevelFeedforward());
+		// //xboxController.a().onFalse(new DefaultDrive(true));
+		// xboxController.b().onTrue(new InstantCommand(swerve::stop));
+		// xboxController.b().onFalse(new DefaultDrive(true));
+
+
+		// new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
+		// new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
+		// new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
+		// new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
+		// new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
+		// new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
 	}
 
 	@Override
 	public void simulationInit() {
 		System.out.println(WPILibVersion.Version);
 		// set default commands
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+
 
 		// Path Weaver Trajectory
 		try {

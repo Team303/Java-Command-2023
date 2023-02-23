@@ -35,6 +35,7 @@ public final class RobotMap {
 
 		/* Steer Motor Offset */
 		public static final double LEFT_FRONT_STEER_OFFSET = Math.toRadians(-22.62);
+		//public static final double LEFT_FRONT_STEER_OFFSET = Math.toRadians(-19.34);
 		public static final double RIGHT_FRONT_STEER_OFFSET = Math.toRadians(-68.5);
 		public static final double LEFT_BACK_STEER_OFFSET = Math.toRadians(-23.5);
 		public static final double RIGHT_BACK_STEER_OFFSET = Math.toRadians(-208.3);
@@ -136,8 +137,8 @@ public final class RobotMap {
 
 	public static final class IOConstants {
 
-		public static final int LEFT_JOYSTICK_ID = 1;
-		public static final int RIGHT_JOYSTICK_ID = 2;
+		public static final int LEFT_JOYSTICK_ID = 2;
+		public static final int RIGHT_JOYSTICK_ID = 1;
 		public static final int OPERATOR_CONTROLLER = 0;
 
 		public static final double DEADBAND_UPPERBOUND = 1;

@@ -2,14 +2,28 @@
 
 package com.team303.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
+import java.io.IOException;
+import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
 import com.team303.swervelib.MkSwerveModuleBuilder;
 import com.team303.swervelib.MotorType;
 import com.team303.swervelib.SwerveModule;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,6 +33,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
@@ -31,6 +46,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.GenericEntry;
 import com.team303.robot.Robot;
@@ -42,6 +60,15 @@ public class SwerveSubsystem extends SubsystemBase {
 	private final Timer timer = new Timer();
 	private double timeElapsed = 0;
 	private double lastPeriodic = 0;
+	public final AprilTagFieldLayout aprilTagField;
+	private final Field2d field2d = new Field2d();
+	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+    private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5));
+
+	public PhotonPoseEstimator visionPoseEstimator;
+    public SwerveDrivePoseEstimator poseEstimator;
+
+
 
 	// private Rotation2d angle = new Rotation2d();
 	private double angle = 0;
@@ -121,6 +148,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	SwerveDriveOdometry odometry;
 
 	private Pose2d pose = new Pose2d();
+
 
 	public static final double MAX_VOLTAGE = 12.0;
 
@@ -208,6 +236,32 @@ public class SwerveSubsystem extends SubsystemBase {
 						new SwerveModulePosition(0, new Rotation2d())
 				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
 		}
+		AprilTagFieldLayout initialLayout;
+
+        try {
+            initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+            var alliance = DriverStation.getAlliance();
+            initialLayout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+                    : OriginPosition.kRedAllianceWallRightSide);
+        } catch (IOException e) {
+            DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+            initialLayout = null;
+        }
+        aprilTagField = initialLayout;
+		poseEstimator = new SwerveDrivePoseEstimator(
+			kinematics,
+			new Rotation2d(),
+			new SwerveModulePosition[] {
+					new SwerveModulePosition(0.0, new Rotation2d()),
+					new SwerveModulePosition(0.0, new Rotation2d()),
+					new SwerveModulePosition(0.0, new Rotation2d()),
+					new SwerveModulePosition(0.0, new Rotation2d()),
+			},
+			new Pose2d(),
+			swerveStandardDeviations,
+			photonStandardDeviations);
+	DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
+	DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
 	}
 
 	// return kinematics instance
@@ -336,11 +390,60 @@ public class SwerveSubsystem extends SubsystemBase {
 				state[3].angle.getRadians());
 	}
 
+	    public Pose2d getRobotPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
+	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return visionPoseEstimator.update();
+    }
+
+    // Sets the pose estimation to a new pose
+    public void setRobotPose(Pose2d newPose) {
+        poseEstimator.resetPosition(
+                Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+                Robot.swerve.getModulePositions(),
+                newPose);
+    }
+
+    @Override
+    public String toString() {
+        var pose = getRobotPose();
+        return String.format("(%.2f, %.2f) %.2f degrees",
+                pose.getX(),
+                pose.getY(),
+                pose.getRotation().getDegrees());
+    }
+
+	
+	public static Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+		// Reset odometry for the first path you run during auto
+		if (isFirstPath) {
+			Robot.swerve.resetOdometry(traj.getInitialHolonomicPose());
+		}
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> {
+					new PPSwerveControllerCommand(
+                        traj,
+                        Robot.swerve::getRobotPose, // Pose supplier
+                        Robot.swerve.getKinematics(), // SwerveDriveKinematics
+                        new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0
+                                                    // will only use feedforwards.
+                        new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+                        new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving
+                                                    // them 0 will only use feedforwards.
+                        Robot.swerve::drive, // Module states consumer
+                        true, // Should the path be automatically mirrored depending on alliance color.
+                        Robot.swerve);
+                }));
+    }
+
 	public void stop() {
-		leftFrontModule.set(0, leftFrontModule.getSteerAngle());
-		rightFrontModule.set(0, rightFrontModule.getSteerAngle());
-		leftBackModule.set(0, leftBackModule.getSteerAngle());
-		rightBackModule.set(0, rightBackModule.getSteerAngle());
+		leftFrontModule.set(0, 0);
+		rightFrontModule.set(0, 0);
+		leftBackModule.set(0, 0);
+		rightBackModule.set(0, 0);
 	}
 	// Assuming this method is part of a drivetrain subsystem that provides the
 	// necessary methods
@@ -348,18 +451,10 @@ public class SwerveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 
+		SmartDashboard.putNumber("leftjouytick val", Robot.getRightJoyStick().getX());
 		
 		if (Robot.isReal()) {
 			// Update Pose
-			/*pose = odometry.update(
-					Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
-					new SwerveModulePosition[] {
-							new SwerveModulePosition(-leftFrontModule.getDriveDistance(), Rotation2d.fromRadians(leftFrontModule.getSteerAngle())),
-							new SwerveModulePosition(-rightFrontModule.getDriveDistance(), Rotation2d.fromRadians(rightFrontModule.getSteerAngle())),
-							new SwerveModulePosition(-rightBackModule.getDriveDistance(), Rotation2d.fromRadians(rightBackModule.getSteerAngle())),
-							new SwerveModulePosition(-leftBackModule.getDriveDistance(), Rotation2d.fromRadians(leftBackModule.getSteerAngle())),
-					});*/
-
 			pose = odometry.update(
 				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 				new SwerveModulePosition[] {
@@ -385,6 +480,16 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
+		Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        if (result.isPresent()) {
+            EstimatedRobotPose visionPoseEstimate = result.get();
+            poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+                    visionPoseEstimate.timestampSeconds);
+        }
+        poseEstimator.update(
+                Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+                Robot.swerve.getModulePositions());
+        field2d.setRobotPose(getRobotPose());
 
 		lastPeriodic = timer.get();
 

@@ -35,7 +35,7 @@ public class Photonvision extends SubsystemBase {
 
     private static PhotonCamera[] camera = {
         new PhotonCamera("PhotonVision1"), 
-        new PhotonCamera("photonvision2")};
+        new PhotonCamera("PhotonVision2")};
 
     public static enum PhotonPipeline {
         AprilTag,
@@ -139,16 +139,20 @@ public class Photonvision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (getBestTarget(CameraName.CAM1) == null) {
-            return;
+        // if (getBestTarget(CameraName.CAM1) == null) {
+        //     return;
+        // }
+
+        if (hasTargets(CameraName.CAM1)) {
+            if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+                APRILTAG_ID.setInteger(getBestTarget(CameraName.CAM1).getFiducialId());
+            }
+    
+            TARGET_AMBIGUITY.setDouble(getBestTarget(CameraName.CAM1).getPoseAmbiguity());
+            TARGET_YAW.setDouble(getBestTarget(CameraName.CAM1).getYaw());
+            TARGET_PITCH.setDouble(getBestTarget(CameraName.CAM1).getPitch());
+            TARGET_SKEW.setDouble(getBestTarget(CameraName.CAM1).getSkew());
         }
         
-        if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-            APRILTAG_ID.setInteger(getBestTarget(CameraName.CAM1).getFiducialId());
-        }
-        TARGET_AMBIGUITY.setDouble(getBestTarget(CameraName.CAM1).getPoseAmbiguity());
-        TARGET_YAW.setDouble(getBestTarget(CameraName.CAM1).getYaw());
-        TARGET_PITCH.setDouble(getBestTarget(CameraName.CAM1).getPitch());
-        TARGET_SKEW.setDouble(getBestTarget(CameraName.CAM1).getSkew());
     }
 }

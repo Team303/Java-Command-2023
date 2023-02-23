@@ -7,14 +7,14 @@ import java.util.List;
 import com.team303.robot.Robot;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.TurnToAngle;
-// import org.json.simple.parser.JSONParser;
-// import com.pathplanner.lib.PathPlannerTrajectory;
-// import com.pathplanner.lib.auto.SwerveAutoBuilder;
-// import com.pathplanner.lib.auto.PIDConstants;
-// import org.json.simple.JSONArray;
-// import java.io.FileReader;
-// import com.pathplanner.lib.PathConstraints;
-// import com.pathplanner.lib.PathPlanner;
+import org.json.simple.parser.JSONParser;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.auto.PIDConstants;
+import org.json.simple.JSONArray;
+import java.io.FileReader;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.team303.robot.RobotMap.Swerve;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,18 +58,18 @@ public class Autonomous {
     // Create the AutoBuilder. This only needs to be created once when robot code
     // starts, not every time you want to create an auto command. A good place to
     // put this is in RobotContainer along with your subsystems.
-    //static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
+    static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
 
     //static Path dir = Filesystem.getDeployDirectory().toPath().resolve("");
     //static Iterator<Path> files = dir.iterator();
     private static File dir = new File(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toString());
     private static File[] directoryListing = dir.listFiles();
     //private static List<PathPlannerTrajectory> pathGroup;
-    //private static SwerveAutoBuilder autoBuilder;
+    private static SwerveAutoBuilder autoBuilder;
 
 
     public static void init() {
-        /* 
+        
         autoBuilder = new SwerveAutoBuilder(
             swerve::getPose, // Pose2d supplier
             swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
@@ -86,7 +86,7 @@ public class Autonomous {
                   // Optional, defaults to true
             swerve // The drive subsystem. Used to properly set the requirements of path following
                    // commands
-            );*/
+            );
 
         /* 
         for (File file : directoryListing) {
@@ -99,8 +99,8 @@ public class Autonomous {
        // pathGroup = PathPlanner.loadPathGroup("Top to Cone", new PathConstraints(3, Swerve.MAX_VELOCITY));
        // create("Top to Cone", () -> new SequentialCommandGroup(new InstantCommand(Robot.swerve::resetOdometry), autoBuilder.fullAuto(pathGroup)));
 
-       // pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       // create("New Path", () -> autoBuilder.fullAuto(pathGroup));
+       pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(3, Swerve.MAX_VELOCITY));
+       create("New Path", () -> autoBuilder.fullAuto(pathGroup));
 
         create("New", () -> {
             try {
