@@ -9,7 +9,8 @@ public class MoveArm extends CommandBase {
     }
 
     @Override
-    public void execute() {
-        Robot.arm.move(Robot.getXbox().getRightX());
+    public void execute()
+     {
+        Robot.arm.move(Robot.getXbox().getRightTriggerAxis() -Robot.getXbox().getLeftTriggerAxis());
     }
 }

@@ -27,6 +27,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -56,6 +57,7 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import com.team303.robot.modules.Photonvision.CameraName;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -69,7 +71,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
     private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5));
 
-	// public PhotonPoseEstimator visionPoseEstimator;
+	public PhotonPoseEstimator visionPoseEstimator;
     public SwerveDrivePoseEstimator poseEstimator;
 
 
@@ -164,9 +166,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		timer.start();
 
-		// photonvision pose estimator
-		// visionPoseEstimator = new PhotonPoseEstimator(AprilTagFieldLayout.kBlueAllianceWallRightSide);
-
 		SmartDashboard.putData("FIELD SIM", field);
 
 		kinematics = new SwerveDriveKinematics(
@@ -256,6 +255,8 @@ public class SwerveSubsystem extends SubsystemBase {
             initialLayout = null;
         }
         aprilTagField = initialLayout;
+				// photonvision pose estimator
+		visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP, Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
 		poseEstimator = new SwerveDrivePoseEstimator(
 			kinematics,
 			new Rotation2d(),
@@ -309,7 +310,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		System.out.println("Resetting");
 
 		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions,
-			new Pose2d(2,2, new Rotation2d()));
+			new Pose2d(2,2, new Rotation2d(Math.PI/2)));
 		this.angle = 0;
 
 	}
@@ -400,14 +401,31 @@ public class SwerveSubsystem extends SubsystemBase {
 				state[3].angle.getRadians());
 	}
 
+	// public void driveInverted(SwerveModuleState[] state) {
+	// 	ChassisSpeeds temp = kinematics.toChassisSpeeds(state);
+	// 	ChassisSpeeds newSpeed = new ChassisSpeeds(temp.vxMetersPerSecond, -temp.vyMetersPerSecond, -temp.omegaRadiansPerSecond);
+	// 	state = kinematics.toSwerveModuleStates(newSpeed);
+	// 	chassisSpeeds = kinematics.toChassisSpeeds(state);
+	// 	// map speed of swerve modules to voltage
+	// 	leftFrontModule.set(state[0].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
+	// 			state[0].angle.getRadians());
+	// 	rightFrontModule.set(state[1].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
+	// 			state[1].angle.getRadians());
+	// 	leftBackModule.set(state[2].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
+	// 			state[2].angle.getRadians());
+	// 	rightBackModule.set(state[3].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
+	// 			state[3].angle.getRadians());
+	// }
+
+
 	public Pose2d getRobotPose() {
         return poseEstimator.getEstimatedPosition();
     }
 
-	// public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-    //     visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-    //     return visionPoseEstimator.update();
-    // }
+	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return visionPoseEstimator.update();
+    }
 
     // Sets the pose estimation to a new pose
     public void setRobotPose(Pose2d newPose) {
@@ -443,7 +461,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		if (Robot.isReal()) {
 			// Update Pose
 			pose = odometry.update(
-				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+				Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
 				new SwerveModulePosition[] {
 						leftFrontModule.getPosition(),
 						rightFrontModule.getPosition(),
@@ -467,14 +485,14 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
-		// Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-        // if (result.isPresent()) {
-        //     EstimatedRobotPose visionPoseEstimate = result.get();
-        //     poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-        //             visionPoseEstimate.timestampSeconds);
-        // }
+		Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        if (result.isPresent()) {
+            EstimatedRobotPose visionPoseEstimate = result.get();
+            poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+                    visionPoseEstimate.timestampSeconds);
+        }
         poseEstimator.update(
-                Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+                Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
                 Robot.swerve.getModulePositions());
         field2d.setRobotPose(getRobotPose());
 
@@ -497,6 +515,10 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.getInstance().recordOutput("Velocity X", Robot.getNavX().getVelocityX());
 		Logger.getInstance().recordOutput("Raw Acceleration", Robot.getNavX().getRawAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
+		Logger.getInstance().recordOutput("Odometry 2", poseEstimator.update(
+			Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
+			Robot.swerve.getModulePositions()));
+
 	}
 
 	public static CommandBase followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
@@ -506,7 +528,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		}
 		return new PPSwerveControllerCommand(
 			traj,
-			Robot.swerve::getRobotPose, // Pose supplier
+			Robot.swerve::getPose, // Pose supplier
 			Robot.swerve.getKinematics(), // SwerveDriveKinematics
 			new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0
 										// will only use feedforwards.

@@ -8,6 +8,13 @@
       "type": "java",
       "name": "Launch Main",
       "request": "launch",
+      "mainClass": "frc.robot.Main",
+      "projectName": "team303-robot"
+    },
+    {
+      "type": "java",
+      "name": "Launch Main",
+      "request": "launch",
       "mainClass": "com.team303.robot.Main",
       "projectName": "robot"
     },

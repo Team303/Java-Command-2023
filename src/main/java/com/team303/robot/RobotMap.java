@@ -51,7 +51,10 @@ public final class RobotMap {
 		public static final double DRIVE_GEAR_RATIO = 12.75; // Toughbox mini 12.75:1
 		public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for each encoder unit
 		public static final double MAX_VELOCITY = 4;
-		public static final double MAX_DRIVE_SPEED = 0.5;
+		public static final double MAX_DRIVE_SPEED = 0.75;
+		
+		
+		
 		public static final double MAX_ACCELERATION = 3; //Meters per second
 		public static final double MAX_RPS = 183.33; // Max rotations per second
 
@@ -142,7 +145,7 @@ public final class RobotMap {
 		public static final int OPERATOR_CONTROLLER = 0;
 
 		public static final double DEADBAND_UPPERBOUND = 1;
-		public static final double DEADBAND_LOWERBOUND = 0.05;
+		public static final double DEADBAND_LOWERBOUND = 0.15;
 		public static final DeadbandFilter DEADBAND_FILTER = new DeadbandFilter(DEADBAND_LOWERBOUND, DEADBAND_UPPERBOUND);
 	}
 

@@ -143,15 +143,17 @@ public class Photonvision extends SubsystemBase {
         //     return;
         // }
 
-        if (hasTargets(CameraName.CAM1)) {
+        PhotonTrackedTarget target = getBestTarget(CameraName.CAM1);
+
+        if (target != null) {
             if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-                APRILTAG_ID.setInteger(getBestTarget(CameraName.CAM1).getFiducialId());
+                APRILTAG_ID.setInteger(target.getFiducialId());
             }
     
-            TARGET_AMBIGUITY.setDouble(getBestTarget(CameraName.CAM1).getPoseAmbiguity());
-            TARGET_YAW.setDouble(getBestTarget(CameraName.CAM1).getYaw());
-            TARGET_PITCH.setDouble(getBestTarget(CameraName.CAM1).getPitch());
-            TARGET_SKEW.setDouble(getBestTarget(CameraName.CAM1).getSkew());
+            TARGET_AMBIGUITY.setDouble(target.getPoseAmbiguity());
+            TARGET_YAW.setDouble(target.getYaw());
+            TARGET_PITCH.setDouble(target.getPitch());
+            TARGET_SKEW.setDouble(target.getSkew());
         }
         
     }

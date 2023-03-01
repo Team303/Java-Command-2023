@@ -32,6 +32,7 @@ import com.team303.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import com.team303.robot.commands.arm.ReachCubeToNode;
 
 /**
  * Quick guide to Comand Groups:
@@ -93,7 +94,7 @@ public class Autonomous {
                                              // controller)
             swerve::drive, // Module states consumer used to output to the drive subsystem
             eventMap,
-            true, // Should the path be automatically mirrored depending on alliance color.
+            false, // Should the path be automatically mirrored depending on alliance color.
                   // Optional, defaults to true
             swerve // The drive subsystem. Used to properly set the requirements of path following
                    // commands
@@ -150,6 +151,8 @@ public class Autonomous {
         );
 
         create("Drivepose", () -> SwerveSubsystem.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d())));
+
+        create("Apriltag", () -> new ReachCubeToNode());
 
         create("Autolevel", () -> 
             new AutolevelFeedforward()

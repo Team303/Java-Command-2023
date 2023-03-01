@@ -21,7 +21,7 @@ public class ArmTest extends SubsystemBase {
         motor2.setIdleMode(IdleMode.kCoast);
         
         motor1.setInverted(false);
-        motor2.setInverted(false);
+        motor2.setInverted(true);
     }
 
     public void move(double speed) {
