@@ -98,6 +98,7 @@
       "/LiveWindow/Ungrouped/Talon FX [4]": "Motor Controller",
       "/Shuffleboard/Autonomous/Auto Start Delay": "String Chooser",
       "/Shuffleboard/Autonomous/Autonomous Selector": "String Chooser",
+      "/Shuffleboard/Drivebase/Controller": "String Chooser",
       "/Shuffleboard/Drivebase/FIELD SIM": "Field2d",
       "/Shuffleboard/Drivebase/Field": "Field2d",
       "/Shuffleboard/Pose Estimation/Field": "Field2d",
@@ -106,6 +107,11 @@
     },
     "windows": {
       "/Shuffleboard/Autonomous/Autonomous Selector": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Drivebase/Controller": {
         "window": {
           "visible": true
         }

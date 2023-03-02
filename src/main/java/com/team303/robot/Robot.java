@@ -52,7 +52,7 @@ public class Robot extends LoggedRobot {
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
 	public static final ArmTest arm = null;// new ArmTest();
-	public static final Photonvision photonvision = new Photonvision();
+	public static final Photonvision photonvision = null;// Photonvision();
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 
 	/* Robot IO Controls */
@@ -207,20 +207,23 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		xboxController.y().onTrue(new InstantCommand(navX::reset));
-		xboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-		xboxController.a().onTrue(new AutolevelFeedforward());
-		xboxController.a().onFalse(new DefaultDrive(true));
-		xboxController.b().onTrue(new InstantCommand(swerve::stop));
-		xboxController.b().onFalse(new DefaultDrive(true));
 
+		if (SwerveSubsystem.controllerChooser.getSelected().equals("Controller")) {
+			xboxController.y().onTrue(new InstantCommand(navX::reset));
+			xboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+			xboxController.a().onTrue(new AutolevelFeedforward());
+			xboxController.a().onFalse(new DefaultDrive(true));
+			xboxController.b().onTrue(new InstantCommand(swerve::stop));
+			xboxController.b().onFalse(new DefaultDrive(true));
+		} else {
+			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
+			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
+			new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
+			new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
+			new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
+			new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
+		}
 
-		// new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
-		// new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
-		// new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
-		// new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
-		// new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
-		// new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
 	}
 
 	@Override

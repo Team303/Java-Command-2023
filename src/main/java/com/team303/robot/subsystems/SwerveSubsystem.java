@@ -58,6 +58,8 @@ import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.modules.Photonvision.CameraName;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -86,57 +88,12 @@ public class SwerveSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
 
+	public static SendableChooser<String> controllerChooser = new SendableChooser<>();
+
 
 	public static final GenericEntry NAVX_ANGLE = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
 	public static final GenericEntry NAVX_Y_VELOCITY = DRIVEBASE_TAB.add("Y velocity", 0).getEntry();
 	public static final GenericEntry NAVX_ACCELERATION = DRIVEBASE_TAB.add("acceleration", 0).getEntry();
-	
-	// public static final ShuffleboardTab FIELD_TAB =
-	// Shuffleboard.getTab("Drivebase");
-
-	/*
-	 * public static final GenericEntry NAVX_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-	 * public static final GenericEntry NAVX_RATE_ENTRY =
-	 * DRIVEBASE_TAB.add("NavX Rate", 0).getEntry();
-	 * public static final GenericEntry POSITION_X_ENTRY =
-	 * DRIVEBASE_TAB.add("Position X", 0).getEntry();
-	 * public static final GenericEntry POSITION_Y_ENTRY =
-	 * DRIVEBASE_TAB.add("Position Y", 0).getEntry();
-	 * public static final GenericEntry LEFT_FRONT_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Front Left Steer Angle", 0).getEntry();
-	 * public static final GenericEntry RIGHT_FRONT_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Front Right Steer Angle", 0).getEntry();
-	 * public static final GenericEntry LEFT_BACK_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Back Left Steer Angle", 0).getEntry();
-	 * public static final GenericEntry RIGHT_BACK_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Back Right Steer Angle", 0).getEntry();
-	 * public static final GenericEntry DRIVE_ENCODER_ENTRY =
-	 * DRIVEBASE_TAB.add("Average Encoders", 0).getEntry();
-	 */
-	public static final NetworkTable swerveTable = NetworkTableInstance.getDefault().getTable("swerve");
-
-	public static final DoublePublisher NAVX_ANGLE_PUB = swerveTable.getDoubleTopic("NavX Angle").publish();
-	public static final DoublePublisher NAVX_RATE_PUB = swerveTable.getDoubleTopic("NavX Rate").publish();
-	public static final DoublePublisher POS_X_PUB = swerveTable.getDoubleTopic("Position X").publish();
-	public static final DoublePublisher POS_Y_PUB = swerveTable.getDoubleTopic("Position Y").publish();
-	public static final DoublePublisher LEFT_FRONT_STEER_ANGLE_PUB = swerveTable
-			.getDoubleTopic("Front Left Steer Angle").publish();
-	public static final DoublePublisher RIGHT_FRONT_STEER_ANGLE_PUB = swerveTable
-			.getDoubleTopic("Front Right Steer Angle").publish();
-	public static final DoublePublisher LEFT_BACK_STEER_ANGLE_PUB = swerveTable.getDoubleTopic("Back Left Steer Angle")
-			.publish();
-	public static final DoublePublisher RIGHT_BACK_STEER_ANGLE_PUB = swerveTable
-			.getDoubleTopic("Back Right Steer Angle").publish();
-	public static final DoublePublisher LEFT_FRONT_VEL_PUB = swerveTable.getDoubleTopic("Front Left Velocity")
-			.publish();
-	public static final DoublePublisher LEFT_BACK_VEL_PUB = swerveTable.getDoubleTopic("Back Left Velocity").publish();
-	public static final DoublePublisher RIGHT_FRONT_VEL_PUB = swerveTable.getDoubleTopic("Front Right Velocity")
-			.publish();
-	public static final DoublePublisher RIGHT_BACK_VEL_PUB = swerveTable.getDoubleTopic("Back Right Velocity")
-			.publish();
-	// public static final ComplexWidget FIELD_SIM_ENTRY = DRIVEBASE_TAB.add("FIELD
-	// SIM", field);
 
 	/* Swerve Modules */
 	private final SwerveModule leftFrontModule;
@@ -163,6 +120,11 @@ public class SwerveSubsystem extends SubsystemBase {
 			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;*/
 			
 	public SwerveSubsystem() {
+
+		controllerChooser.addOption("Controller", "Controller");
+		controllerChooser.addOption("JoySticks", "JoySticks");
+		controllerChooser.setDefaultOption("JoySticks", "JoySticks");
+		DRIVEBASE_TAB.add("Controller", controllerChooser);
 
 		timer.start();
 
@@ -256,7 +218,10 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         aprilTagField = initialLayout;
 				// photonvision pose estimator
-		visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP, Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
+
+		if (Robot.photonvision != null) {
+			visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP, Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
+		}
 		poseEstimator = new SwerveDrivePoseEstimator(
 			kinematics,
 			new Rotation2d(),
@@ -485,12 +450,14 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
-		Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-        if (result.isPresent()) {
-            EstimatedRobotPose visionPoseEstimate = result.get();
-            poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-                    visionPoseEstimate.timestampSeconds);
-        }
+		if (Robot.photonvision != null) {
+			Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+			if (result.isPresent()) {
+				EstimatedRobotPose visionPoseEstimate = result.get();
+				poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+						visionPoseEstimate.timestampSeconds);
+			}
+		}
         poseEstimator.update(
                 Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
                 Robot.swerve.getModulePositions());
@@ -515,9 +482,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.getInstance().recordOutput("Velocity X", Robot.getNavX().getVelocityX());
 		Logger.getInstance().recordOutput("Raw Acceleration", Robot.getNavX().getRawAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
-		Logger.getInstance().recordOutput("Odometry 2", poseEstimator.update(
-			Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
-			Robot.swerve.getModulePositions()));
+		Logger.getInstance().recordOutput("Odometry 2", getRobotPose());
 
 	}
 

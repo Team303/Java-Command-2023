@@ -10,6 +10,7 @@ import com.team303.robot.RobotMap.Swerve;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import com.team303.robot.subsystems.SwerveSubsystem;
 
 public class DefaultDrive extends CommandBase {
 
@@ -22,14 +23,26 @@ public class DefaultDrive extends CommandBase {
 
     @Override
     public void execute() {
-        Robot.swerve.drive(
-                new Translation2d(
-                        DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
-                                * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED,
-                        DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
-                                * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED),
-                DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
-                fieldOriented);
+
+        if (SwerveSubsystem.controllerChooser.getSelected().equals("Controller")) {
+                Robot.swerve.drive(
+                        new Translation2d(
+                                DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
+                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED,
+                                DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
+                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED),
+                        DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                        fieldOriented);
+        } else {
+                Robot.swerve.drive(
+                        new Translation2d(
+                                DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY(), DEADBAND_FILTER.getLowerBound())
+                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED,
+                                DEADBAND_FILTER.applyDeadband(-Robot.getLeftJoyStick().getX(), DEADBAND_FILTER.getLowerBound())
+                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED),
+                        DEADBAND_FILTER.applyDeadband(-Robot.getRightJoyStick().getX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                        fieldOriented);
+        }
     }
     /*
      * if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.APRILTAG) {

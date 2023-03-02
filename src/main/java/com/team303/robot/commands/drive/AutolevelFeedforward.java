@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.RobotMap.Swerve;
 import com.team303.robot.Robot;
+import com.team303.robot.subsystems.SwerveSubsystem;
 
 public class AutolevelFeedforward extends CommandBase {
     private final PIDController FeedbackController = new PIDController(0.025,0, 0.01);
