@@ -54,7 +54,7 @@ dependencies {
     implementation project(':kinematics')
     implementation project(':math')
     implementation project(':swerve-lib')
-
+    
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
@@ -73,7 +73,7 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
-//     annotationProcessor 'org.littletonrobotics.akit.junction:junction-autolog:2.1.3'
+    annotationProcessor 'org.littletonrobotics.akit.junction:junction-autolog:2.1.2'
 
 //         def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
 //     annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"

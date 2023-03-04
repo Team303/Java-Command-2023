@@ -1,6 +1,7 @@
 package com.team303.robot.commands.claw;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import static com.team303.robot.Robot.claw;
 import com.team303.robot.Robot;
 
 public class RotateClaw extends CommandBase {
@@ -12,16 +13,16 @@ public class RotateClaw extends CommandBase {
     public RotateClaw(double angle, double speed) {
         this.angle = angle;
         this.speed = speed;
-        addRequirements(Robot.claw);
+        addRequirements(claw);
     }
     
     @Override
     public void execute() {
-        Robot.claw.rotate(angle, speed);
+        claw.rotate(angle, speed);
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(Robot.claw.getRotatePosition() - angle) < 1.0;
+        return Math.abs(claw.getRotatePosition() - angle) < 1.0;
     }
 }

@@ -44,7 +44,15 @@ public class ReachCubeToNode extends CommandBase {
 
     @Override
     public void execute() {
-        target = photonvision.getBestTarget(CameraName.CAM1);
+        if (photonvision.hasTargets(CameraName.CAM1)) {
+        PhotonTrackedTarget target = photonvision.getBestTarget(CameraName.CAM1);
+        // TODO: Find optimal distance from drivetrain to node
+        // swerve.drive(
+        //         new Translation2d(
+        //                 xControl.calculate(target.getBestCameraToTarget().getX(), Units.inchesToMeters(3)),
+        //                 yControl.calculate(target.getBestCameraToTarget().getY(), 0)),
+        //         0,
+        //         true);
 
         if (target == null) {
             return;
@@ -82,6 +90,7 @@ public class ReachCubeToNode extends CommandBase {
         //     arm.reach(armToAprilTag
         //             .plus(new Translation3d(Units.inchesToMeters(47.4375), 0.0, Units.inchesToMeters(32.25))));
         // }
+        }
     }
 
     @Override

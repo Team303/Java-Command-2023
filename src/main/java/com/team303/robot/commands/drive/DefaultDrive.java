@@ -32,11 +32,11 @@ public class DefaultDrive extends CommandBase {
         if (SwerveSubsystem.controllerChooser.getSelected().equals("Controller")) {
                 Robot.swerve.drive(
                         new Translation2d(
-                                DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
+                                DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
                                         * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED,
-                                DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
+                                DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
                                         * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED),
-                        DEADBAND_FILTER.applyDeadband(-Robot.getXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                        DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
                         fieldOriented);
         } else {
                 Robot.swerve.drive(
