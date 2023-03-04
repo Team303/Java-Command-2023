@@ -523,13 +523,17 @@ public class SwerveSubsystem extends SubsystemBase {
 			}
 
 			PathPlannerTrajectory trajectory = PathPlanner.generatePath(
-			new PathConstraints(4, 3), 
-			new PathPoint(point1.getTranslation(), point1.getRotation()), // position, heading
-			new PathPoint(point2.getTranslation(), point2.getRotation()),
-			points
-			// position, heading
-		);
+				new PathConstraints(4, 3), 
+				new PathPoint(point1.getTranslation(), point1.getRotation()), // position, heading
+				new PathPoint(point2.getTranslation(), point2.getRotation()),
+				points
+				// position, heading
+			);
 	
 		return followTrajectoryCommand(trajectory, false);
+	}
+
+	public static CommandBase driveToNode(int node) {
+		return driveToPose(Robot.swerve.getPose(), new Pose2d(1, node, new Rotation2d()));
 	}
 }
