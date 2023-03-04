@@ -150,7 +150,7 @@ public class Autonomous {
         }
         );
 
-        create("Drivepose", () -> SwerveSubsystem.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d())));
+        create("Drivepose", () -> SwerveSubsystem.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
         create("Apriltag", () -> new ReachCubeToNode());
 

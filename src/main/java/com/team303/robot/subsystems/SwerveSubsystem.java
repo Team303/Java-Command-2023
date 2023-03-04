@@ -184,6 +184,8 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withSteerOffset(Swerve.RIGHT_BACK_STEER_OFFSET)
 				.build();
 
+		resetToAbsoluteAngle();
+
 		if (Robot.isReal()) {
 			odometry = new SwerveDriveOdometry(
 					kinematics, Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
@@ -236,6 +238,13 @@ public class SwerveSubsystem extends SubsystemBase {
 			photonStandardDeviations);
 			DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
 			DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
+	}
+
+	public void resetToAbsoluteAngle() {
+		leftBackModule.resetToAbsolute();
+		leftFrontModule.resetToAbsolute();
+		rightBackModule.resetToAbsolute();
+		rightFrontModule.resetToAbsolute();
 	}
 
 	// return kinematics instance
@@ -505,11 +514,20 @@ public class SwerveSubsystem extends SubsystemBase {
 			Robot.swerve);
 	}
 	
-	public static CommandBase driveToPose(Pose2d startPose, Pose2d endPose) {
+	public static CommandBase driveToPose(Pose2d point1, Pose2d point2, Pose2d... poses) {
+
+			PathPoint[] points = new PathPoint[poses.length];
+		
+			for (int i = 0; i < poses.length; i++) {
+				points[i] = new PathPoint(poses[i].getTranslation(), poses[i].getRotation());
+			}
+
 			PathPlannerTrajectory trajectory = PathPlanner.generatePath(
 			new PathConstraints(4, 3), 
-			new PathPoint(startPose.getTranslation(), startPose.getRotation()), // position, heading
-			new PathPoint(endPose.getTranslation(), endPose.getRotation()) // position, heading
+			new PathPoint(point1.getTranslation(), point1.getRotation()), // position, heading
+			new PathPoint(point2.getTranslation(), point2.getRotation()),
+			points
+			// position, heading
 		);
 	
 		return followTrajectoryCommand(trajectory, false);

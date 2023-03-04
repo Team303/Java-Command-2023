@@ -41,4 +41,9 @@ public interface SwerveModule {
     }
 
     void set(double driveVoltage, double steerAngle);
+
+       /**
+     * Reset motor or encoder position to the absolute position. May take a little bit.
+     */
+    void resetToAbsolute();
 }

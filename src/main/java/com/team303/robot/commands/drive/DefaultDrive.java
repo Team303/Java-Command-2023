@@ -22,6 +22,11 @@ public class DefaultDrive extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+        Robot.swerve.resetToAbsoluteAngle();
+    }
+
+    @Override
     public void execute() {
 
         if (SwerveSubsystem.controllerChooser.getSelected().equals("Controller")) {

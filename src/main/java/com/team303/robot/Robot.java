@@ -37,11 +37,14 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import com.team303.robot.subsystems.ArmTest;
+import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.commands.MoveArm;
 import com.team303.robot.modules.Photonvision;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.arm.ReachCubeToNode;
 //import com.team303.robot.modules.Photonvision;
+import com.team303.robot.modules.Photonvision.CameraName;
+import com.team303.robot.commands.claw.RotateClaw;
 
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.AutolevelPID;
@@ -54,6 +57,7 @@ public class Robot extends LoggedRobot {
 	public static final ArmTest arm = null;// new ArmTest();
 	public static final Photonvision photonvision = null;// Photonvision();
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final ClawSubsystem claw = new ClawSubsystem();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -215,6 +219,7 @@ public class Robot extends LoggedRobot {
 			xboxController.a().onFalse(new DefaultDrive(true));
 			xboxController.b().onTrue(new InstantCommand(swerve::stop));
 			xboxController.b().onFalse(new DefaultDrive(true));
+			xboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
 		} else {
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));

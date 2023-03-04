@@ -105,15 +105,17 @@ public class Photonvision extends SubsystemBase {
     }
 
     
-    public ConePosition getConePosiition(CameraName name) {
+    public double getObjectSkew(CameraName name) {
         
-        List<TargetCorner> corners = getRectCorners(name);
-        
-        for (TargetCorner corner : corners) {
-            
-            System.out.println(corner.toString());
-        }
-        return ConePosition.Up;
+        // List<TargetCorner> corners = getRectCorners(name);
+        PhotonTrackedTarget target = getBestTarget(name);
+        double skew = target.getSkew();
+
+        // double height = (corners.get(0).y + corners.get(1).y) / 2 - (corners.get(3).y + corners.get(4).y) / 2;
+        // double width = (corners.get(1).y + corners.get(3).y) / 2 - (corners.get(0).y + corners.get(2).y) / 2;
+
+
+        return skew;
     }
 
     public double getDistanceToTarget() {

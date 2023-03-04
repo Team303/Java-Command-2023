@@ -123,6 +123,15 @@ public final class RobotMap {
 		public static final boolean CLIMB_MOTOR_INVERTED = true;
 	}
 
+	public static final class Claw {
+		public static final int OUTER_LEFT_INPUT = 0;
+		public static final int OUTER_RIGHT_INPUT = 1;
+		public static final int INNER_LEFT_INPUT = 2;
+		public static final int INNER_RIGHT_INPUT = 3;
+
+		public static final double ROTATE_OFFSET = Math.toRadians(0.0);
+	}
+
 	public static final class Auto {
 		public static final double MAX_VELOCITY = 10;
 		public static final double MAX_ACCELERATION = 10;
