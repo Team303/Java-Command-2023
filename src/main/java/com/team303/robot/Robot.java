@@ -58,7 +58,7 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = null; // new SwerveSubsystem();
 	public static final ArmTest arm = null; //new ArmTest();
-	public static final Photonvision photonvision = new Photonvision();
+	public static final Photonvision photonvision = null; // new Photonvision();
 	public static final Operator operator = new Operator();
 	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
@@ -71,9 +71,13 @@ public class Robot extends LoggedRobot {
 	private static final XboxController driverXboxController = new XboxController(IOConstants.DRIVER_CONTROLLER);
 
 
+	public static SendableChooser<String> controllerChooser = new SendableChooser<>();
+
+
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
+	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
 
 	/* Shuffleboard Choosers */
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
@@ -83,7 +87,7 @@ public class Robot extends LoggedRobot {
 		CONE,
 		NONE
 	}
-	public static HeldObject heldObject = HeldObject.NONE;
+	public static HeldObject heldObject = HeldObject.CUBE;
 
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
@@ -145,6 +149,11 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotInit() {
 
+		controllerChooser.addOption("Controller", "Controller");
+		controllerChooser.addOption("JoySticks", "JoySticks");
+		controllerChooser.setDefaultOption("JoySticks", "JoySticks");
+		DRIVEBASE_TAB.add("Controller", controllerChooser);
+
 		Logger logger = Logger.getInstance();
 
 		// Record metadata
@@ -179,15 +188,15 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.arm.setDefaultCommand(new MoveArm());
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		// add Autos to Shuffleboard
-		Autonomous.init();
-		AutonomousProgram.addAutosToShuffleboard();
+		// Autonomous.init();
+		// AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -249,22 +258,22 @@ public class Robot extends LoggedRobot {
 		// xboxController.b().onTrue(new InstantCommand(swerve::stop));
 		// xboxController.b().onFalse(new DefaultDrive(true));
 
-		if (SwerveSubsystem.controllerChooser.getSelected().equals("Controller")) {
-			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
-			driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-			driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
-			driverCommandXboxController.a().onFalse(new DefaultDrive(true));
-			driverCommandXboxController.b().onTrue(new InstantCommand(swerve::stop));
-			driverCommandXboxController.b().onFalse(new DefaultDrive(true));
-			driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
-		} else {
-			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
-			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
-			new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
-			new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
-			new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
-			new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
-		}
+		// if (controllerChooser.getSelected().equals("Controller")) {
+		// 	driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
+		// 	driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+		// 	driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
+		// 	driverCommandXboxController.a().onFalse(new DefaultDrive(true));
+		// 	driverCommandXboxController.b().onTrue(new InstantCommand(swerve::stop));
+		// 	driverCommandXboxController.b().onFalse(new DefaultDrive(true));
+		// 	// driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
+		// } else {
+		// 	new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
+		// 	new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
+		// 	new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
+		// 	new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
+		// 	new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
+		// 	new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
+		// }
 
 	}
 

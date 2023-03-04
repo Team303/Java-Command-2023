@@ -60,6 +60,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.modules.Photonvision.CameraName;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import static com.team303.robot.Robot.DRIVEBASE_TAB;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -86,9 +87,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final Field2d field = new Field2d();
 
 	/* ShuffleBoard */
-	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
-
-	public static SendableChooser<String> controllerChooser = new SendableChooser<>();
 
 
 	public static final GenericEntry NAVX_ANGLE = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
@@ -120,11 +118,6 @@ public class SwerveSubsystem extends SubsystemBase {
 			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;*/
 			
 	public SwerveSubsystem() {
-
-		controllerChooser.addOption("Controller", "Controller");
-		controllerChooser.addOption("JoySticks", "JoySticks");
-		controllerChooser.setDefaultOption("JoySticks", "JoySticks");
-		DRIVEBASE_TAB.add("Controller", controllerChooser);
 
 		timer.start();
 

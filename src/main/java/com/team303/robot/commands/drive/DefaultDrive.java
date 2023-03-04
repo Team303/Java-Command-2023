@@ -29,7 +29,7 @@ public class DefaultDrive extends CommandBase {
     @Override
     public void execute() {
 
-        if (SwerveSubsystem.controllerChooser.getSelected().equals("Controller")) {
+        if (Robot.controllerChooser.getSelected().equals("Controller")) {
                 Robot.swerve.drive(
                         new Translation2d(
                                 DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())

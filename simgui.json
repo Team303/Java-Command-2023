@@ -106,6 +106,11 @@
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
+      "/Shuffleboard/Autonomous/Auto Start Delay": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Shuffleboard/Autonomous/Autonomous Selector": {
         "window": {
           "visible": true
