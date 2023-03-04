@@ -22,6 +22,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj.XboxController;
@@ -42,6 +43,7 @@ import com.team303.robot.commands.MoveArm;
 import com.team303.robot.modules.Photonvision;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.arm.ReachCubeToNode;
+import com.team303.robot.modules.Operator;
 //import com.team303.robot.modules.Photonvision;
 import com.team303.robot.modules.Photonvision.CameraName;
 import com.team303.robot.commands.claw.RotateClaw;
@@ -54,15 +56,21 @@ public class Robot extends LoggedRobot {
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
-	public static final ArmTest arm = null;// new ArmTest();
-	public static final Photonvision photonvision = null;// Photonvision();
-	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final SwerveSubsystem swerve = null; // new SwerveSubsystem();
+	public static final ArmTest arm = null; //new ArmTest();
+	public static final Photonvision photonvision = new Photonvision();
+	public static final Operator operator = new Operator();
+	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
-	private static final CommandXboxController xboxController = new CommandXboxController(IOConstants.OPERATOR_CONTROLLER);
+	private static final CommandXboxController operatorCommandXboxController = new CommandXboxController(IOConstants.OPERATOR_CONTROLLER);
+	private static final XboxController operatorXboxController = new XboxController(IOConstants.OPERATOR_CONTROLLER);
+	private static final CommandXboxController driverCommandXboxController = new CommandXboxController(IOConstants.DRIVER_CONTROLLER);
+	private static final XboxController driverXboxController = new XboxController(IOConstants.DRIVER_CONTROLLER);
+
+
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -70,6 +78,12 @@ public class Robot extends LoggedRobot {
 	/* Shuffleboard Choosers */
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
 	public static HashMap<String, Command> eventMap = new HashMap<>();
+	public static enum HeldObject {
+		CUBE,
+		CONE,
+		NONE
+	}
+	public static HeldObject heldObject = HeldObject.NONE;
 
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
@@ -100,8 +114,17 @@ public class Robot extends LoggedRobot {
 		return leftJoystick;
 	}
 
-	public static CommandXboxController getXbox() {
-		return xboxController;
+	public static XboxController getOperatorXbox() {
+		return operatorXboxController;
+	}
+	public static CommandXboxController getOperatorCommandXbox() {
+		return operatorCommandXboxController;
+	}
+	public static XboxController getDriverXbox() {
+		return driverXboxController;
+	}
+	public static CommandXboxController getDriverCommandXbox() {
+		return driverCommandXboxController;
 	}
 
 	/**
@@ -211,15 +234,29 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
+		operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
+		operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
+		operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
+		operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
+		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setCone));
+		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setCube));
+		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
+
+		// xboxController.y().onTrue(new InstantCommand(navX::reset));
+		// xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
+		// //xboxController.a().onTrue(new AutolevelFeedforward());
+		// //xboxController.a().onFalse(new DefaultDrive(true));
+		// xboxController.b().onTrue(new InstantCommand(swerve::stop));
+		// xboxController.b().onFalse(new DefaultDrive(true));
 
 		if (SwerveSubsystem.controllerChooser.getSelected().equals("Controller")) {
-			xboxController.y().onTrue(new InstantCommand(navX::reset));
-			xboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-			xboxController.a().onTrue(new AutolevelFeedforward());
-			xboxController.a().onFalse(new DefaultDrive(true));
-			xboxController.b().onTrue(new InstantCommand(swerve::stop));
-			xboxController.b().onFalse(new DefaultDrive(true));
-			xboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
+			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
+			driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+			driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
+			driverCommandXboxController.a().onFalse(new DefaultDrive(true));
+			driverCommandXboxController.b().onTrue(new InstantCommand(swerve::stop));
+			driverCommandXboxController.b().onFalse(new DefaultDrive(true));
+			driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
 		} else {
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
