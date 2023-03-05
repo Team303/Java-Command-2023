@@ -1,7 +1,7 @@
 package com.team303.robot.commands.drive;
 
 import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
-import com.team303.robot.Robot;
+import static com.team303.robot.subsystems.SwerveSubsystem.MAX_DRIVE_SPEED;
 import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
 
 import com.team303.robot.Robot;
@@ -33,18 +33,18 @@ public class DefaultDrive extends CommandBase {
                 Robot.swerve.drive(
                         new Translation2d(
                                 DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
-                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED,
+                                        * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
                                 DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
-                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED),
+                                        * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
                         DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
                         fieldOriented);
         } else {
                 Robot.swerve.drive(
                         new Translation2d(
                                 DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY(), DEADBAND_FILTER.getLowerBound())
-                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED,
+                                        * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
                                 DEADBAND_FILTER.applyDeadband(-Robot.getLeftJoyStick().getX(), DEADBAND_FILTER.getLowerBound())
-                                        * Swerve.MAX_VELOCITY * Swerve.MAX_DRIVE_SPEED),
+                                        * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
                         DEADBAND_FILTER.applyDeadband(-Robot.getRightJoyStick().getX(), DEADBAND_FILTER.getLowerBound()) * 4,
                         fieldOriented);
         }

@@ -112,6 +112,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
 	public static final double MAX_VOLTAGE = 12.0;
+	public static double MAX_DRIVE_SPEED = 0.75;
+
 
 	/*public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
 			SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
@@ -238,6 +240,10 @@ public class SwerveSubsystem extends SubsystemBase {
 		leftFrontModule.resetToAbsolute();
 		rightBackModule.resetToAbsolute();
 		rightFrontModule.resetToAbsolute();
+	}
+
+	public void setMaxSpeed(double maxSpeed) {
+		MAX_DRIVE_SPEED=maxSpeed;
 	}
 
 	// return kinematics instance
@@ -422,7 +428,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-
+		double triggerPressure=Robot.getDriverXbox().getRightTriggerAxis();
+		if (triggerPressure>0.01) {
+		MAX_DRIVE_SPEED=((triggerPressure*-1)*4/10)+0.5;
+		} else if (Robot.getDriverXbox().getBButton()==false) {
+			MAX_DRIVE_SPEED=0.75;
+		}
+		System.out.println(MAX_DRIVE_SPEED);
 		SmartDashboard.putNumber("leftjouytick val", Robot.getRightJoyStick().getX());
 		
 		if (Robot.isReal()) {
@@ -460,10 +472,10 @@ public class SwerveSubsystem extends SubsystemBase {
 						visionPoseEstimate.timestampSeconds);
 			}
 		}
-        poseEstimator.update(
+        /*poseEstimator.update(
                 Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
                 Robot.swerve.getModulePositions());
-        field2d.setRobotPose(getRobotPose());
+        field2d.setRobotPose(getRobotPose());*/
 
 		lastPeriodic = timer.get();
 

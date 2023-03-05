@@ -64,7 +64,6 @@ public class Operator extends SubsystemBase {
             if (nodeSuperStateValues[newRow][hoverValue[1]] == NodeSuperState.NONE.value) {
                 hoverValue[0] = newRow;
                 nodeSuperStateValues[hoverValue[0]][hoverValue[1]] = NodeSuperState.HOVER.value;
-                System.out.println("\n\n\n\n\n\n\n\n" + hoverValue[0] + "\n\n\n\n\n\n\n\n");
                 return;
             }
         }

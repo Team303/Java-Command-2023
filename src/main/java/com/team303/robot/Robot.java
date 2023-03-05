@@ -17,6 +17,7 @@ import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.drive.TurnToAngle;
 import com.team303.robot.subsystems.SwerveSubsystem;
+import static com.team303.robot.subsystems.SwerveSubsystem.MAX_DRIVE_SPEED;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -55,12 +56,6 @@ public class Robot extends LoggedRobot {
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
-	/* Robot Subsystems */
-	public static final SwerveSubsystem swerve = null; // new SwerveSubsystem();
-	public static final ArmTest arm = null; //new ArmTest();
-	public static final Photonvision photonvision = null; // new Photonvision();
-	public static final Operator operator = new Operator();
-	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -88,6 +83,13 @@ public class Robot extends LoggedRobot {
 		NONE
 	}
 	public static HeldObject heldObject = HeldObject.CUBE;
+
+	/* Robot Subsystems */
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final ArmTest arm = null; //new ArmTest();
+	public static final Photonvision photonvision = null; // new Photonvision();
+	public static final Operator operator = new Operator();
+	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
@@ -251,29 +253,24 @@ public class Robot extends LoggedRobot {
 		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setCube));
 		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
 
-		// xboxController.y().onTrue(new InstantCommand(navX::reset));
-		// xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
-		// //xboxController.a().onTrue(new AutolevelFeedforward());
-		// //xboxController.a().onFalse(new DefaultDrive(true));
-		// xboxController.b().onTrue(new InstantCommand(swerve::stop));
-		// xboxController.b().onFalse(new DefaultDrive(true));
-
-		// if (controllerChooser.getSelected().equals("Controller")) {
-		// 	driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
-		// 	driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-		// 	driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
-		// 	driverCommandXboxController.a().onFalse(new DefaultDrive(true));
-		// 	driverCommandXboxController.b().onTrue(new InstantCommand(swerve::stop));
-		// 	driverCommandXboxController.b().onFalse(new DefaultDrive(true));
-		// 	// driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
-		// } else {
-		// 	new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
-		// 	new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
-		// 	new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
-		// 	new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
-		// 	new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
-		// 	new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
-		// }
+		if (controllerChooser.getSelected().equals("Controller")) {
+			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
+			driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+			driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
+			driverCommandXboxController.a().onFalse(new DefaultDrive(true));
+			//TODO: Make B Button work
+			driverCommandXboxController.b().onTrue(new InstantCommand(() -> {swerve.setMaxSpeed(1);}));
+			driverCommandXboxController.b().onFalse(new InstantCommand(() -> {swerve.setMaxSpeed(0.75);}));
+			driverCommandXboxController.b().onFalse(new DefaultDrive(true));			
+			// driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
+		} else {
+			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
+			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
+			new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
+			new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
+			new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
+			new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
+		}
 
 	}
 
