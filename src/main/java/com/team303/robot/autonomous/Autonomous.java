@@ -32,7 +32,7 @@ import com.team303.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import com.team303.robot.commands.arm.ReachCubeToNode;
+import com.team303.robot.commands.arm.AprilTagAlign;
 
 /**
  * Quick guide to Comand Groups:
@@ -152,7 +152,9 @@ public class Autonomous {
 
         create("Drivepose", () -> SwerveSubsystem.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
-        create("Apriltag", () -> new ReachCubeToNode());
+        // create("Apriltag", () -> new AlignAprilTag());
+
+        create("AprilTag", () -> new AprilTagAlign());
 
         create("Autolevel", () -> 
             new AutolevelFeedforward()

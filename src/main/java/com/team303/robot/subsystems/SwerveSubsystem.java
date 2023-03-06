@@ -60,7 +60,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.modules.Photonvision.CameraName;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import static com.team303.robot.Robot.DRIVEBASE_TAB;
+import static com.team303.robot.Robot.NAVX_ACCELERATION;
+import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
+import static com.team303.robot.Robot.NAVX_ANGLE;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -77,7 +79,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public PhotonPoseEstimator visionPoseEstimator;
     public SwerveDrivePoseEstimator poseEstimator;
 
-
+	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Data");
 
 	// private Rotation2d angle = new Rotation2d();
 	private double angle = 0;
@@ -87,11 +89,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final Field2d field = new Field2d();
 
 	/* ShuffleBoard */
-
-
-	public static final GenericEntry NAVX_ANGLE = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-	public static final GenericEntry NAVX_Y_VELOCITY = DRIVEBASE_TAB.add("Y velocity", 0).getEntry();
-	public static final GenericEntry NAVX_ACCELERATION = DRIVEBASE_TAB.add("acceleration", 0).getEntry();
 
 	/* Swerve Modules */
 	private final SwerveModule leftFrontModule;

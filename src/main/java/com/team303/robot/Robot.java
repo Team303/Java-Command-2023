@@ -17,7 +17,6 @@ import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.drive.TurnToAngle;
 import com.team303.robot.subsystems.SwerveSubsystem;
-import static com.team303.robot.subsystems.SwerveSubsystem.MAX_DRIVE_SPEED;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -43,19 +42,28 @@ import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.commands.MoveArm;
 import com.team303.robot.modules.Photonvision;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
-import com.team303.robot.commands.arm.ReachCubeToNode;
+import com.team303.robot.commands.arm.AprilTagAlign;
+import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.modules.Operator;
 //import com.team303.robot.modules.Photonvision;
 import com.team303.robot.modules.Photonvision.CameraName;
 import com.team303.robot.commands.claw.RotateClaw;
-
+import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.AutolevelPID;
+import edu.wpi.first.networktables.GenericEntry;
 
 public class Robot extends LoggedRobot {
 
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
+	/* Robot Subsystems */
+	public static final SwerveSubsystem swerve = new SwerveSubsystem(); // new SwerveSubsystem();
+	public static final ArmSubsystem arm = new ArmSubsystem(); //new ArmTest();
+	public static final ArmTest armtest = new ArmTest();
+	public static final Photonvision photonvision = null; // new Photonvision();
+	public static final Operator operator = new Operator();
+	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -68,11 +76,13 @@ public class Robot extends LoggedRobot {
 
 	public static SendableChooser<String> controllerChooser = new SendableChooser<>();
 
-
-
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
-	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
+	public static final ShuffleboardTab DATA_TAB = Shuffleboard.getTab("Data");
+
+	public static final GenericEntry NAVX_ANGLE = DATA_TAB.add("NavX Angle", 0).getEntry();
+	public static final GenericEntry NAVX_Y_VELOCITY = DATA_TAB.add("Y velocity", 0).getEntry();
+	public static final GenericEntry NAVX_ACCELERATION = DATA_TAB.add("acceleration", 0).getEntry();
 
 	/* Shuffleboard Choosers */
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
@@ -83,13 +93,6 @@ public class Robot extends LoggedRobot {
 		NONE
 	}
 	public static HeldObject heldObject = HeldObject.CUBE;
-
-	/* Robot Subsystems */
-	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmTest arm = null; //new ArmTest();
-	public static final Photonvision photonvision = null; // new Photonvision();
-	public static final Operator operator = new Operator();
-	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
@@ -154,7 +157,7 @@ public class Robot extends LoggedRobot {
 		controllerChooser.addOption("Controller", "Controller");
 		controllerChooser.addOption("JoySticks", "JoySticks");
 		controllerChooser.setDefaultOption("JoySticks", "JoySticks");
-		DRIVEBASE_TAB.add("Controller", controllerChooser);
+		DATA_TAB.add("Controller", controllerChooser);
 
 		Logger logger = Logger.getInstance();
 
@@ -190,6 +193,7 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
 		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.arm.setDefaultCommand(new MoveArm());
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
@@ -253,15 +257,20 @@ public class Robot extends LoggedRobot {
 		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setCube));
 		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
 
+		// xboxController.y().onTrue(new InstantCommand(navX::reset));
+		// xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
+		// //xboxController.a().onTrue(new AutolevelFeedforward());
+		// //xboxController.a().onFalse(new DefaultDrive(true));
+		// xboxController.b().onTrue(new InstantCommand(swerve::stop));
+		// xboxController.b().onFalse(new DefaultDrive(true));
+
 		if (controllerChooser.getSelected().equals("Controller")) {
 			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
 			driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
 			driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
 			driverCommandXboxController.a().onFalse(new DefaultDrive(true));
-			//TODO: Make B Button work
-			driverCommandXboxController.b().onTrue(new InstantCommand(() -> {swerve.setMaxSpeed(1);}));
-			driverCommandXboxController.b().onFalse(new InstantCommand(() -> {swerve.setMaxSpeed(0.75);}));
-			driverCommandXboxController.b().onFalse(new DefaultDrive(true));			
+			driverCommandXboxController.b().onTrue(new InstantCommand(swerve::stop));
+			driverCommandXboxController.b().onFalse(new DefaultDrive(true));
 			// driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
 		} else {
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
