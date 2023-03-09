@@ -427,7 +427,8 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void periodic() {
 		double triggerPressure=Robot.getDriverXbox().getRightTriggerAxis();
 		if (triggerPressure>0.01) {
-		MAX_DRIVE_SPEED=((triggerPressure*-1)*4/10)+0.5;
+		//Map max speed from 0-100 to 50-10
+		MAX_DRIVE_SPEED=triggerPressure*-4/10+0.5;
 		} else if (Robot.getDriverXbox().getBButton()==false) {
 			MAX_DRIVE_SPEED=0.75;
 		}

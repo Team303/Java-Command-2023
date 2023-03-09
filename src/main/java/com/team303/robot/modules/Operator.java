@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+//TODO: Only one queue at a time, only accept queue if node is not already queued   
 public class Operator extends SubsystemBase {
     public static final ShuffleboardTab OPERATOR_TAB = Shuffleboard.getTab("Operator");
     public static final NetworkTable operator = NetworkTableInstance.getDefault().getTable("Operator");
