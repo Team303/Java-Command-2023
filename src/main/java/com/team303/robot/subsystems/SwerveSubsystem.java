@@ -426,17 +426,19 @@ public class SwerveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		double triggerPressure=Robot.getDriverXbox().getRightTriggerAxis();
-		if (triggerPressure>0.01) {
-		//Map max speed from 0-100 to 50-10
-		MAX_DRIVE_SPEED=triggerPressure*-4/10+0.5;
+		if (Robot.getDriverXbox().getBButton()==true) {
+			MAX_DRIVE_SPEED=1.0;
+		} else if (triggerPressure>0.01) {
+			//Map max speed from 0-100 to 50-10
+			MAX_DRIVE_SPEED=triggerPressure*-4/10+0.5;
 		} else if (Robot.getDriverXbox().getBButton()==false) {
 			MAX_DRIVE_SPEED=0.75;
 		}
-		System.out.println(MAX_DRIVE_SPEED);
+		//System.out.println(MAX_DRIVE_SPEED);
 		SmartDashboard.putNumber("leftjouytick val", Robot.getRightJoyStick().getX());
 		
 		if (Robot.isReal()) {
-			// Update Pose
+			// Update Poses
 			pose = odometry.update(
 				Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
 				new SwerveModulePosition[] {

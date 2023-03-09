@@ -2,6 +2,7 @@ package com.team303.robot.modules;
 
 import static com.team303.robot.Robot.heldObject;
 
+import com.team303.lib.math.Point2D;
 import com.team303.robot.Robot.HeldObject;
 
 import edu.wpi.first.networktables.GenericEntry;
@@ -17,7 +18,8 @@ public class Operator extends SubsystemBase {
     public static final GenericEntry[][] nodes = new GenericEntry[3][9];
     public static final int[][] nodeStateValues = new int[3][9];
     public static final int[][] nodeSuperStateValues = new int[3][9];
-    public final int[] hoverValue = { 0, 0 };
+    public Point2D hoverValue = new Point2D(0,0);
+    public Point2D queuedValue;
 
     public static enum NodeState {
         NONE(0),
@@ -55,86 +57,91 @@ public class Operator extends SubsystemBase {
     }
 
     public void moveDown() {
-        nodeSuperStateValues[hoverValue[0]][hoverValue[1]] = NodeSuperState.NONE.value;
+        nodeSuperStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeSuperState.NONE.value;
         for (int k = 1; k < nodeSuperStateValues.length + 1; k++) {
-            int newRow = hoverValue[0] + k;
+            int newRow = hoverValue.xAsInt() + k;
             if (newRow > 2) {
                 newRow -= 3;
             }
-            if (nodeSuperStateValues[newRow][hoverValue[1]] == NodeSuperState.NONE.value) {
-                hoverValue[0] = newRow;
-                nodeSuperStateValues[hoverValue[0]][hoverValue[1]] = NodeSuperState.HOVER.value;
+            if (nodeSuperStateValues[newRow][hoverValue.xAsInt()] == NodeSuperState.NONE.value) {
+                hoverValue.x = newRow;
+                nodeSuperStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeSuperState.HOVER.value;
                 return;
             }
         }
     }
 
     public void moveUp() {
-        nodeSuperStateValues[hoverValue[0]][hoverValue[1]] = NodeSuperState.NONE.value;
+        nodeSuperStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeSuperState.NONE.value;
         for (int k = 1; k < nodeSuperStateValues.length + 1; k++) {
-            int newRow = hoverValue[0] - k;
+            int newRow = hoverValue.xAsInt() - k;
             if (newRow < 0) {
                 newRow += 3;
             }
-            if (nodeSuperStateValues[newRow][hoverValue[1]] == NodeSuperState.NONE.value) {
-                nodeSuperStateValues[newRow][hoverValue[1]] = NodeSuperState.HOVER.value;
-                hoverValue[0] = newRow;
+            if (nodeSuperStateValues[newRow][hoverValue.yAsInt()] == NodeSuperState.NONE.value) {
+                nodeSuperStateValues[newRow][hoverValue.yAsInt()] = NodeSuperState.HOVER.value;
+                hoverValue.x = newRow;
                 return;
             }
         }
     }
 
     public void moveLeft() {
-        nodeSuperStateValues[hoverValue[0]][hoverValue[1]] = NodeSuperState.NONE.value;
-        for (int k = 1; k < nodeSuperStateValues[hoverValue[0]].length + 1; k++) {
-            int newCol = hoverValue[1] - k;
+        nodeSuperStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeSuperState.NONE.value;
+        for (int k = 1; k < nodeSuperStateValues[hoverValue.xAsInt()].length + 1; k++) {
+            int newCol = hoverValue.yAsInt() - k;
             if (newCol < 0) {
                 newCol += 9;
             }
-            if (nodeSuperStateValues[hoverValue[0]][newCol] == NodeSuperState.NONE.value) {
-                nodeSuperStateValues[hoverValue[0]][newCol] = NodeSuperState.HOVER.value;
-                hoverValue[1] = newCol;
+            if (nodeSuperStateValues[hoverValue.xAsInt()][newCol] == NodeSuperState.NONE.value) {
+                nodeSuperStateValues[hoverValue.xAsInt()][newCol] = NodeSuperState.HOVER.value;
+                hoverValue.y = newCol;
                 return;
             }
         }
     }
 
     public void moveRight() {
-        nodeSuperStateValues[hoverValue[0]][hoverValue[1]] = NodeSuperState.NONE.value;
-        for (int k = 1; k < nodeSuperStateValues[hoverValue[0]].length + 1; k++) {
-            int newCol = hoverValue[1] + k;
+        nodeSuperStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeSuperState.NONE.value;
+        for (int k = 1; k < nodeSuperStateValues[hoverValue.xAsInt()].length + 1; k++) {
+            int newCol = hoverValue.yAsInt() + k;
             if (newCol > 8) {
                 newCol -= 9;
             }
-            if (nodeSuperStateValues[hoverValue[0]][newCol] == NodeSuperState.NONE.value) {
-                nodeSuperStateValues[hoverValue[0]][newCol] = NodeSuperState.HOVER.value;
-                hoverValue[1] = newCol;
+            if (nodeSuperStateValues[hoverValue.xAsInt()][newCol] == NodeSuperState.NONE.value) {
+                nodeSuperStateValues[hoverValue.xAsInt()][newCol] = NodeSuperState.HOVER.value;
+                hoverValue.y = newCol;
                 return;
             }
         }
     }
 
-    public void setCube() {
-        if (nodeStateValues[hoverValue[0]][hoverValue[1]] == NodeState.CUBE.value) {
-            nodeStateValues[hoverValue[0]][hoverValue[1]] = NodeState.NONE.value;
-        } else {
-            nodeStateValues[hoverValue[0]][hoverValue[1]] = NodeState.CUBE.value;
-        }
-    }
-
-    public void setCone() {
-        if (nodeStateValues[hoverValue[0]][hoverValue[1]] == NodeState.CONE.value) {
-            nodeStateValues[hoverValue[0]][hoverValue[1]] = NodeState.NONE.value;
-        } else {
-            nodeStateValues[hoverValue[0]][hoverValue[1]] = NodeState.CONE.value;
+    public void setPiece() {
+        if (nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] == NodeState.CUBE.value || nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] == NodeState.CONE.value) {
+            nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.NONE.value;
+        } else if (hoverValue.xAsInt()>1) {
+            nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.CUBE.value;
+        } else if (hoverValue.yAsInt() % 3 == 0 || hoverValue.yAsInt() % 3 == 2) {
+            nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.CONE.value;
+        } else
+        {
+            nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.CUBE.value;
         }
     }
 
     public void queuePlacement() {
-        if (nodeStateValues[hoverValue[0]][hoverValue[1]] == NodeState.QUEUED.value) {
-            nodeStateValues[hoverValue[0]][hoverValue[1]] = NodeState.NONE.value;
+        if (nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] == NodeState.QUEUED.value) {
+            nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.NONE.value;
         } else {
-            nodeStateValues[hoverValue[0]][hoverValue[1]] = NodeState.QUEUED.value;
+            if (queuedValue == null) {
+            nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.QUEUED.value;
+            queuedValue = new Point2D(hoverValue.x,hoverValue.y);
+            } else {
+            nodeStateValues[queuedValue.xAsInt()][queuedValue.yAsInt()]=NodeState.NONE.value;
+            nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()]=NodeState.QUEUED.value;
+            queuedValue.x=hoverValue.x;
+            queuedValue.y=hoverValue.y;
+            }
         }
     }
 
