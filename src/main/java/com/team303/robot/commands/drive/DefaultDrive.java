@@ -21,23 +21,33 @@ public class DefaultDrive extends CommandBase {
         this.fieldOriented = fieldOriented;
     }
 
-    @Override
-    public void initialize() {
-        Robot.swerve.resetToAbsoluteAngle();
-    }
+//     @Override
+//     public void initialize() {
+//         Robot.swerve.resetToAbsoluteAngle();
+//     }
 
     @Override
     public void execute() {
 
         if (Robot.controllerChooser.getSelected().equals("Controller")) {
-                Robot.swerve.drive(
-                        new Translation2d(
-                                DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
-                                        * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
-                                DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
-                                        * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
-                        DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
-                        fieldOriented);
+                if (Robot.isReal())
+                        Robot.swerve.drive(
+                                new Translation2d(
+                                        DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
+                                                * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
+                                        DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
+                                                * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
+                                DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                                fieldOriented);
+                else 
+                        Robot.swerve.drive(
+                                new Translation2d(
+                                        DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
+                                                * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
+                                        DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
+                                                * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
+                                DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                                fieldOriented);    
         } else {
                 Robot.swerve.drive(
                         new Translation2d(
@@ -47,8 +57,8 @@ public class DefaultDrive extends CommandBase {
                                         * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
                         DEADBAND_FILTER.applyDeadband(-Robot.getRightJoyStick().getX(), DEADBAND_FILTER.getLowerBound()) * 4,
                         fieldOriented);
+                }
         }
-    }
     /*
      * if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.APRILTAG) {
      * photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.APRILTAG);

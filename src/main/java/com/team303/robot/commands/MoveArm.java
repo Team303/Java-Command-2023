@@ -5,7 +5,7 @@ import com.team303.robot.Robot;
 
 public class MoveArm extends CommandBase {
     public MoveArm() {
-        addRequirements(Robot.arm);
+        addRequirements(Robot.armtest);
     }
 
     @Override

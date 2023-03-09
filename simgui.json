@@ -90,6 +90,7 @@
   },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/MyMechanism": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX [1]": "Motor Controller",
@@ -98,6 +99,8 @@
       "/LiveWindow/Ungrouped/Talon FX [4]": "Motor Controller",
       "/Shuffleboard/Autonomous/Auto Start Delay": "String Chooser",
       "/Shuffleboard/Autonomous/Autonomous Selector": "String Chooser",
+      "/Shuffleboard/Controller/Controller": "String Chooser",
+      "/Shuffleboard/Data/Field": "Field2d",
       "/Shuffleboard/Drivebase/Controller": "String Chooser",
       "/Shuffleboard/Drivebase/FIELD SIM": "Field2d",
       "/Shuffleboard/Drivebase/Field": "Field2d",

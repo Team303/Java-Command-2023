@@ -33,6 +33,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import com.team303.robot.commands.arm.AprilTagAlign;
+import com.team303.robot.commands.arm.ReachPoint;
+import static com.team303.robot.Robot.CONTROLLER_TAB;
+import edu.wpi.first.networktables.GenericEntry;
 
 /**
  * Quick guide to Comand Groups:
@@ -69,6 +72,7 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
     static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
 
+
     //static Path dir = Filesystem.getDeployDirectory().toPath().resolve("");
     //static Iterator<Path> files = dir.iterator();
     private static File dir = new File(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toString());
@@ -77,10 +81,13 @@ public class Autonomous {
     private static SwerveAutoBuilder autoBuilder;
 
 
+    public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
+    public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
+
     public static void init() {
         
         HashMap<String,Command> eventMap = new HashMap<>();
-        eventMap.put("armup", new PrintCommand("\n\n\n\n arm up\n\n\n"));
+        eventMap.put("armup", new ReachPoint(20, 20));
 
         autoBuilder = new SwerveAutoBuilder(
             swerve::getPose, // Pose2d supplier
@@ -159,6 +166,10 @@ public class Autonomous {
         create("Autolevel", () -> 
             new AutolevelFeedforward()
          );
+
+        create("Reach Point", () ->
+            new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
+        );
     }
 
     /* 

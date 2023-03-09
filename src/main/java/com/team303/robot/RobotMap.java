@@ -108,9 +108,11 @@ public final class RobotMap {
 
 	public static final class Arm {
 
-		public static final int SHOULDER_JOINT_ID = 17;
+		public static final int SHOULDER_JOINT_ID1 = 14;
+		public static final int SHOULDER_JOINT_ID2 = 15;
 		public static final int ELBOW_JOINT_ID = 18;
 		public static final int CLAW_JOINT_ID = 19;
+		public static final int SIMULATION_OFFSET = 0;
 		/*public static final int BOTTOM_LEFT_LIMIT_SWITCH = 0;
 		public static final int BOTTOM_RIGHT_LIMIT_SWITCH = 1;
 		public static final int TOP_RIGHT_LIMIT_SWITCH = 8;
@@ -150,7 +152,7 @@ public final class RobotMap {
 
 		public static final int LEFT_JOYSTICK_ID = 3;
 		public static final int RIGHT_JOYSTICK_ID = 1;
-		public static final int DRIVER_CONTROLLER=1;
+		public static final int DRIVER_CONTROLLER = 1;
 		public static final int OPERATOR_CONTROLLER = 2;
 
 		public static final double DEADBAND_UPPERBOUND = 1;

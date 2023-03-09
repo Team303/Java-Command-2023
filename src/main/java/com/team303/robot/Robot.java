@@ -60,7 +60,7 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem(); // new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem(); //new ArmTest();
-	public static final ArmTest armtest = new ArmTest();
+	public static final ArmTest armtest = null;// new ArmTest();
 	public static final Photonvision photonvision = null; // new Photonvision();
 	public static final Operator operator = new Operator();
 	public static final ClawSubsystem claw = null; // new ClawSubsystem();
@@ -79,10 +79,12 @@ public class Robot extends LoggedRobot {
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
 	public static final ShuffleboardTab DATA_TAB = Shuffleboard.getTab("Data");
+	public static final ShuffleboardTab CONTROLLER_TAB = Shuffleboard.getTab("Controller");
 
 	public static final GenericEntry NAVX_ANGLE = DATA_TAB.add("NavX Angle", 0).getEntry();
 	public static final GenericEntry NAVX_Y_VELOCITY = DATA_TAB.add("Y velocity", 0).getEntry();
 	public static final GenericEntry NAVX_ACCELERATION = DATA_TAB.add("acceleration", 0).getEntry();
+	public static final GenericEntry L_AXIS = CONTROLLER_TAB.add("l trigger", 0).getEntry();
 
 	/* Shuffleboard Choosers */
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
@@ -156,8 +158,8 @@ public class Robot extends LoggedRobot {
 
 		controllerChooser.addOption("Controller", "Controller");
 		controllerChooser.addOption("JoySticks", "JoySticks");
-		controllerChooser.setDefaultOption("JoySticks", "JoySticks");
-		DATA_TAB.add("Controller", controllerChooser);
+		controllerChooser.setDefaultOption("Controller", "Controller");
+		CONTROLLER_TAB.add("Controller", controllerChooser);
 
 		Logger logger = Logger.getInstance();
 
@@ -192,17 +194,16 @@ public class Robot extends LoggedRobot {
 
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
-
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		// Robot.armtest.setDefaultCommand(new MoveArm());
 		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
-		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		// Robot.arm.setDefaultCommand(new MoveArm());
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		// add Autos to Shuffleboard
-		// Autonomous.init();
-		// AutonomousProgram.addAutosToShuffleboard();
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -249,13 +250,13 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
-		operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
-		operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
-		operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
-		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setCone));
-		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setCube));
-		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
+		// operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
+		// operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
+		// operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
+		// operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
+		// operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setCone));
+		// operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setCube));
+		// operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
 
 		// xboxController.y().onTrue(new InstantCommand(navX::reset));
 		// xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
