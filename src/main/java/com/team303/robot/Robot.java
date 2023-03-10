@@ -17,6 +17,7 @@ import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.drive.TurnToAngle;
 import com.team303.robot.subsystems.SwerveSubsystem;
+import frc.robot.BuildConstants;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -37,6 +38,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.BuildConstants;
+
 import com.team303.robot.subsystems.ArmTest;
 import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.commands.MoveArm;
@@ -250,28 +253,24 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		// operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
-		// operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
-		// operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
-		// operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
-		// operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setCone));
-		// operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setCube));
-		// operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
-
-		// xboxController.y().onTrue(new InstantCommand(navX::reset));
-		// xboxController.x().onTrue(new InstantCommand(swerve::resetOdometry));
-		// //xboxController.a().onTrue(new AutolevelFeedforward());
-		// //xboxController.a().onFalse(new DefaultDrive(true));
-		// xboxController.b().onTrue(new InstantCommand(swerve::stop));
-		// xboxController.b().onFalse(new DefaultDrive(true));
-
+		operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
+		operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
+		operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
+		operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
+		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
+		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
+		
 		if (controllerChooser.getSelected().equals("Controller")) {
 			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
 			driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
 			driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
 			driverCommandXboxController.a().onFalse(new DefaultDrive(true));
-			driverCommandXboxController.b().onTrue(new InstantCommand(swerve::stop));
-			driverCommandXboxController.b().onFalse(new DefaultDrive(true));
+			driverCommandXboxController.pov(0).onTrue(new TurnToAngle(0));
+			driverCommandXboxController.pov(90).onTrue(new TurnToAngle(90));
+			driverCommandXboxController.pov(180).onTrue(new TurnToAngle(180));
+			driverCommandXboxController.pov(270).onTrue(new TurnToAngle(270));
+			driverCommandXboxController.x().onTrue(new InstantCommand(swerve::stop));
+			driverCommandXboxController.x().onFalse(new DefaultDrive(true));
 			// driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
 		} else {
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));

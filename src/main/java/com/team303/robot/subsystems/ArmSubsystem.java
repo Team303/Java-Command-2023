@@ -187,13 +187,13 @@ public class ArmSubsystem extends SubsystemBase {
 
 
 	public void reach(List<Double> desiredRadianAngles) {
-		for (double i : desiredRadianAngles) {
-			System.out.print(Math.toDegrees(i)+" ");
-		}
+		// for (double i : desiredRadianAngles) {
+		// 	System.out.print(Math.toDegrees(i)+" ");
+		// }
 		shoulderAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(0)));
 		jointAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(1)));
 		clawAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(2)));
-		System.out.println();
+		// System.out.println();
 
 		double shoulderEncoders = (desiredRadianAngles.get(0) / Math.PI * 2) * 42 * GEAR_RATIO;
 
