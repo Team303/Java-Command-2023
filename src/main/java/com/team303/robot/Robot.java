@@ -151,7 +151,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	// The command configured to run during auto
-	private Command autonomousCommand;;
+	private Command autonomousCommand;
 
 	@Override
 	public void robotInit() {

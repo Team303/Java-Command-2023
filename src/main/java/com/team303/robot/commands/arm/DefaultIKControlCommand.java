@@ -41,6 +41,7 @@ public class DefaultIKControlCommand extends CommandBase {
         // System.out.println(cartesianStorage.toString());
         arm.reachEmbedded(cartesianStorage);
         ArmSubsystem.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
-        effectorRoot.setPosition(Arm.SIMULATION_OFFSET+cartesianStorage.getX(),Arm.SIMULATION_OFFSET+cartesianStorage.getZ());
+        effectorRoot.setPosition((Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX()/Arm.SIMULATION_SCALE,
+            Arm.SIMULATION_OFFSET/Arm.SIMULATION_SCALE+cartesianStorage.getZ()/Arm.SIMULATION_SCALE);
     }
 }

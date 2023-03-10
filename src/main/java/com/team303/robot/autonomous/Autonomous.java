@@ -87,7 +87,8 @@ public class Autonomous {
     public static void init() {
         
         HashMap<String,Command> eventMap = new HashMap<>();
-        eventMap.put("armup", new ReachPoint(20, 20));
+        eventMap.put("Top Cone", new ReachPoint(42, 48));
+        eventMap.put("Reach Cone", new ReachPoint(36, 0));
 
         autoBuilder = new SwerveAutoBuilder(
             swerve::getPose, // Pose2d supplier
@@ -118,8 +119,8 @@ public class Autonomous {
        // pathGroup = PathPlanner.loadPathGroup("Top to Cone", new PathConstraints(3, Swerve.MAX_VELOCITY));
        // create("Top to Cone", () -> new SequentialCommandGroup(new InstantCommand(Robot.swerve::resetOdometry), autoBuilder.fullAuto(pathGroup)));
 
-       pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       create("New Path", () -> autoBuilder.fullAuto(pathGroup));
+       pathGroup = PathPlanner.loadPathGroup("Cone Top", new PathConstraints(3, Swerve.MAX_VELOCITY));
+       create("Cone Top", () -> autoBuilder.fullAuto(pathGroup));
 
         create("New", () -> {
             try {

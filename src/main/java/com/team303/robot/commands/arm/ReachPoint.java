@@ -9,7 +9,8 @@ import com.team303.robot.RobotMap.Arm;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class ReachPoint extends CommandBase {
+public class 
+ReachPoint extends CommandBase {
     public Translation3d cartesianStorage;
 
     public ReachPoint(double x, double z) {
@@ -28,7 +29,7 @@ public class ReachPoint extends CommandBase {
         // System.out.println(cartesianStorage.toString());
         arm.reachEmbedded(cartesianStorage);
         ArmSubsystem.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
-        Robot.arm.effectorRoot.setPosition(Arm.SIMULATION_OFFSET+cartesianStorage.getX(),Arm.SIMULATION_OFFSET+cartesianStorage.getZ());
+        Robot.arm.effectorRoot.setPosition((Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX(),Arm.SIMULATION_OFFSET/Arm.SIMULATION_OFFSET+cartesianStorage.getZ());
     }
 
     // @Override

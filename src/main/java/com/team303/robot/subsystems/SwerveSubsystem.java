@@ -280,7 +280,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		System.out.println("Resetting");
 
 		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions,
-			new Pose2d(2,2, new Rotation2d(Math.PI/2)));
+			new Pose2d(2,2, new Rotation2d()));
 		this.angle = 0;
 
 	}

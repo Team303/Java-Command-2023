@@ -112,7 +112,9 @@ public final class RobotMap {
 		public static final int SHOULDER_JOINT_ID2 = 15;
 		public static final int ELBOW_JOINT_ID = 18;
 		public static final int CLAW_JOINT_ID = 19;
-		public static final int SIMULATION_OFFSET = 0;
+		public static final double SIMULATION_OFFSET = 0;
+		public static final double SIMULATION_SCALE = 84/2.54;
+		// public static final double INCHES_TO_
 		/*public static final int BOTTOM_LEFT_LIMIT_SWITCH = 0;
 		public static final int BOTTOM_RIGHT_LIMIT_SWITCH = 1;
 		public static final int TOP_RIGHT_LIMIT_SWITCH = 8;

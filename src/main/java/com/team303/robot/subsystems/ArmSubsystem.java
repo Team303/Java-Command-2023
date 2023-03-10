@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.GenericEntry;
 import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.team303.robot.RobotMap.Arm;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -135,9 +136,9 @@ public class ArmSubsystem extends SubsystemBase {
 		// armKinematics.setAngleConstraint(0, 360, 360);
 		// armKinematics.setAngleConstraint(1, 360, 360);
 		// armKinematics.setAngleConstraint(2, 360, 360);
-		armKinematics.setAngleConstraint(0, 90, 20);
-		armKinematics.setAngleConstraint(1, 60, 180);
-		armKinematics.setAngleConstraint(2, 45, 135);
+		armKinematics.setAngleConstraint(0, 20, 20);
+		armKinematics.setAngleConstraint(1, 110, 110);
+		armKinematics.setAngleConstraint(2, 135, 135);
 		armKinematics.setSegmentInitialDirection(0, (float) Math.toRadians(90));
 		armKinematics.setSegmentInitialDirection(1, (float) Math.toRadians(0));
 		armKinematics.setSegmentInitialDirection(2, (float) Math.toRadians(-45));
@@ -149,18 +150,18 @@ public class ArmSubsystem extends SubsystemBase {
 		// 60 motor rotations = 360 degrees of rotation for the arm
 		// elbowJoint.elbowEncoder.setPositionConversionFactor(60);
 		// clawJoint.clawEncoder.setPositionConversionFactor(1);
-		armSimulation = new Mechanism2d(300, 300);
-		MechanismRoot2d armRoot = armSimulation.getRoot("Arm", Arm.SIMULATION_OFFSET, Arm.SIMULATION_OFFSET);
+		armSimulation = new Mechanism2d(300/Arm.SIMULATION_SCALE, 300/Arm.SIMULATION_SCALE);
+		MechanismRoot2d armRoot = armSimulation.getRoot("Arm", (Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE, (Arm.SIMULATION_OFFSET)/Arm.SIMULATION_SCALE);
 		shoulderJoint.shoulderSimulator = armRoot.append(new MechanismLigament2d("shoulder",
-				(double) armKinematics.getSegmentLength(0), 0.0, 5.0, new Color8Bit(255, 0, 0)));
+				(double) armKinematics.getSegmentLength(0)/Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(255, 0, 0)));
 		elbowJoint.elbowSimulator = shoulderJoint.shoulderSimulator.append(new MechanismLigament2d("elbow",
-				(double) armKinematics.getSegmentLength(1), 0.0, 5.0, new Color8Bit(0, 255, 0)));
+				(double) armKinematics.getSegmentLength(1)/Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(0, 255, 0)));
 		clawJoint.clawSimulator = elbowJoint.elbowSimulator.append(new MechanismLigament2d("claw",
-				(double) armKinematics.getSegmentLength(2), 0.0, 5.0, new Color8Bit(0, 0, 255)));
+				(double) armKinematics.getSegmentLength(2)/Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(0, 0, 255)));
 		//effectorRoot = armSimulation.getRoot("End Effector", Arm.SIMULATION_OFFSET+armKinematics.getEffectorPoint().get(0),Arm.SIMULATION_OFFSET+armKinematics.getEffectorPoint().get(1));
-		effectorRoot = armSimulation.getRoot("End Effector", Arm.SIMULATION_OFFSET+cartesianStorage.getX(),Arm.SIMULATION_OFFSET+cartesianStorage.getZ());
+		effectorRoot = armSimulation.getRoot("End Effector", (Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX(),Arm.SIMULATION_OFFSET/Arm.SIMULATION_SCALE+cartesianStorage.getZ());
 
-		effectorPoint = effectorRoot.append(new MechanismLigament2d("effector",1.0,0.0,5.0,new Color8Bit(125,125,125)));
+		effectorPoint = effectorRoot.append(new MechanismLigament2d("effector",1.0/Arm.SIMULATION_SCALE,0.0,5.0,new Color8Bit(255,0,0)));
 		storedShoulderAngle = -90+armKinematics.getIKAnglesDegrees().get(0);
 		storedElbowAngle = storedShoulderAngle-armKinematics.getIKAnglesDegrees().get(1);
 		storedClawAngle = storedElbowAngle+armKinematics.getIKAnglesDegrees().get(2);
