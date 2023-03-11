@@ -55,6 +55,8 @@ import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.AutolevelPID;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose2d;
 
 public class Robot extends LoggedRobot {
 
@@ -259,6 +261,9 @@ public class Robot extends LoggedRobot {
 		operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
 		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
 		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
+		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setNone));
+		operatorCommandXboxController.a().toggleOnTrue(swerve.driveToNode());
+		operatorCommandXboxController.rightTrigger().toggleOnTrue(Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 		
 		if (controllerChooser.getSelected().equals("Controller")) {
 			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));

@@ -10,6 +10,9 @@ import com.team303.robot.Robot;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 public class AutolevelFeedforward extends CommandBase {
+
+    private double angle;
+    private double magnitude;
     private final PIDController FeedbackController = new PIDController(0.025,0, 0.01);
     private final SimpleMotorFeedforward FeedforwardController = new SimpleMotorFeedforward(
         1, 0.5);
@@ -22,9 +25,11 @@ public class AutolevelFeedforward extends CommandBase {
 
     @Override
     public void execute() {
-        Robot.swerve.drive(new Translation2d(0,
-            (FeedbackController.calculate(-Robot.getNavX().getPitch(), 0) 
-            + FeedforwardController.calculate(-Robot.getNavX().getPitch())) * 0.04), 
+        angle = Math.toRadians(Robot.getNavX().getAngle());
+        magnitude = (FeedbackController.calculate(-Robot.getNavX().getPitch(), 0) 
+            + FeedforwardController.calculate(-Robot.getNavX().getPitch())) * 0.04;
+
+        Robot.swerve.drive(new Translation2d(magnitude * Math.cos(angle), magnitude * Math.sin(angle)), 
             0, true);
     }
 

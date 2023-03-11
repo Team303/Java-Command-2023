@@ -63,6 +63,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import static com.team303.robot.Robot.NAVX_ACCELERATION;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
 import static com.team303.robot.Robot.NAVX_ANGLE;
+import static com.team303.robot.modules.Operator.nodeStateValues;
+import com.team303.robot.modules.Operator.NodeState;
+import com.team303.lib.math.Point2D;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -496,15 +499,14 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.getInstance().recordOutput("Velocity X", Robot.getNavX().getVelocityX());
 		Logger.getInstance().recordOutput("Raw Acceleration", Robot.getNavX().getRawAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
+		SmartDashboard.putNumber("Pose X", pose.getX());
+		SmartDashboard.putNumber("Pose Y", pose.getY());
 		Logger.getInstance().recordOutput("Odometry 2", getRobotPose());
 
 	}
 
-	public static CommandBase followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+	public CommandBase followTrajectoryCommand(PathPlannerTrajectory traj) {
 		// Reset odometry for the first path you run during auto
-		if (isFirstPath) {
-			Robot.swerve.resetOdometry(traj.getInitialHolonomicPose());
-		}
 		return new PPSwerveControllerCommand(
 			traj,
 			Robot.swerve::getPose, // Pose supplier
@@ -519,26 +521,38 @@ public class SwerveSubsystem extends SubsystemBase {
 			Robot.swerve);
 	}
 	
-	public static CommandBase driveToPose(Pose2d point1, Pose2d point2, Pose2d... poses) {
+	public CommandBase driveToPose(Pose2d point1, Pose2d point2, Pose2d... poses) {
 
-			PathPoint[] points = new PathPoint[poses.length];
-		
-			for (int i = 0; i < poses.length; i++) {
-				points[i] = new PathPoint(poses[i].getTranslation(), poses[i].getRotation());
-			}
-
-			PathPlannerTrajectory trajectory = PathPlanner.generatePath(
-				new PathConstraints(4, 3), 
-				new PathPoint(point1.getTranslation(), point1.getRotation()), // position, heading
-				new PathPoint(point2.getTranslation(), point2.getRotation()),
-				points
-				// position, heading
-			);
+		PathPoint[] points = new PathPoint[poses.length];
 	
-		return followTrajectoryCommand(trajectory, false);
-	}
+		for (int i = 0; i < poses.length; i++) {
+			points[i] = new PathPoint(poses[i].getTranslation(), poses[i].getRotation());
+		}
 
-	public static CommandBase driveToNode(int node) {
-		return driveToPose(Robot.swerve.getPose(), new Pose2d(1, node, new Rotation2d()));
+		PathPlannerTrajectory trajectory = PathPlanner.generatePath(
+			new PathConstraints(4, 3), 
+			new PathPoint(point1.getTranslation(), point1.getRotation()), // position, heading
+			new PathPoint(point2.getTranslation(), point2.getRotation()),
+			points
+			// position, heading
+		);
+
+	return followTrajectoryCommand(trajectory);
+}
+
+
+	public CommandBase driveToNode() {
+
+		Point2D posePoint = new Point2D(0, 0);
+		final double[] nodePositions = {0,0.5,1,1.5,2,2.5,3,3.5,4.0};
+
+		for (int i = 0; i < nodeStateValues.length; i++) {
+            for (int j = 0; j < nodeStateValues.length; j++)
+                if (nodeStateValues[i][j] == NodeState.QUEUED.value) {
+                    posePoint = new Point2D(i, j);
+                }
+        }
+		System.out.println("Swerve pose" + Robot.swerve.getPose());
+		return driveToPose(Robot.swerve.getPose(), new Pose2d(1, 1, new Rotation2d()));
 	}
 }

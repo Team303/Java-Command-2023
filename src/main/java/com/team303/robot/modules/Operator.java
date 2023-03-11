@@ -116,6 +116,10 @@ public class Operator extends SubsystemBase {
         }
     }
 
+    public void setNone() {
+        nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.NONE.value;
+    }
+
     public void setPiece() {
         if (nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] == NodeState.CUBE.value || nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] == NodeState.CONE.value) {
             nodeStateValues[hoverValue.xAsInt()][hoverValue.yAsInt()] = NodeState.NONE.value;

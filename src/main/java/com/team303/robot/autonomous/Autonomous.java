@@ -27,7 +27,6 @@ import com.team303.robot.commands.drive.FollowTrajectory;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
-import com.team303.robot.commands.drive.DriveToPose;
 import com.team303.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
@@ -36,6 +35,9 @@ import com.team303.robot.commands.arm.AprilTagAlign;
 import com.team303.robot.commands.arm.ReachPoint;
 import static com.team303.robot.Robot.CONTROLLER_TAB;
 import edu.wpi.first.networktables.GenericEntry;
+import static com.team303.robot.modules.Operator.nodeStateValues;
+import com.team303.robot.modules.Operator.NodeState;
+import com.team303.lib.math.Point2D;
 
 /**
  * Quick guide to Comand Groups:
@@ -72,15 +74,12 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
     static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
 
-
     //static Path dir = Filesystem.getDeployDirectory().toPath().resolve("");
     //static Iterator<Path> files = dir.iterator();
     private static File dir = new File(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toString());
     private static File[] directoryListing = dir.listFiles();
     //private static List<PathPlannerTrajectory> pathGroup;
     private static SwerveAutoBuilder autoBuilder;
-
-
     public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
     public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
 
@@ -158,7 +157,7 @@ public class Autonomous {
         }
         );
 
-        create("Drivepose", () -> SwerveSubsystem.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
+        create("Drivepose", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
         // create("Apriltag", () -> new AlignAprilTag());
 
@@ -171,6 +170,9 @@ public class Autonomous {
         create("Reach Point", () ->
             new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
         );
+
+        create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
+
     }
 
     /* 
