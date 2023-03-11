@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.team303.robot.util.GroundedDigitalInput;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,6 +26,7 @@ public class ClawSubsystem extends SubsystemBase {
 	public final GroundedDigitalInput outerRight;
 	public final GroundedDigitalInput innerLeft;
 	public final GroundedDigitalInput innerRight;
+	private final AnalogPotentiometer ultrasonicSensor = new AnalogPotentiometer(Claw.ULTRASONIC_ID,300,50);
 
 	public ClawSubsystem() {
 		clawCanSparkMax.setInverted(true);
