@@ -65,7 +65,8 @@ import static com.team303.robot.Robot.NAVX_ACCELERATION;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
 import static com.team303.robot.Robot.NAVX_ANGLE;
 import static com.team303.robot.modules.Operator.nodeStateValues;
-import com.team303.robot.modules.Operator.NodeState;
+import static com.team303.robot.modules.Operator.nodeSuperStateValues;
+import com.team303.robot.modules.Operator.NodeSuperState;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -207,6 +208,7 @@ public class SwerveSubsystem extends SubsystemBase {
         try {
             initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
             var alliance = DriverStation.getAlliance();
+			System.out.println(alliance.name());
             initialLayout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
                     : OriginPosition.kRedAllianceWallRightSide);
         } catch (IOException e) {
@@ -548,7 +550,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		for (int i = 0; i < nodeStateValues.length; i++) {
             for (int j = 0; j < nodeStateValues.length; j++)
-                if (nodeStateValues[i][j] == NodeState.QUEUED.value) {
+                if (nodeSuperStateValues[i][j] == NodeSuperState.QUEUED.value) {
                     posePoint = new Point(i, j);
                 }
         }

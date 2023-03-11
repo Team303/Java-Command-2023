@@ -100,7 +100,7 @@ public class Robot extends LoggedRobot {
 		CONE,
 		NONE
 	}
-	public static HeldObject heldObject = HeldObject.CUBE;
+	public static HeldObject heldObject = HeldObject.NONE;
 
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
