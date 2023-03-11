@@ -209,10 +209,12 @@ public class Operator extends SubsystemBase {
             for (int i=0; i<2; i++) {
                 for (int j=0;j<8;j+=3) {
                     if ((nodeStateValues[i][j] != NodeState.NONE.value && nodeStateValues[i][j+1] != NodeState.NONE.value) && nodeStateValues[i][j+2]==NodeState.NONE.value) {
+                        System.out.println("\n\n\n\n\n\nnani 1\n\n\n\n\n\n\n");
                         queuedValue=new Point(i,j+2);
                         nodeSuperStateValues[i][j+2]=NodeSuperState.QUEUED.value;
                         return;
                     } else if ((nodeStateValues[i][j+1] != NodeState.NONE.value && nodeStateValues[i][j+2] != NodeState.NONE.value) && nodeStateValues[i][j]==NodeState.NONE.value) {
+                        System.out.println("\n\n\n\n\n\nnani 2\n\n\n\n\n");
                         queuedValue=new Point(i,j);
                         nodeSuperStateValues[i][j]=NodeSuperState.QUEUED.value;
                         return;
@@ -223,17 +225,17 @@ public class Operator extends SubsystemBase {
             for (int i=0; i<2; i++) {
                 for (int j=0;j<8;j+=3) {
                     //Case 1: Cube node in link is filled
-                    if (nodeStateValues[i][(j/3)*3+1] != NodeState.NONE.value && nodeSuperStateValues[i][j]==NodeSuperState.NONE.value) {
+                    if (nodeStateValues[i][(j/3)*3+1] != NodeState.NONE.value && nodeStateValues[i][j]==NodeState.NONE.value) {
                         queuedValue=new Point(i,j);
                         nodeSuperStateValues[i][j]=NodeSuperState.QUEUED.value;
                         return;
                     //Case 2: First cone node in link is filled
-                    } else if (nodeStateValues[i][j] != NodeState.NONE.value  && nodeSuperStateValues[i][j+2]==NodeSuperState.NONE.value) {
+                    } else if (nodeStateValues[i][j] != NodeState.NONE.value  && nodeStateValues[i][j+2]==NodeState.NONE.value) {
                         queuedValue=new Point(i,j+2);
                         nodeSuperStateValues[i][j+2]=NodeSuperState.QUEUED.value;
                         return;
                     //Case 3: Second cone node in link is filled
-                    } else if (nodeStateValues[i][j] == NodeState.NONE.value  && nodeSuperStateValues[i][j+2]!=NodeSuperState.NONE.value) {
+                    } else if (nodeStateValues[i][j] == NodeState.NONE.value  && nodeStateValues[i][j+2]!=NodeState.NONE.value) {
                         queuedValue=new Point(i,j);
                         nodeSuperStateValues[i][j]=NodeSuperState.QUEUED.value;
                         return;
@@ -250,6 +252,8 @@ public class Operator extends SubsystemBase {
                     }
                 }
             }
+            nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
+            queuedValue=null;
         } else if (heldObject == HeldObject.CUBE) {
             //First priority is to achieve coopertition bonus link (all priorities automatically go for highest possible)
             if (coopertitionBonusAchieved==false) {
@@ -292,7 +296,10 @@ public class Operator extends SubsystemBase {
                     }
                 }
             }
+            nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
+            queuedValue=null;
         } else {
+            System.out.println("\n\n\n\n\nwhoa\n\n\n\n\n");
             return;
         }
     }
@@ -308,8 +315,8 @@ public class Operator extends SubsystemBase {
             }
         }
         heldObject = heldObjectChooser.getSelected();
+        autoQueuePlacement();
         }
-        //System.out.println(heldObject);
         if (coopertitionBonusAchieved==false) {
             for (int i=0; i<2; i++) {
                 if ((nodeStateValues[i][3] != NodeState.NONE.value && nodeStateValues[i][4] != NodeState.NONE.value && nodeStateValues[i][5] != NodeState.NONE.value)) {
