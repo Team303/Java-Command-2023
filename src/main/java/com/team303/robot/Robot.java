@@ -326,15 +326,11 @@ public class Robot extends LoggedRobot {
 		SmartDashboard.putNumber("Y crosshair", Limelight.getLimelight().getEntry("ty").getDouble(0.0));
 		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tv").getDouble(0.0));
 		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("ta").getDouble(0.0));*/
-<<<<<<< HEAD
 		operatorCommandXboxController.a().toggleOnTrue(swerve.driveToNode());
 		// operatorCommandXboxController.rightTrigger().toggleOnTrue(
 		// 	Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d()))
 		// );
 
-=======
-		operatorCommandXboxController.rightTrigger().toggleOnTrue(Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
->>>>>>> refs/remotes/origin/drivebase
 		CommandScheduler.getInstance().run();
 	}
 }
