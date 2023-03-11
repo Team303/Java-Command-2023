@@ -161,7 +161,7 @@ public class Autonomous {
 
         // create("Apriltag", () -> new AlignAprilTag());
 
-        create("AprilTag", () -> new AprilTagAlign());
+        create("AprilTag", () -> new AprilTagAlign(2));
 
         create("Autolevel", () -> 
             new AutolevelFeedforward()
@@ -172,6 +172,8 @@ public class Autonomous {
         );
 
         create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
+
+        create("drive to node", () -> swerve.driveToNode());
 
     }
 

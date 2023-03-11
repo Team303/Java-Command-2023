@@ -14,6 +14,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
+import com.team303.robot.commands.arm.AprilTagAlign;
 import com.team303.swervelib.MkSwerveModuleBuilder;
 import com.team303.swervelib.MotorType;
 import com.team303.swervelib.SwerveModule;
@@ -63,9 +64,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import static com.team303.robot.Robot.NAVX_ACCELERATION;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
 import static com.team303.robot.Robot.NAVX_ANGLE;
-import static com.team303.robot.modules.Operator.nodeStateValues;
 import com.team303.robot.modules.Operator.NodeState;
 import com.team303.lib.math.Point2D;
+import static com.team303.robot.modules.Operator.nodeStateValues;
+import java.util.HashMap;
+import com.team303.robot.commands.arm.ReachPoint;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -108,11 +112,19 @@ public class SwerveSubsystem extends SubsystemBase {
 	/* Odometry */
 	SwerveDriveOdometry odometry;
 
-	private Pose2d pose = new Pose2d();
+	private Pose2d pose = new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d());
 
 
 	public static final double MAX_VOLTAGE = 12.0;
 	public static double MAX_DRIVE_SPEED = 0.75;
+
+	/* Node Positions */
+	public static double[] nodePositions = new double[9];
+	public static final double START_NODE = 0.6540499999989841;
+	// final double DIFFERENCE = 0.4699000000010161;
+	public static final double DIFFERENCE = 0.53;
+	public static final HashMap<String, Point2D> nodePoints = new HashMap<String, Point2D>();
+
 
 
 	/*public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
@@ -120,6 +132,15 @@ public class SwerveSubsystem extends SubsystemBase {
 			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;*/
 			
 	public SwerveSubsystem() {
+		nodePoints.put("Top Cube", new Point2D(Units.metersToInches(-1.01), Units.metersToInches(1.17)));
+		nodePoints.put("Mid Cube", new Point2D(Units.metersToInches(-0.58), Units.metersToInches(0.87)));
+		nodePoints.put("Top Cone", new Point2D(Units.metersToInches(-1.01), Units.metersToInches(0.90)));
+		nodePoints.put("Mid Cone", new Point2D(Units.metersToInches(-0.58), Units.metersToInches(0.60)));
+		nodePoints.put("Bottom", new Point2D(Units.metersToInches(-0.29), Units.metersToInches(0.05)));
+
+		for (int i = 0; i < nodePositions.length; i++) {
+			nodePositions[i] = START_NODE + i * DIFFERENCE;
+		}
 
 		timer.start();
 
@@ -190,7 +211,7 @@ public class SwerveSubsystem extends SubsystemBase {
 							leftBackModule.getPosition(),
 							rightBackModule.getPosition(),
 							
-					}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+					}, pose);
 		} else {
 			odometry = new SwerveDriveOdometry(
 				kinematics, Rotation2d.fromDegrees(0),
@@ -199,7 +220,7 @@ public class SwerveSubsystem extends SubsystemBase {
 						new SwerveModulePosition(0, new Rotation2d()),
 						new SwerveModulePosition(0, new Rotation2d()),
 						new SwerveModulePosition(0, new Rotation2d())
-				}, new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d()));
+				}, pose);
 		}
 		
 		AprilTagFieldLayout initialLayout;
@@ -228,7 +249,7 @@ public class SwerveSubsystem extends SubsystemBase {
 					new SwerveModulePosition(0.0, new Rotation2d()),
 					new SwerveModulePosition(0.0, new Rotation2d()),
 			},
-			new Pose2d(),
+			pose,
 			swerveStandardDeviations,
 			photonStandardDeviations);
 			DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
@@ -511,10 +532,10 @@ public class SwerveSubsystem extends SubsystemBase {
 			traj,
 			Robot.swerve::getPose, // Pose supplier
 			Robot.swerve.getKinematics(), // SwerveDriveKinematics
-			new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0
+			new PIDController(0, 0.2, 0), // X controller. Tune these values for your robot. Leaving them 0
 										// will only use feedforwards.
-			new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-			new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving
+			new PIDController(0, 0.2, 0), // Y controller (usually the same values as X controller)
+			new PIDController(0, 0.05, 0), // Rotation controller. Tune these values for your robot. Leaving
 										// them 0 will only use feedforwards.
 			Robot.swerve::drive, // Module states consumer
 			true, // Should the path be automatically mirrored depending on alliance color.
@@ -531,28 +552,70 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		PathPlannerTrajectory trajectory = PathPlanner.generatePath(
 			new PathConstraints(4, 3), 
-			new PathPoint(point1.getTranslation(), point1.getRotation()), // position, heading
+			new PathPoint(point1.getTranslation(), point1.getRotation()),
 			new PathPoint(point2.getTranslation(), point2.getRotation()),
 			points
 			// position, heading
 		);
 
-	return followTrajectoryCommand(trajectory);
-}
+		return followTrajectoryCommand(trajectory);
+	}
 
+	public CommandBase driveToPose(Pose2d point1, Pose2d point2) {
+
+
+		PathPlannerTrajectory trajectory = PathPlanner.generatePath(
+			new PathConstraints(4, 3), 
+			new PathPoint(point1.getTranslation(), point1.getRotation()),
+			new PathPoint(point1.getTranslation().plus(point2.getTranslation()).div(2), point1.getRotation().plus(point2.getRotation()).div(2)),
+			new PathPoint(point2.getTranslation(), point2.getRotation())
+			// position, heading
+		);
+
+		return followTrajectoryCommand(trajectory);
+	}
 
 	public CommandBase driveToNode() {
 
 		Point2D posePoint = new Point2D(0, 0);
-		final double[] nodePositions = {0,0.5,1,1.5,2,2.5,3,3.5,4.0};
+		
 
 		for (int i = 0; i < nodeStateValues.length; i++) {
-            for (int j = 0; j < nodeStateValues.length; j++)
+            for (int j = 0; j < nodeStateValues[i].length; j++) {
                 if (nodeStateValues[i][j] == NodeState.QUEUED.value) {
+					System.out.println("Found selected!!!");
                     posePoint = new Point2D(i, j);
                 }
+				System.out.print(nodeStateValues[i][j] + " ");
+			}
+			System.out.println();
         }
-		System.out.println("Swerve pose" + Robot.swerve.getPose());
-		return driveToPose(Robot.swerve.getPose(), new Pose2d(1, 1, new Rotation2d()));
+		System.out.println("\n\n\n");
+
+		// System.out.println("Node Positions: " + nodePositions[posePoint.yAsInt()]);
+
+		String reachNode = "Bottom";
+
+		if (posePoint.xAsInt() == 0 && posePoint.yAsInt() % 3 == 2) {
+			reachNode = "Top Cube";
+		} else if (posePoint.xAsInt() == 1 && posePoint.yAsInt() % 3 == 2) {
+			reachNode = "Mid Cube";
+		} else if (posePoint.xAsInt() == 0) {
+			reachNode = "Top Cone";
+		} else if (posePoint.xAsInt() == 1) {
+			reachNode = "Mid Cone";
+		}
+
+		return new ParallelCommandGroup(
+			driveToPose(Robot.swerve.getPose(), new Pose2d(1.75, nodePositions[posePoint.yAsInt()], new Rotation2d())),
+			new ReachPoint(nodePoints.get(reachNode).xAsDouble(), nodePoints.get(reachNode).yAsDouble())
+			);
+
+		// return new SequentialCommandGroup(
+		// 	driveToPoseTeleop(Robot.swerve.getPose(), new Pose2d(2.3, nodePositions[posePoint.yAsInt()], new Rotation2d())),
+		// 	new AprilTagAlign(posePoint.yAsInt())
+		// 	);
 	}
+
+
 }

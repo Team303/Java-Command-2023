@@ -10,8 +10,16 @@ public class Point2D {
     public int xAsInt() {
         return (int)this.x;
     }
+
     public int yAsInt() {
         return (int)this.y;
     }
-    
+
+    public double xAsDouble() {
+        return this.x;
+    }
+
+    public double yAsDouble() {
+        return this.y;
+    }
 }
