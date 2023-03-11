@@ -4,6 +4,7 @@ package com.team303.robot.subsystems;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.awt.Point;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
@@ -64,9 +65,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import static com.team303.robot.Robot.NAVX_ACCELERATION;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
 import static com.team303.robot.Robot.NAVX_ANGLE;
-import com.team303.robot.modules.Operator.NodeState;
+import com.team303.robot.modules.Operator.NodeSuperState;
 import com.team303.lib.math.Point2D;
 import static com.team303.robot.modules.Operator.nodeStateValues;
+import static com.team303.robot.modules.Operator.nodeSuperStateValues;
 import java.util.HashMap;
 import com.team303.robot.commands.arm.ReachPoint;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -228,6 +230,7 @@ public class SwerveSubsystem extends SubsystemBase {
         try {
             initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
             var alliance = DriverStation.getAlliance();
+			System.out.println(alliance.name());
             initialLayout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
                     : OriginPosition.kRedAllianceWallRightSide);
         } catch (IOException e) {
@@ -580,13 +583,13 @@ public class SwerveSubsystem extends SubsystemBase {
 		Point2D posePoint = new Point2D(0, 0);
 		
 
-		for (int i = 0; i < nodeStateValues.length; i++) {
-            for (int j = 0; j < nodeStateValues[i].length; j++) {
-                if (nodeStateValues[i][j] == NodeState.QUEUED.value) {
+		for (int i = 0; i < nodeSuperStateValues.length; i++) {
+            for (int j = 0; j < nodeSuperStateValues[i].length; j++) {
+                if (nodeSuperStateValues[i][j] == NodeSuperState.QUEUED.value) {
 					System.out.println("Found selected!!!");
                     posePoint = new Point2D(i, j);
                 }
-				System.out.print(nodeStateValues[i][j] + " ");
+				System.out.print(nodeSuperStateValues[i][j] + " ");
 			}
 			System.out.println();
         }

@@ -132,6 +132,8 @@ public final class RobotMap {
 		public static final int INNER_LEFT_INPUT = 2;
 		public static final int INNER_RIGHT_INPUT = 3;
 
+		public static final int ULTRASONIC_ID = 0;
+
 		public static final double ROTATE_OFFSET = Math.toRadians(0.0);
 	}
 
