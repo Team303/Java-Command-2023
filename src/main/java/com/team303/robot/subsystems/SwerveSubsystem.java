@@ -4,6 +4,7 @@ package com.team303.robot.subsystems;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.awt.Point;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
@@ -65,7 +66,6 @@ import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
 import static com.team303.robot.Robot.NAVX_ANGLE;
 import static com.team303.robot.modules.Operator.nodeStateValues;
 import com.team303.robot.modules.Operator.NodeState;
-import com.team303.lib.math.Point2D;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -543,13 +543,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public CommandBase driveToNode() {
 
-		Point2D posePoint = new Point2D(0, 0);
+		Point posePoint = new Point(0, 0);
 		final double[] nodePositions = {0,0.5,1,1.5,2,2.5,3,3.5,4.0};
 
 		for (int i = 0; i < nodeStateValues.length; i++) {
             for (int j = 0; j < nodeStateValues.length; j++)
                 if (nodeStateValues[i][j] == NodeState.QUEUED.value) {
-                    posePoint = new Point2D(i, j);
+                    posePoint = new Point(i, j);
                 }
         }
 		System.out.println("Swerve pose" + Robot.swerve.getPose());

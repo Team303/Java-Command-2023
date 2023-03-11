@@ -18,6 +18,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.team303.robot.RobotMap.Swerve;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.awt.Point;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -37,7 +38,6 @@ import static com.team303.robot.Robot.CONTROLLER_TAB;
 import edu.wpi.first.networktables.GenericEntry;
 import static com.team303.robot.modules.Operator.nodeStateValues;
 import com.team303.robot.modules.Operator.NodeState;
-import com.team303.lib.math.Point2D;
 
 /**
  * Quick guide to Comand Groups:

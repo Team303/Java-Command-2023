@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -255,26 +256,24 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
-		operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
-		operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
-		operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
-		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
-		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
-		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setNone));
+		operatorCommandXboxController.pov(0).onTrue(Commands.runOnce(operator::moveUp));
+		operatorCommandXboxController.pov(90).onTrue(Commands.runOnce(operator::moveRight));
+		operatorCommandXboxController.pov(180).onTrue(Commands.runOnce(operator::moveDown));
+		operatorCommandXboxController.pov(270).onTrue(Commands.runOnce(operator::moveLeft));
+		operatorCommandXboxController.y().onTrue(Commands.runOnce(operator::setPiece));
+		operatorCommandXboxController.b().onTrue(Commands.runOnce(operator::queuePlacement));
+		operatorCommandXboxController.x().onTrue(Commands.runOnce(operator::setNone));
 		operatorCommandXboxController.a().toggleOnTrue(swerve.driveToNode());
-		operatorCommandXboxController.rightTrigger().toggleOnTrue(Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
-		
 		if (controllerChooser.getSelected().equals("Controller")) {
-			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
-			driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-			driverCommandXboxController.a().onTrue(new AutolevelFeedforward());
-			driverCommandXboxController.a().onFalse(new DefaultDrive(true));
+			driverCommandXboxController.y().onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
+			driverCommandXboxController.a().whileTrue(new AutolevelFeedforward())
+											.whileFalse(new DefaultDrive(true));
 			driverCommandXboxController.pov(0).onTrue(new TurnToAngle(0));
 			driverCommandXboxController.pov(90).onTrue(new TurnToAngle(90));
 			driverCommandXboxController.pov(180).onTrue(new TurnToAngle(180));
 			driverCommandXboxController.pov(270).onTrue(new TurnToAngle(270));
-			driverCommandXboxController.x().onTrue(new InstantCommand(swerve::stop));
+			driverCommandXboxController.x().whileTrue(Commands.runOnce(swerve::stop))
+											.whileFalse(new DefaultDrive(true));
 			driverCommandXboxController.x().onFalse(new DefaultDrive(true));
 			// driverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
 		} else {
@@ -327,7 +326,7 @@ public class Robot extends LoggedRobot {
 		SmartDashboard.putNumber("Y crosshair", Limelight.getLimelight().getEntry("ty").getDouble(0.0));
 		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tv").getDouble(0.0));
 		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("ta").getDouble(0.0));*/
-
+		operatorCommandXboxController.rightTrigger().toggleOnTrue(Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 		CommandScheduler.getInstance().run();
 	}
 }

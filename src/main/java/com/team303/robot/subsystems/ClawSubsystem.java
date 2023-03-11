@@ -71,6 +71,9 @@ public class ClawSubsystem extends SubsystemBase {
     public double getRotatePosition() {
         return rotateEncoder.getPosition();
     }
+	public double getUltrasonicDistance() {
+		return ultrasonicSensor.get();
+	}
 
 	public void rotate(double angle, double speed) {
 
