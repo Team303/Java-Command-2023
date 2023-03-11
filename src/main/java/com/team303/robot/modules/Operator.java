@@ -58,7 +58,7 @@ public class Operator extends SubsystemBase {
                         .withWidget("State of Node").getEntry();
             }
         }
-        heldObjectChooser.setDefaultOption("None", HeldObject.NONE);
+        heldObjectChooser.addOption("None", HeldObject.NONE);
         heldObjectChooser.addOption("Cube", HeldObject.CUBE);
         heldObjectChooser.addOption("Cone", HeldObject.CONE);
         OPERATOR_TAB.add("Held Object Chooser",heldObjectChooser).withPosition(2,0);
@@ -186,7 +186,6 @@ public class Operator extends SubsystemBase {
         if (manualOverride==true) {
             return;
         }
-        System.out.println("\n\n\nlol\n\n\n");
         if (queuedValue!=null) {
             nodeSuperStateValues[queuedValue.x][queuedValue.y] = NodeSuperState.NONE.value;
         }
@@ -209,11 +208,11 @@ public class Operator extends SubsystemBase {
             //Next priority is to complete a link
             for (int i=0; i<2; i++) {
                 for (int j=0;j<8;j+=3) {
-                    if ((nodeStateValues[i][j] != NodeState.NONE.value && nodeStateValues[i][j+1] != NodeState.NONE.value) && nodeStateValues[i][j+1]==NodeState.NONE.value) {
+                    if ((nodeStateValues[i][j] != NodeState.NONE.value && nodeStateValues[i][j+1] != NodeState.NONE.value) && nodeStateValues[i][j+2]==NodeState.NONE.value) {
                         queuedValue=new Point(i,j+2);
                         nodeSuperStateValues[i][j+2]=NodeSuperState.QUEUED.value;
                         return;
-                    } else if ((nodeStateValues[i][j+1] != NodeState.NONE.value && nodeStateValues[i][j+2] != NodeState.NONE.value) && nodeStateValues[i][j+1]==NodeState.NONE.value) {
+                    } else if ((nodeStateValues[i][j+1] != NodeState.NONE.value && nodeStateValues[i][j+2] != NodeState.NONE.value) && nodeStateValues[i][j]==NodeState.NONE.value) {
                         queuedValue=new Point(i,j);
                         nodeSuperStateValues[i][j]=NodeSuperState.QUEUED.value;
                         return;
@@ -302,7 +301,7 @@ public class Operator extends SubsystemBase {
     public void periodic() {
         if (heldObject!=heldObjectChooser.getSelected()) {
         for (int i = 0; i < 2; i++) {
-            for (int j = 1; j < 8; j += 3) {
+            for (int j = 0; j < 9; j++) {
                 if (nodeSuperStateValues[i][j] == NodeSuperState.INVALID.value) {
                     nodeSuperStateValues[i][j] = NodeSuperState.NONE.value;
                 }
@@ -310,7 +309,7 @@ public class Operator extends SubsystemBase {
         }
         heldObject = heldObjectChooser.getSelected();
         }
-        System.out.println(heldObject);
+        //System.out.println(heldObject);
         if (coopertitionBonusAchieved==false) {
             for (int i=0; i<2; i++) {
                 if ((nodeStateValues[i][3] != NodeState.NONE.value && nodeStateValues[i][4] != NodeState.NONE.value && nodeStateValues[i][5] != NodeState.NONE.value)) {
@@ -321,7 +320,7 @@ public class Operator extends SubsystemBase {
         }
         if (heldObject == HeldObject.CONE) {
             for (int i = 0; i < 2; i++) {
-                for (int j = 1; j < 8; j += 3) {
+                for (int j = 1; j < 8; j+=3) {
                     nodeSuperStateValues[i][j] = NodeSuperState.INVALID.value;
                 }
             }   
@@ -335,7 +334,7 @@ public class Operator extends SubsystemBase {
             }
         } else {
             for (int i = 0; i < 2; i++) {
-                for (int j = 1; j < 8; j += 3) {
+                for (int j = 0; j < 9; j++) {
                     if (nodeSuperStateValues[i][j] == NodeSuperState.INVALID.value) {
                         nodeSuperStateValues[i][j] = NodeSuperState.NONE.value;
                     }
