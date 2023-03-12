@@ -2,7 +2,8 @@ package com.team303.robot.modules;
 
 import static com.team303.robot.Robot.heldObject;
 
-//import com.team303.lib.math.Point2D;
+import com.team303.robot.util.Alert;
+import com.team303.robot.util.Alert.AlertType;
 import java.awt.Point;
 import com.team303.robot.Robot.HeldObject;
 
@@ -25,6 +26,10 @@ public class Operator extends SubsystemBase {
     public boolean manualOverride = false;
     public Point hoverValue = new Point(0,0);
     public Point queuedValue;
+    private final Alert logQueueOnFilledNode = new Alert("Operator Terminal","Attempted to queue on already-filled node, queue not performed",AlertType.WARNING);
+    private final Alert logNoMorePieceSpaceCones = new Alert("Operator Terminal","No more space to place cones, queue canceled",AlertType.WARNING);
+    private final Alert logNoMorePieceSpaceCubes = new Alert("Operator Terminal","No more space to place cubes, queue canceled",AlertType.WARNING);
+
 
     public static enum NodeState {
         NONE(0),
@@ -168,6 +173,11 @@ public class Operator extends SubsystemBase {
             manualOverride=false;
             queuedValue=null;
         } else {
+            if (nodeStateValues[hoverValue.x][hoverValue.y]!= NodeState.NONE.value) {
+                logQueueOnFilledNode.set(true);
+                return;
+            }
+            logQueueOnFilledNode.set(false);
             if (queuedValue == null) {
             nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
             manualOverride=true;
