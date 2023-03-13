@@ -128,10 +128,10 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public ArmSubsystem() {
 		// Initialize Inverse Kinematics with constant values
-		armKinematics.setArmLength(84f);
-		armKinematics.setSegmentLengthRatio(0, 36 / 84f);
-		armKinematics.setSegmentLengthRatio(1, 36 / 84f);
-		armKinematics.setSegmentLengthRatio(2, 12 / 84f);
+		armKinematics.setArmLength(74f);
+		armKinematics.setSegmentLengthRatio(0, 31 / 74f);
+		armKinematics.setSegmentLengthRatio(1, 31 / 74f);
+		armKinematics.setSegmentLengthRatio(2, 12 / 74f);
 		armKinematics.setSegmentLengths();
 		// armKinematics.setAngleConstraint(0, 360, 360);
 		// armKinematics.setAngleConstraint(1, 360, 360);

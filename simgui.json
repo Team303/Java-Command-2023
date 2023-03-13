@@ -104,6 +104,7 @@
       "/Shuffleboard/Drivebase/Controller": "String Chooser",
       "/Shuffleboard/Drivebase/FIELD SIM": "Field2d",
       "/Shuffleboard/Drivebase/Field": "Field2d",
+      "/Shuffleboard/Operator/Held Object Chooser": "String Chooser",
       "/Shuffleboard/Pose Estimation/Field": "Field2d",
       "/SmartDashboard/FIELD SIM": "Field2d",
       "/SmartDashboard/Field": "Field2d"
