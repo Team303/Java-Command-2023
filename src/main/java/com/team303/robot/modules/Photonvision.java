@@ -104,6 +104,14 @@ public class Photonvision extends SubsystemBase {
         return PhotonPipeline.values()[getCamera(name).getPipelineIndex()];
     }
 
+    public ConePosition getConePosition(CameraName name) {
+        double skew = getObjectSkew(name);
+        if (skew % 360 <= 5) {
+            return ConePosition.Up;
+        } else {
+            return ConePosition.Down;
+        }
+    }
     
     public double getObjectSkew(CameraName name) {
         
@@ -113,7 +121,6 @@ public class Photonvision extends SubsystemBase {
 
         // double height = (corners.get(0).y + corners.get(1).y) / 2 - (corners.get(3).y + corners.get(4).y) / 2;
         // double width = (corners.get(1).y + corners.get(3).y) / 2 - (corners.get(0).y + corners.get(2).y) / 2;
-
 
         return skew;
     }
