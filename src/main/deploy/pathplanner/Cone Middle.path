@@ -74,15 +74,9 @@
   ],
   "markers": [
     {
-      "position": 1.0036363636363361,
-      "names": [
-        "Reach Cone"
-      ]
-    },
-    {
       "position": 1.0,
       "names": [
-        "Top Cone"
+        "Middle Cone"
       ]
     }
   ]

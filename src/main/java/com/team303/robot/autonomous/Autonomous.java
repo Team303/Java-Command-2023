@@ -86,7 +86,12 @@ public class Autonomous {
     public static void init() {
         
         HashMap<String,Command> eventMap = new HashMap<>();
+        //In Inches
         eventMap.put("Top Cone", new ReachPoint(42, 48));
+        eventMap.put("Middle Cone", new ReachPoint(24, 35)); //TEST THESE
+        eventMap.put("Top Cube", new ReachPoint(42, 36)); //TEST THESE
+        eventMap.put("Middle Cone", new ReachPoint(24, 25)); //TEST THESE
+        eventMap.put("Bottom Hybrid", new ReachPoint(16, 5)); //TEST THESE
         eventMap.put("Reach Cone", new ReachPoint(36, 0));
 
         autoBuilder = new SwerveAutoBuilder(

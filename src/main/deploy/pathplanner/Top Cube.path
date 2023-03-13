@@ -50,11 +50,11 @@
     {
       "anchorPoint": {
         "x": 1.9287848773997844,
-        "y": 4.956226286390249
+        "y": 4.42
       },
       "prevControl": {
         "x": 2.92797826388854,
-        "y": 5.211701868162943
+        "y": 4.675475581772694
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -74,15 +74,9 @@
   ],
   "markers": [
     {
-      "position": 1.0036363636363361,
-      "names": [
-        "Reach Cone"
-      ]
-    },
-    {
       "position": 1.0,
       "names": [
-        "Top Cone"
+        "event"
       ]
     }
   ]
