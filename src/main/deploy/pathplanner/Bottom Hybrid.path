@@ -64,7 +64,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Top Cone"
+          "Top Cone",
+          "Reach Cone"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",

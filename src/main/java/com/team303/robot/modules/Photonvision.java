@@ -125,6 +125,13 @@ public class Photonvision extends SubsystemBase {
         return skew;
     }
 
+    public double getObjectYaw(CameraName name) {
+        PhotonTrackedTarget target = getBestTarget(name);
+        double yaw = target.getYaw();
+
+        return yaw;
+    }
+
     public double getDistanceToTarget() {
         if (!hasTargets(CameraName.CAM1)) {
             return Double.NaN;

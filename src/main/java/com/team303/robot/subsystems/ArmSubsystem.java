@@ -55,9 +55,9 @@ public class ArmSubsystem extends SubsystemBase {
 	public static final GenericEntry clawAngle = ARM_TAB.add("clawAngle", 0).getEntry();
 	public static final GenericEntry effectorX = ARM_TAB.add("effectorX", 0).getEntry();
 	public static final GenericEntry effectorY = ARM_TAB.add("effectorY", 0).getEntry();
-	public static final GenericEntry shoulderEncoder = ARM_TAB.add("shoulderEnc", 0).getEntry();
-	public static final GenericEntry elbowEncoder = ARM_TAB.add("elbowEnc", 0).getEntry();
-	public static final GenericEntry clawEncoder = ARM_TAB.add("clawEnc", 0).getEntry();
+	public static final GenericEntry shoulderEncoderTab = ARM_TAB.add("shoulderEnc", 0).getEntry();
+	public static final GenericEntry elbowEncoderTab = ARM_TAB.add("elbowEnc", 0).getEntry();
+	public static final GenericEntry clawEncoderTab = ARM_TAB.add("clawEnc", 0).getEntry();
     public static final GenericEntry shoulderAngleAbsolute = ARM_TAB.add("shoulderAngleAbsolute", 0).getEntry();
 	public static final GenericEntry jointAngleAbsolute = ARM_TAB.add("jointAngleAbsolute", 0).getEntry();
 	public static final GenericEntry clawAngleAbsolute = ARM_TAB.add("clawAngleAbsolute", 0).getEntry();
@@ -143,6 +143,10 @@ public class ArmSubsystem extends SubsystemBase {
 	private double storedElbowAngle;
 	private double storedClawAngle ;
 
+	private final double shoulderStartAngle;
+	private final double elbowStartAngle;
+	private final double clawStartAngle;
+
 	public ArmSubsystem() {
 
 		SmartDashboard.putNumber("Neo counts per revolution", shoulderJoint.shoulderEncoder.getCountsPerRevolution());
@@ -184,6 +188,13 @@ public class ArmSubsystem extends SubsystemBase {
 		storedShoulderAngle = -90+armKinematics.getIKAnglesDegrees().get(0);
 		storedElbowAngle = storedShoulderAngle-armKinematics.getIKAnglesDegrees().get(1);
 		storedClawAngle = storedElbowAngle+armKinematics.getIKAnglesDegrees().get(2);
+		shoulderStartAngle = (Math.toRadians(Math.round(-1.867246)) / (Math.PI * 2)) * shoulderJoint.shoulderEncoder.getCountsPerRevolution() * GEAR_RATIO_SHOULDER;
+		elbowStartAngle = (Math.toRadians(Math.round(110)) / (Math.PI * 2)) * elbowJoint.elbowEncoder.getCountsPerRevolution() * GEAR_RATIO_ELBOW;
+		clawStartAngle = (Math.toRadians(Math.round(125)) / (Math.PI * 2)) * clawJoint.clawEncoder.getCountsPerRevolution() * GEAR_RATIO_CLAW;
+
+		// setEncoders(shoulderStartAngle,elbowStartAngle,clawStartAngle);
+		System.out.println(shoulderStartAngle + " " + elbowStartAngle + " " + clawStartAngle);
+		
 	}
 	public static NetworkTable getArmNetwork() {
 		if (armNetwork == null) {
@@ -214,12 +225,12 @@ public class ArmSubsystem extends SubsystemBase {
 		clawAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(2)));
 		// System.out.println();
 
-		double shoulderEncoders = (desiredRadianAngles.get(0)/ (Math.PI * 2)) * shoulderJoint.shoulderEncoder.getCountsPerRevolution() * GEAR_RATIO_SHOULDER;
-		double elbowEncoders = (desiredRadianAngles.get(0) / (Math.PI * 2)) * shoulderJoint.shoulderEncoder.getCountsPerRevolution() * GEAR_RATIO_ELBOW;
-		double clawEncoders = (desiredRadianAngles.get(0) / (Math.PI * 2)) * shoulderJoint.shoulderEncoder.getCountsPerRevolution() * GEAR_RATIO_CLAW;
-		shoulderEncoder.setDouble(shoulderEncoders);
-		elbowEncoder.setDouble(elbowEncoders);
-		clawEncoder.setDouble(clawEncoders);
+		double shoulderEncoders = Math.round((desiredRadianAngles.get(0))/ (Math.PI * 2) * shoulderJoint.shoulderEncoder.getCountsPerRevolution()) * GEAR_RATIO_SHOULDER;
+		double elbowEncoders = Math.round((desiredRadianAngles.get(1)) / (Math.PI * 2) * shoulderJoint.shoulderEncoder.getCountsPerRevolution()) * GEAR_RATIO_ELBOW;
+		double clawEncoders = Math.round((desiredRadianAngles.get(2)) / (Math.PI * 2) * shoulderJoint.shoulderEncoder.getCountsPerRevolution()) * GEAR_RATIO_CLAW;
+		shoulderEncoderTab.setDouble(shoulderEncoders);
+		elbowEncoderTab.setDouble(elbowEncoders);
+		clawEncoderTab.setDouble(clawEncoders);
 		// Gear ratio is 40 / 12 * 160  * ShoulderJoint.shoulderEncoder.getEncodersPer
 
 		shoulderJoint.shoulderControl.setGoal(shoulderEncoders);
@@ -252,6 +263,12 @@ public class ArmSubsystem extends SubsystemBase {
 		shoulderJoint.shoulderEncoder.setPosition(0.0);
 		elbowJoint.elbowEncoder.setPosition(0.0);
 		clawJoint.clawEncoder.setPosition(0.0);
+	}
+
+	public void setEncoders(double shoulder, double elbow, double claw) {
+		shoulderJoint.shoulderEncoder.setPosition(shoulder);
+		elbowJoint.elbowEncoder.setPosition(elbow);
+		clawJoint.clawEncoder.setPosition(claw);
 	}
 
 	public double[] getEncoderPosition() {

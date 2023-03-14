@@ -40,17 +40,21 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.BuildConstants;
+import com.team303.robot.commands.claw.ToggleOpen;
+import com.team303.robot.commands.claw.ToggleClose;
 
 import com.team303.robot.subsystems.ArmTest;
 import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.commands.MoveArm;
 import com.team303.robot.modules.Photonvision;
+import com.team303.robot.modules.Ultrasonic;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.arm.AprilTagAlign;
 import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.modules.Operator;
 //import com.team303.robot.modules.Photonvision;
 import com.team303.robot.modules.Photonvision.CameraName;
+import com.team303.robot.commands.claw.DefaultClaw;
 import com.team303.robot.commands.claw.RotateClaw;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
@@ -64,13 +68,13 @@ public class Robot extends LoggedRobot {
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
+	public static final Photonvision photonvision = null; //new Photonvision();
 	public static final SwerveSubsystem swerve = new SwerveSubsystem(); // new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem(); //new ArmTest();
 	public static final ArmTest armtest = null;// new ArmTest();
-	public static final Photonvision photonvision = null; // new Photonvision();
 	public static final Operator operator = new Operator();
-	public static final ClawSubsystem claw = null; // new ClawSubsystem();
-
+	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final Ultrasonic ultrasonic = new Ultrasonic(0, 4);
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
@@ -202,7 +206,8 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
+		Robot.claw.setDefaultCommand(new DefaultClaw());
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(true));
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// Place event markers here
@@ -239,6 +244,7 @@ public class Robot extends LoggedRobot {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
+			
 
 		// Match LEDs color to team
 		//CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
@@ -263,6 +269,7 @@ public class Robot extends LoggedRobot {
 		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
 		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
 		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setNone));
+		operatorCommandXboxController.start().toggleOnFalse(new ToggleOpen()).toggleOnTrue(new ToggleClose());
 		
 		if (controllerChooser.getSelected().equals("Controller")) {
 			driverCommandXboxController.y().onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
@@ -330,11 +337,12 @@ public class Robot extends LoggedRobot {
 		// operatorCommandXboxController.rightTrigger().toggleOnTrue(
 		// 	Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d()))
 		// );
-		try {
+		// try {
 			CommandScheduler.getInstance().run();
-		} catch (Exception e) {
-			System.out.println("its shrey's fault");
-		}
+		// } catch (Exception e) {
+		// 	System.out.println("its shrey's fault");
+		// 	e.printStackTrace();
+		// }
 
 	}
 }

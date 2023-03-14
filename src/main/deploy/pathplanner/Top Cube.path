@@ -64,9 +64,10 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Top Cone"
+          "Top Cone",
+          "Reach Cone"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -76,7 +77,8 @@
     {
       "position": 1.0,
       "names": [
-        "event"
+        "event",
+        "Top Cube"
       ]
     }
   ]

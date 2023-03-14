@@ -1,4 +1,4 @@
-package com.team303.robot.commands.arm;
+package com.team303.robot.commands.arm.oldcommands;
 
 import static com.team303.robot.Robot.arm;
 //import static com.team303.robot.Robot.photonvision;
@@ -14,12 +14,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.modules.Photonvision.CameraName;
 
-public class ReachGroundConeCommand extends CommandBase {
+public class ReachGroundCubeCommand extends CommandBase {
     /* 
     public static PIDController xControl;
     public static PIDController yControl;
 
-    public ReachGroundConeCommand() {
+    public ReachGroundCubeCommand() {
         addRequirements(swerve, arm);
         xControl = new PIDController(0.01, 0, 0);
         yControl = new PIDController(0.01, 0, 0);
@@ -27,10 +27,10 @@ public class ReachGroundConeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.CONE) {
-            photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CONE);
+        if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.CUBE) {
+            photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CUBE);
         }
-        // TODO: Find optimal distance for drivetrain from cone
+        // TODO: Find optimal distance for drivetrain from cube
         swerve.drive(
                 new Translation2d(
                         xControl.calculate(photonvision.getBestTarget(CameraName.CAM1).getBestCameraToTarget().getX(),
@@ -38,9 +38,8 @@ public class ReachGroundConeCommand extends CommandBase {
                         yControl.calculate(photonvision.getBestTarget(CameraName.CAM1).getBestCameraToTarget().getY(), 0)),
                 0,
                 true);
-        Translation3d armToCone = poseTracker.getArmtoTargetTranslation();
-        // TODO: Find optimal part of cone to grab
-        arm.reach(armToCone.plus(new Translation3d()));
-    }
-    */
+        Translation3d armToCube = poseTracker.getArmtoTargetTranslation();
+        arm.reach(armToCube.plus(new Translation3d(Units.inchesToMeters(-4.25), 0.0, 0.0)));
+    }*/
+
 }

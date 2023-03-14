@@ -5,6 +5,7 @@ import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
 import com.team303.robot.RobotMap.Arm;
 import com.team303.robot.Robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.subsystems.ArmSubsystem;
@@ -19,10 +20,12 @@ public class DefaultIKControlCommand extends CommandBase {
     double angle = Math.atan2(x, z);
     double length = Math.hypot(x, z);
     MechanismRoot2d effectorRoot;
+    boolean fieldOriented;
 
-    public DefaultIKControlCommand() {
+    public DefaultIKControlCommand(boolean fieldOriented) {
         addRequirements(arm);
         this.effectorRoot = Robot.arm.effectorRoot;
+        this.fieldOriented = fieldOriented;
     }
 
     @Override
@@ -30,15 +33,31 @@ public class DefaultIKControlCommand extends CommandBase {
         angle = Math.atan2(cartesianStorage.getZ(), cartesianStorage.getX());
         angle += Math.toRadians(Robot.getOperatorXbox().getLeftTriggerAxis() - Robot.getOperatorXbox().getRightTriggerAxis());
         length = Math.hypot(cartesianStorage.getZ(), cartesianStorage.getX());
+
+        double robotAngle;
+        if (Robot.isReal()) {
+            robotAngle = Math.toRadians(-Robot.getNavX().getAngle());
+        } else {
+            robotAngle = Robot.swerve.angle;
+        }
+
         x = Math.cos(angle) * length;
         z = Math.sin(angle) * length;
 
+        if (fieldOriented) {
+            x += (MathUtil.applyDeadband(-Robot.getOperatorXbox().getLeftY(), 0.02) * Math.cos(robotAngle) - MathUtil.applyDeadband(Robot.getOperatorXbox().getLeftX(), 0.02) * Math.sin(robotAngle))* 2;
+        } else {
+            x += DEADBAND_FILTER.applyDeadband(Robot.getOperatorXbox().getLeftX(), DEADBAND_FILTER.getLowerBound());
+        }
+        z -= DEADBAND_FILTER.applyDeadband(Robot.getOperatorXbox().getRightY(), DEADBAND_FILTER.getLowerBound());
+
+        x = x > 48 ? 48 : x;
+        x = x < -48 ? -48 : x;
+        z = z > 72 ? 72 : z;
+        z = z < 0 ? 0 : z;
         
-        cartesianStorage = new Translation3d(
-            x+DEADBAND_FILTER.applyDeadband(Robot.getOperatorXbox().getLeftX(), DEADBAND_FILTER.getLowerBound()),
-            0.0,
-            z-DEADBAND_FILTER.applyDeadband(Robot.getOperatorXbox().getLeftY(), DEADBAND_FILTER.getLowerBound()));
-        // System.out.println(cartesianStorage.toString());
+        cartesianStorage = new Translation3d(x, 0.0, z);
+
         arm.reachEmbedded(cartesianStorage);
         ArmSubsystem.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
         effectorRoot.setPosition((Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX()/Arm.SIMULATION_SCALE,

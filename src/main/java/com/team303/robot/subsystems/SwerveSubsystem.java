@@ -314,7 +314,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void resetOdometry(Pose2d pose) {
-		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
+		if (Robot.isReal()) {
+			odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
+		} else {
+			odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
+		}
 	}
 
 	public SwerveModulePosition[] getModulePositions() {
@@ -567,7 +571,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public CommandBase driveToPose(Pose2d point1, Pose2d point2) {
 
-
 		PathPlannerTrajectory trajectory = PathPlanner.generatePath(
 			new PathConstraints(4, 3), 
 			new PathPoint(point1.getTranslation(), point1.getRotation()),
@@ -582,7 +585,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	public CommandBase driveToNode() {
 
 		Point posePoint = new Point(0, 0);
-		
 
 		for (int i = 0; i < nodeSuperStateValues.length; i++) {
             for (int j = 0; j < nodeSuperStateValues[i].length; j++) {
@@ -591,7 +593,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 }
 			}
         }
-
 
 		String reachNode = "Bottom";
 
