@@ -66,7 +66,7 @@ import static com.team303.robot.Robot.NAVX_ACCELERATION;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
 import static com.team303.robot.Robot.NAVX_ANGLE;
 import com.team303.robot.modules.Operator.NodeSuperState;
-import com.team303.lib.math.Point2D;
+import java.awt.geom.Point2D;
 import static com.team303.robot.modules.Operator.nodeStateValues;
 import static com.team303.robot.modules.Operator.nodeSuperStateValues;
 import java.util.HashMap;
@@ -126,7 +126,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final double START_NODE = 0.6540499999989841;
 	// final double DIFFERENCE = 0.4699000000010161;
 	public static final double DIFFERENCE = 0.53;
-	public static final HashMap<String, Point2D> nodePoints = new HashMap<String, Point2D>();
+	public static final HashMap<String, Point2D.Double> nodePoints = new HashMap<String, Point2D.Double>();
 
 
 
@@ -135,11 +135,11 @@ public class SwerveSubsystem extends SubsystemBase {
 			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;*/
 			
 	public SwerveSubsystem() {
-		nodePoints.put("Top Cube", new Point2D(Units.metersToInches(-1.31), Units.metersToInches(1.17)));
-		nodePoints.put("Mid Cube", new Point2D(Units.metersToInches(-0.58), Units.metersToInches(0.87)));
-		nodePoints.put("Top Cone", new Point2D(Units.metersToInches(-1.01), Units.metersToInches(0.90)));
-		nodePoints.put("Mid Cone", new Point2D(Units.metersToInches(-0.88), Units.metersToInches(0.60)));
-		nodePoints.put("Bottom", new Point2D(Units.metersToInches(-0.29), Units.metersToInches(0.05)));
+		nodePoints.put("Top Cube", new Point2D.Double(Units.metersToInches(-1.01), Units.metersToInches(1.17)));
+		nodePoints.put("Mid Cube", new Point2D.Double(Units.metersToInches(-0.58), Units.metersToInches(0.87)));
+		nodePoints.put("Top Cone", new Point2D.Double(Units.metersToInches(-1.01), Units.metersToInches(0.90)));
+		nodePoints.put("Mid Cone", new Point2D.Double(Units.metersToInches(-0.58), Units.metersToInches(0.60)));
+		nodePoints.put("Bottom", new Point2D.Double(Units.metersToInches(-0.29), Units.metersToInches(0.05)));
 
 		for (int i = 0; i < nodePositions.length; i++) {
 			nodePositions[i] = START_NODE + i * DIFFERENCE;
@@ -581,47 +581,38 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public CommandBase driveToNode() {
 
-		Point2D posePoint = new Point2D(0, 0);
+		Point posePoint = new Point(0, 0);
 		
 
 		for (int i = 0; i < nodeSuperStateValues.length; i++) {
             for (int j = 0; j < nodeSuperStateValues[i].length; j++) {
                 if (nodeSuperStateValues[i][j] == NodeSuperState.QUEUED.value) {
-					// System.out.println("Found selected!!!");
-                    posePoint = new Point2D(i, j);
+                    posePoint = new Point(i, j);
                 }
-				// System.out.print(nodeSuperStateValues[i][j] + " ");
 			}
-			// System.out.println();
         }
-		// System.out.println("\n\n\n");
 
-		// System.out.println("Node Positions: " + nodePositions[posePoint.yAsInt()]);
 
 		String reachNode = "Bottom";
 
-		if (posePoint.xAsInt() == 0 && posePoint.yAsInt() % 3 == 2) {
+		if (posePoint.x == 0 && posePoint.y % 3 == 2) {
 			reachNode = "Top Cube";
-		} else if (posePoint.xAsInt() == 1 && posePoint.yAsInt() % 3 == 2) {
+		} else if (posePoint.x == 1 && posePoint.y % 3 == 2) {
 			reachNode = "Mid Cube";
-		} else if (posePoint.xAsInt() == 0) {
+		} else if (posePoint.x == 0) {
 			reachNode = "Top Cone";
-		} else if (posePoint.xAsInt() == 1) {
+		} else if (posePoint.x == 1) {
 			reachNode = "Mid Cone";
 		}
 
-		return 
-		new SequentialCommandGroup(
-			new TurnToAngle(360),
-			new ParallelCommandGroup(
-				driveToPose(Robot.swerve.getPose(), new Pose2d(1.75, nodePositions[posePoint.yAsInt()], new Rotation2d())),
-				new ReachPoint(nodePoints.get(reachNode).xAsDouble(), nodePoints.get(reachNode).yAsDouble())
-				)
-		);
+		return new ParallelCommandGroup(
+			driveToPose(Robot.swerve.getPose(), new Pose2d(1.75, nodePositions[posePoint.y], new Rotation2d())),
+			new ReachPoint(nodePoints.get(reachNode).x, nodePoints.get(reachNode).y)
+			);
 
 		// return new SequentialCommandGroup(
-		// 	driveToPoseTeleop(Robot.swerve.getPose(), new Pose2d(2.3, nodePositions[posePoint.yAsInt()], new Rotation2d())),
-		// 	new AprilTagAlign(posePoint.yAsInt())
+		// 	driveToPoseTeleop(Robot.swerve.getPose(), new Pose2d(2.3, nodePositions[posePoint.y], new Rotation2d())),
+		// 	new AprilTagAlign(posePoint.y)
 		// 	);
 	}
 
