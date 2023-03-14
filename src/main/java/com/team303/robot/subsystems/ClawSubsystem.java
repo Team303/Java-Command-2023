@@ -1,5 +1,6 @@
 package com.team303.robot.subsystems;
 
+import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -12,77 +13,62 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.team303.robot.RobotMap.Claw;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
 	public static final double GEAR_RATIO_WRIST = 27;
 
-	private final CANSparkMax clawCanSparkMax = new CANSparkMax(20, MotorType.kBrushless);
-	private final CANSparkMax rotateCANSparkMax = new CANSparkMax(21, MotorType.kBrushless);
+	private final CANSparkMax clawMotor = new CANSparkMax(20, MotorType.kBrushless);
+	private final CANSparkMax clawRollMotor = new CANSparkMax(21, MotorType.kBrushless);
 	private final RelativeEncoder clawEncoder;
-	private final RelativeEncoder rotateEncoder;
-	public final GroundedDigitalInput outerLeft;
-	public final GroundedDigitalInput outerRight;
-	public final GroundedDigitalInput innerLeft;
-	public final GroundedDigitalInput innerRight;
-	private final AnalogPotentiometer ultrasonicSensor = new AnalogPotentiometer(Claw.ULTRASONIC_ID,300,50);
+	private final RelativeEncoder clawRollEncoder;
+	public final SparkMaxLimitSwitch  clawOuterLimit;
+	private final DigitalInput ultrasonicSensor = new DigitalInput(Claw.ULTRASONIC_ID);
 
 	public ClawSubsystem() {
-		clawCanSparkMax.setInverted(true);
-		clawCanSparkMax.setIdleMode(IdleMode.kBrake);
-		rotateCANSparkMax.setInverted(false);
-		rotateCANSparkMax.setIdleMode(IdleMode.kBrake);
-		clawEncoder = clawCanSparkMax.getEncoder();
-		rotateEncoder = rotateCANSparkMax.getEncoder();
-		// limit switches
-		innerLeft = new GroundedDigitalInput(Claw.INNER_LEFT_INPUT);
-		innerRight = new GroundedDigitalInput(Claw.INNER_RIGHT_INPUT);
-		outerLeft = new GroundedDigitalInput(Claw.OUTER_LEFT_INPUT);
-		outerRight = new GroundedDigitalInput(Claw.OUTER_RIGHT_INPUT);
+		clawMotor.setInverted(true);
+		clawMotor.setIdleMode(IdleMode.kBrake);
+
+		clawRollMotor.setInverted(false);
+		clawRollMotor.setIdleMode(IdleMode.kBrake);
+
+		clawEncoder = clawMotor.getEncoder();
+		clawRollEncoder = clawRollMotor.getEncoder();
+
+		clawOuterLimit = clawMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     }
 
 	//claw motor getter among us imposter mode
-	public CANSparkMax getClawCanSparkMax() {
-		return clawCanSparkMax;
+	public CANSparkMax getClawMotor() {
+		return clawMotor;
 	}
 
 	//limits
 	public boolean outerLimitReached() {
-		return outerLeft.get() || outerRight.get();
+		return clawOuterLimit.isPressed();
 	}
-	
-	public boolean innerLimitReached() {
-		return innerRight.get() || innerLeft.get();
-	}
-
-	public void claw(double speed) {
-		if ((outerLimitReached() && speed < 0) || (innerLimitReached() && speed > 0)) 
-			{
-			clawCanSparkMax.set(0);
-			return;
-		}
-		clawCanSparkMax.set(speed);
-    }
 
     public double getClawPosition() {
         return clawEncoder.getPosition();
     }
 
     public double getRotatePosition() {
-        return rotateEncoder.getPosition();
+        return clawRollEncoder.getPosition();
     }
-	public double getUltrasonicDistance() {
+	public boolean getUltrasonicDistance() {
 		return ultrasonicSensor.get();
 	}
 
 	public void setRotateSpeed(double wrist) {
-		clawCanSparkMax.set(wrist);
+		clawMotor.set(wrist);
 	}
 
 	public void setClawSpeed(double claw) {
-		clawCanSparkMax.set(claw);
+		clawMotor.set(claw);
 	}
 
 	public void rotate(double angle, double speed) {
@@ -93,10 +79,10 @@ public class ClawSubsystem extends SubsystemBase {
             angle += 360;
         }
 
-		double startPos = rotateEncoder.getPosition() / GEAR_RATIO_WRIST;
+		double startPos = clawRollEncoder.getPosition() / GEAR_RATIO_WRIST;
 
-		while (rotateEncoder.getPosition() / GEAR_RATIO_WRIST < angle + startPos) {
-			rotateCANSparkMax.set(speed);
+		while (clawRollEncoder.getPosition() / GEAR_RATIO_WRIST < angle + startPos) {
+			clawRollMotor.set(speed);
 		}
 	}
         
@@ -105,7 +91,7 @@ public class ClawSubsystem extends SubsystemBase {
 	}
 
 	public boolean getRotate(double rotateLimit) {
-		return rotateEncoder.getPosition() == rotateLimit;
+		return clawRollEncoder.getPosition() == rotateLimit;
 	}
 
 	public void resetEncoders() {

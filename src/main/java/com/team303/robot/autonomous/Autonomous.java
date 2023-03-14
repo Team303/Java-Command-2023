@@ -88,12 +88,12 @@ public class Autonomous {
         
         HashMap<String,Command> eventMap = new HashMap<>();
         //In Inches
-        eventMap.put("Top Cone", new ReachPoint(-42, 48));
-        eventMap.put("Middle Cone", new ReachPoint(-24, 35)); //TEST THESE
-        eventMap.put("Top Cube", new ReachPoint(-42, 36)); //TEST THESE
-        eventMap.put("Middle Cone", new ReachPoint(-24, 25)); //TEST THESE
-        eventMap.put("Bottom Hybrid", new ReachPoint(-16, 5)); //TEST THESE
-        eventMap.put("Reach Cone", new ReachPoint(36, 0));
+        // eventMap.put("Top Cone", new ReachPoint(-42, 48));
+        // eventMap.put("Middle Cone", new ReachPoint(-24, 35)); //TEST THESE
+        // eventMap.put("Top Cube", new ReachPoint(-42, 36)); //TEST THESE
+        // eventMap.put("Middle Cone", new ReachPoint(-24, 25)); //TEST THESE
+        // eventMap.put("Bottom Hybrid", new ReachPoint(-16, 5)); //TEST THESE
+        // eventMap.put("Reach Cone", new ReachPoint(36, 0));
 
         autoBuilder = new SwerveAutoBuilder(
             swerve::getPose, // Pose2d supplier
@@ -124,16 +124,16 @@ public class Autonomous {
        // pathGroup = PathPlanner.loadPathGroup("Top to Cone", new PathConstraints(3, Swerve.MAX_VELOCITY));
        // create("Top to Cone", () -> new SequentialCommandGroup(new InstantCommand(Robot.swerve::resetOdometry), autoBuilder.fullAuto(pathGroup)));
 
-       pathGroup = PathPlanner.loadPathGroup("Cone Top", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       create("Cone Top", () -> autoBuilder.fullAuto(pathGroup));
-       pathGroup = PathPlanner.loadPathGroup("Cone Middle", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       create("Cone Middle", () -> autoBuilder.fullAuto(pathGroup));
-       pathGroup = PathPlanner.loadPathGroup("Bottom Hybrid", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       create("Bottom Hybrid", () -> autoBuilder.fullAuto(pathGroup));
-       pathGroup = PathPlanner.loadPathGroup("Top Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       create("Top Cube", () -> autoBuilder.fullAuto(pathGroup));
-       pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
+    //    pathGroup = PathPlanner.loadPathGroup("Cone Top", new PathConstraints(3, Swerve.MAX_VELOCITY));
+    //    create("Cone Top", () -> autoBuilder.fullAuto(pathGroup));
+    //    pathGroup = PathPlanner.loadPathGroup("Cone Middle", new PathConstraints(3, Swerve.MAX_VELOCITY));
+    //    create("Cone Middle", () -> autoBuilder.fullAuto(pathGroup));
+    //    pathGroup = PathPlanner.loadPathGroup("Bottom Hybrid", new PathConstraints(3, Swerve.MAX_VELOCITY));
+    //    create("Bottom Hybrid", () -> autoBuilder.fullAuto(pathGroup));
+    //    pathGroup = PathPlanner.loadPathGroup("Top Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
+    //    create("Top Cube", () -> autoBuilder.fullAuto(pathGroup));
+    //    pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
+    //    create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
 
         // create("New", () -> {
         //     try {
@@ -171,23 +171,23 @@ public class Autonomous {
         // }
         // );
 
-        create("Drivepose", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
+        // create("Drivepose", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
-        // create("Apriltag", () -> new AlignAprilTag());
+        // // create("Apriltag", () -> new AlignAprilTag());
 
-        create("AprilTag", () -> new AprilTagAlign(2));
+        // create("AprilTag", () -> new AprilTagAlign(2));
 
-        create("Autolevel", () -> 
-            new AutolevelFeedforward()
-         );
+        // create("Autolevel", () -> 
+        //     new AutolevelFeedforward()
+        //  );
 
-        create("Reach Point", () ->
-            new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
-        );
+        // create("Reach Point", () ->
+        //     new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
+        // );
 
-        create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
+        // create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
-        create("drive to node", () -> swerve.driveToNode());
+        // create("drive to node", () -> swerve.driveToNode());
 
     }
 

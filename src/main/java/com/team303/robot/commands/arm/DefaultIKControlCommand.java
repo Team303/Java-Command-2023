@@ -12,6 +12,7 @@ import com.team303.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import com.team303.robot.RobotMap.Arm;
+import java.util.List;
 
 public class DefaultIKControlCommand extends CommandBase {
     public static Translation3d cartesianStorage = new Translation3d(0, 0, 0);
@@ -45,7 +46,7 @@ public class DefaultIKControlCommand extends CommandBase {
         z = Math.sin(angle) * length;
 
         if (fieldOriented) {
-            x += (MathUtil.applyDeadband(-Robot.getOperatorXbox().getLeftY(), 0.02) * Math.cos(robotAngle) - MathUtil.applyDeadband(Robot.getOperatorXbox().getLeftX(), 0.02) * Math.sin(robotAngle))* 2;
+            x += (MathUtil.applyDeadband(-Robot.getOperatorXbox().getLeftY(), 0.03) * Math.cos(robotAngle) - MathUtil.applyDeadband(Robot.getOperatorXbox().getLeftX(), 0.03) * Math.sin(robotAngle));
         } else {
             x += DEADBAND_FILTER.applyDeadband(Robot.getOperatorXbox().getLeftX(), DEADBAND_FILTER.getLowerBound());
         }
@@ -59,6 +60,7 @@ public class DefaultIKControlCommand extends CommandBase {
         cartesianStorage = new Translation3d(x, 0.0, z);
 
         arm.reachEmbedded(cartesianStorage);
+        // arm.reach(List.of(Math.toRadians(0.0),Math.toRadians(170.0),Math.toRadians(135.0)));
         ArmSubsystem.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
         effectorRoot.setPosition((Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX()/Arm.SIMULATION_SCALE,
             Arm.SIMULATION_OFFSET/Arm.SIMULATION_SCALE+cartesianStorage.getZ()/Arm.SIMULATION_SCALE);

@@ -68,12 +68,12 @@ public class Robot extends LoggedRobot {
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
-	public static final Photonvision photonvision = null; //new Photonvision();
-	public static final SwerveSubsystem swerve = new SwerveSubsystem(); // new SwerveSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem(); //new ArmTest();
-	public static final ArmTest armtest = null;// new ArmTest();
+	public static final Photonvision photonvision = new Photonvision();
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final ArmTest armtest = null; //new ArmTest();
 	public static final Operator operator = new Operator();
-	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final ClawSubsystem claw = null; //new ClawSubsystem();
 	public static final Ultrasonic ultrasonic = new Ultrasonic(0, 4);
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -203,11 +203,12 @@ public class Robot extends LoggedRobot {
 		}
 
 		// Configure the joystick and controller bindings
-		configureButtonBindings();
+		// configureButtonBindings();
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
-		Robot.claw.setDefaultCommand(new DefaultClaw());
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(true));
+		// Robot.claw.setDefaultCommand(new DefaultClaw());
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		// Robot.armtest.setDefaultCommand(new MoveArm());
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// Place event markers here
