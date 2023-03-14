@@ -72,8 +72,9 @@ public class Autonomous {
     // Create the AutoBuilder. This only needs to be created once when robot code
     // starts, not every time you want to create an auto command. A good place to
     // put this is in RobotContainer along with your subsystems.
-    static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
+    // static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
 
+    static List<PathPlannerTrajectory> pathGroup;
     //static Path dir = Filesystem.getDeployDirectory().toPath().resolve("");
     //static Iterator<Path> files = dir.iterator();
     private static File dir = new File(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toString());
@@ -86,7 +87,12 @@ public class Autonomous {
     public static void init() {
         
         HashMap<String,Command> eventMap = new HashMap<>();
-        eventMap.put("Top Cone", new ReachPoint(42, 48));
+        //In Inches
+        eventMap.put("Top Cone", new ReachPoint(-42, 48));
+        eventMap.put("Middle Cone", new ReachPoint(-24, 35)); //TEST THESE
+        eventMap.put("Top Cube", new ReachPoint(-42, 36)); //TEST THESE
+        eventMap.put("Middle Cone", new ReachPoint(-24, 25)); //TEST THESE
+        eventMap.put("Bottom Hybrid", new ReachPoint(-16, 5)); //TEST THESE
         eventMap.put("Reach Cone", new ReachPoint(36, 0));
 
         autoBuilder = new SwerveAutoBuilder(
@@ -96,7 +102,7 @@ public class Autonomous {
             new PIDConstants(5, 0.0, 0.0), // PID constants to correct for translation error (used to create the X
                                              // and Y
                                              // PID controllers)
-            new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the
+            new PIDConstants(0.1, 0.0, 0.0), // PID constants to correct for rotation error (used to create the
                                              // rotation
                                              // controller)
             swerve::drive, // Module states consumer used to output to the drive subsystem
@@ -120,42 +126,50 @@ public class Autonomous {
 
        pathGroup = PathPlanner.loadPathGroup("Cone Top", new PathConstraints(3, Swerve.MAX_VELOCITY));
        create("Cone Top", () -> autoBuilder.fullAuto(pathGroup));
+       pathGroup = PathPlanner.loadPathGroup("Cone Middle", new PathConstraints(3, Swerve.MAX_VELOCITY));
+       create("Cone Middle", () -> autoBuilder.fullAuto(pathGroup));
+       pathGroup = PathPlanner.loadPathGroup("Bottom Hybrid", new PathConstraints(3, Swerve.MAX_VELOCITY));
+       create("Bottom Hybrid", () -> autoBuilder.fullAuto(pathGroup));
+       pathGroup = PathPlanner.loadPathGroup("Top Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
+       create("Top Cube", () -> autoBuilder.fullAuto(pathGroup));
+       pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
+       create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
 
-        create("New", () -> {
-            try {
-                return new SequentialCommandGroup(
-                    new InstantCommand(Robot.getNavX()::reset),
-                    new FollowTrajectory("output/New.wpilib.json")
-                    );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return new DriveWait(15);
-            }});
+        // create("New", () -> {
+        //     try {
+        //         return new SequentialCommandGroup(
+        //             new InstantCommand(Robot.getNavX()::reset),
+        //             new FollowTrajectory("output/New.wpilib.json")
+        //             );
+        //     } catch (FileNotFoundException e) {
+        //         e.printStackTrace();
+        //         return new DriveWait(15);
+        //     }});
 
-        create("StraighForward1", () -> {
-            try {
-                return new SequentialCommandGroup(
-                    new InstantCommand(Robot.getNavX()::reset),
-                    new FollowTrajectory("output/StraightForward1.wpilib.json")
-                    );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return new DriveWait(15);
-            }});
+        // create("StraighForward1", () -> {
+        //     try {
+        //         return new SequentialCommandGroup(
+        //             new InstantCommand(Robot.getNavX()::reset),
+        //             new FollowTrajectory("output/StraightForward1.wpilib.json")
+        //             );
+        //     } catch (FileNotFoundException e) {
+        //         e.printStackTrace();
+        //         return new DriveWait(15);
+        //     }});
         
-        create("NavX Test", () -> {
-            try {
-                return new SequentialCommandGroup(
-                    new InstantCommand(Robot.getNavX()::reset),
-                    new TurnToAngle(180),
-                    new FollowTrajectory("output/New.wpilib.json")
-                );
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return new DriveWait(15);
-            }
-        }
-        );
+        // create("NavX Test", () -> {
+        //     try {
+        //         return new SequentialCommandGroup(
+        //             new InstantCommand(Robot.getNavX()::reset),
+        //             new TurnToAngle(180),
+        //             new FollowTrajectory("output/New.wpilib.json")
+        //         );
+        //     } catch (FileNotFoundException e) {
+        //         e.printStackTrace();
+        //         return new DriveWait(15);
+        //     }
+        // }
+        // );
 
         create("Drivepose", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 

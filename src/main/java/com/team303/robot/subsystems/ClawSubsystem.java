@@ -17,11 +17,12 @@ import com.team303.robot.RobotMap.Claw;
 public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
+	public static final double GEAR_RATIO_WRIST = 27;
 
 	private final CANSparkMax clawCanSparkMax = new CANSparkMax(20, MotorType.kBrushless);
 	private final CANSparkMax rotateCANSparkMax = new CANSparkMax(21, MotorType.kBrushless);
 	private final RelativeEncoder clawEncoder;
-	private final SparkMaxAbsoluteEncoder rotateEncoder;
+	private final RelativeEncoder rotateEncoder;
 	public final GroundedDigitalInput outerLeft;
 	public final GroundedDigitalInput outerRight;
 	public final GroundedDigitalInput innerLeft;
@@ -31,9 +32,10 @@ public class ClawSubsystem extends SubsystemBase {
 	public ClawSubsystem() {
 		clawCanSparkMax.setInverted(true);
 		clawCanSparkMax.setIdleMode(IdleMode.kBrake);
+		rotateCANSparkMax.setInverted(false);
+		rotateCANSparkMax.setIdleMode(IdleMode.kBrake);
 		clawEncoder = clawCanSparkMax.getEncoder();
-		rotateEncoder = rotateCANSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-        rotateEncoder.setZeroOffset(0.0);
+		rotateEncoder = rotateCANSparkMax.getEncoder();
 		// limit switches
 		innerLeft = new GroundedDigitalInput(Claw.INNER_LEFT_INPUT);
 		innerRight = new GroundedDigitalInput(Claw.INNER_RIGHT_INPUT);
@@ -75,6 +77,14 @@ public class ClawSubsystem extends SubsystemBase {
 		return ultrasonicSensor.get();
 	}
 
+	public void setRotateSpeed(double wrist) {
+		clawCanSparkMax.set(wrist);
+	}
+
+	public void setClawSpeed(double claw) {
+		clawCanSparkMax.set(claw);
+	}
+
 	public void rotate(double angle, double speed) {
 
         angle %= 360;
@@ -83,11 +93,11 @@ public class ClawSubsystem extends SubsystemBase {
             angle += 360;
         }
 
-        if (rotateEncoder.getPosition() < angle) {
-            rotateCANSparkMax.set(speed);
-        } else {
-            rotateCANSparkMax.set(-speed);
-        }
+		double startPos = rotateEncoder.getPosition() / GEAR_RATIO_WRIST;
+
+		while (rotateEncoder.getPosition() / GEAR_RATIO_WRIST < angle + startPos) {
+			rotateCANSparkMax.set(speed);
+		}
 	}
         
 	public boolean getEncoderPos(double encoderLimit) {

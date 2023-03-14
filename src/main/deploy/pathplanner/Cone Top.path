@@ -16,8 +16,11 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "Cone Top",
+          "Reach Cone"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -77,6 +80,12 @@
       "position": 1.0036363636363361,
       "names": [
         "Reach Cone"
+      ]
+    },
+    {
+      "position": 1.0,
+      "names": [
+        "Top Cone"
       ]
     }
   ]

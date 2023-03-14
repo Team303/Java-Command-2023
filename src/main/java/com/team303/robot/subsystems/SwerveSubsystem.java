@@ -72,6 +72,7 @@ import static com.team303.robot.modules.Operator.nodeSuperStateValues;
 import java.util.HashMap;
 import com.team303.robot.commands.arm.ReachPoint;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import com.team303.robot.commands.drive.TurnToAngle;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -91,7 +92,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Data");
 
 	// private Rotation2d angle = new Rotation2d();
-	private double angle = 0;
+	public double angle = 0;
 	private double positions[] = { 0, 0, 0, 0 };
 
 	/* Field Sim */
@@ -313,7 +314,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void resetOdometry(Pose2d pose) {
-		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
+		if (Robot.isReal()) {
+			odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
+		} else {
+			odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
+		}
 	}
 
 	public SwerveModulePosition[] getModulePositions() {
@@ -538,7 +543,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			new PIDController(0, 0.2, 0), // X controller. Tune these values for your robot. Leaving them 0
 										// will only use feedforwards.
 			new PIDController(0, 0.2, 0), // Y controller (usually the same values as X controller)
-			new PIDController(0, 0.05, 0), // Rotation controller. Tune these values for your robot. Leaving
+			new PIDController(1, 0.13, 0), // Rotation controller. Tune these values for your robot. Leaving
 										// them 0 will only use feedforwards.
 			Robot.swerve::drive, // Module states consumer
 			true, // Should the path be automatically mirrored depending on alliance color.
@@ -566,11 +571,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public CommandBase driveToPose(Pose2d point1, Pose2d point2) {
 
-
 		PathPlannerTrajectory trajectory = PathPlanner.generatePath(
 			new PathConstraints(4, 3), 
 			new PathPoint(point1.getTranslation(), point1.getRotation()),
-			new PathPoint(point1.getTranslation().plus(point2.getTranslation()).div(2), point1.getRotation().plus(point2.getRotation()).div(2)),
+			new PathPoint(new Translation2d(point1.getTranslation().plus(point2.getTranslation().div(2).minus(new Translation2d(0, 0.5))).getX(), point2.getTranslation().getY()), point2.getRotation()),
 			new PathPoint(point2.getTranslation(), point2.getRotation())
 			// position, heading
 		);
@@ -581,7 +585,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	public CommandBase driveToNode() {
 
 		Point posePoint = new Point(0, 0);
-		
 
 		for (int i = 0; i < nodeSuperStateValues.length; i++) {
             for (int j = 0; j < nodeSuperStateValues[i].length; j++) {
@@ -590,7 +593,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 }
 			}
         }
-
 
 		String reachNode = "Bottom";
 
