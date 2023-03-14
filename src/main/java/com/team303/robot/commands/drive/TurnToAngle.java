@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 public class TurnToAngle extends PIDCommand {
 
+    double angle;
+
     public TurnToAngle(double angle) {
         super(new PIDController(0.07, 0, 0),
                 () -> Robot.getNavX().getAngle() % 360.0,
@@ -15,11 +17,19 @@ public class TurnToAngle extends PIDCommand {
                 Robot.swerve);
         getController().setTolerance(5);
         getController().enableContinuousInput(-180, 180);
+        this.angle = angle;
     }
 
     @Override
     public boolean isFinished() {
-        System.out.println("Finished!!!\n\n\n\n");
-        return getController().atSetpoint();
+        // System.out.println("Finished!!!\n\n\n\n");
+
+        double useDegrees = Math.toDegrees(Robot.swerve.angle);
+        useDegrees %= 360;
+        if (useDegrees < 0) {
+            useDegrees += 360;
+        }
+        System.out.println("angle: " + useDegrees);
+        return Math.abs(this.angle - useDegrees) < 10.0 || getController().atSetpoint();
     }
 }

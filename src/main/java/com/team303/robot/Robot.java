@@ -330,7 +330,11 @@ public class Robot extends LoggedRobot {
 		// operatorCommandXboxController.rightTrigger().toggleOnTrue(
 		// 	Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d()))
 		// );
+		try {
+			CommandScheduler.getInstance().run();
+		} catch (Exception e) {
+			System.out.println("its shrey's fault");
+		}
 
-		CommandScheduler.getInstance().run();
 	}
 }
