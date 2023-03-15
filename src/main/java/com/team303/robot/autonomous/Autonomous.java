@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import com.team303.robot.commands.arm.AprilTagAlign;
-import com.team303.robot.commands.arm.ReachPoint;
+// import com.team303.robot.commands.arm.ReachPoint;
 import static com.team303.robot.Robot.CONTROLLER_TAB;
 import edu.wpi.first.networktables.GenericEntry;
 
@@ -162,9 +162,9 @@ public class Autonomous {
             new AutolevelFeedforward()
          );
 
-        create("Reach Point", () ->
-            new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
-        );
+        // create("Reach Point", () ->
+        //     new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
+        // );
 
         create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 

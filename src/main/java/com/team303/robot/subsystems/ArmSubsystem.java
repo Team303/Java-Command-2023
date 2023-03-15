@@ -57,8 +57,17 @@ public class ArmSubsystem extends SubsystemBase {
 	public static final GenericEntry clawEncoderTab = ARM_TAB.add("clawEnc", 0).getEntry();
     public static final GenericEntry shoulderAngleAbsolute = ARM_TAB.add("shoulderAngleAbsolute", 0).getEntry();
 	public static final GenericEntry jointAngleAbsolute = ARM_TAB.add("jointAngleAbsolute", 0).getEntry();
-	public static final GenericEntry clawAngleAbsolute = ARM_TAB.add("clawAngleAbsolute", 0).getEntry();
+	public static final GenericEntry clawAngleAbsoludte = ARM_TAB.add("clawAngleAbsolute", 0).getEntry();
     public static final GenericEntry effectorAngle = ARM_TAB.add("effector angle", 0).getEntry();
+
+	public static final double INCHES_TO_METERS = 0.0254;
+	public static final double ARMLEN_METERS = INCHES_TO_METERS * 74;
+	public static final double CIRCUMFERENCE = 2 * Math.PI * ARMLEN_METERS;
+	
+	// rotations/sec
+	public static final double VELOCITY = 0.1;
+	// rotations/sec^2
+	public static final double ACCELERATION = 0.05;
 
 	public static final DoubleArraySubscriber JOINT_ANGLES_SUB = armNetwork.getDoubleArrayTopic("ja")
 			.subscribe(new double[] { 0.0, 0.0, 0.0 });
@@ -75,6 +84,10 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public double radiansToEncoders(double angle, double gearRatio) {
 		return angle / (Math.PI * 2) * 4096 * gearRatio;
+	}
+
+	public double encodersToRadians(double encoders, double gearRatio) {
+		return encoders / gearRatio / 4096 * (Math.PI * 2);
 	}
 
 	public class ShoulderJoint {
@@ -106,7 +119,7 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 
 		public final ProfiledPIDController shoulderControl = new ProfiledPIDController(0.01, 0, 0,
-				new TrapezoidProfile.Constraints(Units.rotationsToRadians(62) / 60, 100));
+				new TrapezoidProfile.Constraints(CIRCUMFERENCE * VELOCITY, CIRCUMFERENCE * ACCELERATION));
 		private final ArmFeedforward m_shoulderFeedForward = new ArmFeedforward(0.01, 0, 0, 0);
 		private MechanismLigament2d shoulderSimulator;
 
@@ -125,7 +138,7 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 
 		public ProfiledPIDController elbowControl = new ProfiledPIDController(0.01, 0, 0,
-				new TrapezoidProfile.Constraints(Units.rotationsToRadians(62) / 60, 100));
+				new TrapezoidProfile.Constraints(CIRCUMFERENCE * VELOCITY, CIRCUMFERENCE * ACCELERATION));
 		private final ArmFeedforward m_elbowFeedForward = new ArmFeedforward(0.01, 0, 0, 0);
 		private MechanismLigament2d elbowSimulator;
 	}
@@ -143,7 +156,7 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 
 		public ProfiledPIDController clawControl = new ProfiledPIDController(0.01, 0, 0,
-				new TrapezoidProfile.Constraints(Units.rotationsToRadians(62) / 60, 100));
+				new TrapezoidProfile.Constraints(CIRCUMFERENCE * VELOCITY, CIRCUMFERENCE * ACCELERATION));
 		private final ArmFeedforward m_clawFeedForward = new ArmFeedforward(0.01, 0, 0, 0);
 		private MechanismLigament2d clawSimulator;
 	}
@@ -163,9 +176,9 @@ public class ArmSubsystem extends SubsystemBase {
 	private double storedClawAngle ;
 
 	//left limit, right limit
-	public float[] shoulderLimits = {20, 20};
-	public float[] elbowLimits = {170, 170};
-	public float[] wristLimits = {135, 135};
+	public float[] shoulderLimits = {-20, 20};
+	public float[] elbowLimits = {-170, 170};
+	public float[] wristLimits = {-135, 135};
 
 	private final double shoulderStartAngle;
 	private final double elbowStartAngle;
@@ -181,18 +194,18 @@ public class ArmSubsystem extends SubsystemBase {
 		armKinematics.setSegmentLengthRatio(1, (31 + 12) / 74f);
 		// armKinematics.setSegmentLengthRatio(2, 12 / 74f);
 		armKinematics.setSegmentLengths();
-		armKinematics.setAngleConstraint(0, shoulderLimits[0], shoulderLimits[1]);
-		armKinematics.setAngleConstraint(1, elbowLimits[0], elbowLimits[1]);
-		// armKinematics.setAngleConstraint(2, wristLimits[0], wristLimits[0]);
+		armKinematics.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1]);
+		armKinematics.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1]);
+		// armKinematics.setAngleConstraint(2, -wristLimits[0], wristLimits[0]);
 		armKinematics.setSegmentInitialDirection(0, (float) Math.toRadians(90));
 		armKinematics.setSegmentInitialDirection(1, (float) Math.toRadians(0));
 		// armKinematics.setSegmentInitialDirection(2, (float) Math.toRadians(-45));
 		armKinematics.initializeArm();
 		armKinematics.setSolveDistanceThreshold(1f);
 		armKinematics.setMaxIterationAttempts(5000);
-		shoulderJoint.shoulderEncoder1.setPositionConversionFactor(Arm.GEAR_RATIO_SHOULDER);
-		elbowJoint.elbowEncoder.setPositionConversionFactor(Arm.GEAR_RATIO_ELBOW);
-		clawJoint.clawEncoder.setPositionConversionFactor(Arm.GEAR_RATIO_CLAW);
+		// shoulderJoint.shoulderEncoder1.setPositionConversionFactor(Arm.GEAR_RATIO_SHOULDER);
+		// elbowJoint.elbowEncoder.setPositionConversionFactor(Arm.GEAR_RATIO_ELBOW);
+		// clawJoint.clawEncoder.setPositionConversionFactor(Arm.GEAR_RATIO_CLAW);
 
 		armSimulation = new Mechanism2d(300/Arm.SIMULATION_SCALE, 300/Arm.SIMULATION_SCALE);
 		MechanismRoot2d armRoot = armSimulation.getRoot("Arm", (Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE, (Arm.SIMULATION_OFFSET)/Arm.SIMULATION_SCALE);
@@ -252,8 +265,8 @@ public class ArmSubsystem extends SubsystemBase {
 		// clawEncoderTab.setDouble(clawEncoders);
 		// Gear ratio is 40 / 12 * 160  * ShoulderJoint.shoulderEncoder.getEncodersPer
 
-		shoulderJoint.shoulderControl.setGoal(shoulderEncoders);
-		elbowJoint.elbowControl.setGoal(elbowEncoders);
+		shoulderJoint.shoulderControl.setGoal(encodersToRadians(shoulderEncoders, Arm.GEAR_RATIO_SHOULDER) * CIRCUMFERENCE);
+		elbowJoint.elbowControl.setGoal(encodersToRadians(elbowEncoders, Arm.GEAR_RATIO_ELBOW) * CIRCUMFERENCE);
 		// clawJoint.clawControl.setGoal(clawEncoders);
 		double shoulderFeedForward = shoulderJoint.m_shoulderFeedForward.calculate(
 				shoulderJoint.shoulderControl.getGoal().position, shoulderJoint.shoulderControl.getGoal().velocity);
@@ -263,10 +276,10 @@ public class ArmSubsystem extends SubsystemBase {
 		// 		clawJoint.clawControl.getGoal().velocity);
 
 		double shoulderFeedback = shoulderJoint.shoulderControl.calculate(
-				shoulderJoint.shoulderEncoder1.getPosition(),
+				encodersToRadians(shoulderJoint.shoulderEncoder1.getPosition(), Arm.GEAR_RATIO_SHOULDER) * CIRCUMFERENCE,
 				shoulderJoint.shoulderControl.getGoal());
 		double elbowFeedback = elbowJoint.elbowControl.calculate(
-				Units.rotationsToRadians(elbowJoint.elbowEncoder.getPosition()), elbowJoint.elbowControl.getGoal());
+				encodersToRadians(elbowJoint.elbowEncoder.getPosition(), Arm.GEAR_RATIO_ELBOW) * CIRCUMFERENCE, elbowJoint.elbowControl.getGoal());
 		// double clawFeedback = clawJoint.clawControl.calculate(
 		// 		Units.rotationsToRadians(clawJoint.clawEncoder.getPosition()), clawJoint.clawControl.getGoal());
 

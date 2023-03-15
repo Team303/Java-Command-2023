@@ -70,7 +70,7 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final Photonvision photonvision = new Photonvision();
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final ArmSubsystem arm = null; // new ArmSubsystem();
 	public static final ArmTest armtest = null; //new ArmTest();
 	public static final Operator operator = new Operator();
 	public static final ClawSubsystem claw = null; //new ClawSubsystem();
@@ -200,7 +200,7 @@ public class Robot extends LoggedRobot {
 			logger.addDataReceiver(new NT4Publisher());
 		}
 
-		CommandScheduler.getInstance().schedule(new Homing());
+		// CommandScheduler.getInstance().schedule(new Homing());
 
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
@@ -208,7 +208,7 @@ public class Robot extends LoggedRobot {
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
 		// Robot.claw.setDefaultCommand(new DefaultClaw());
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
