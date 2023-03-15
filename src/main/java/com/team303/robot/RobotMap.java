@@ -51,9 +51,7 @@ public final class RobotMap {
 		public static final double DRIVE_GEAR_RATIO = 12.75; // Toughbox mini 12.75:1
 		public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for each encoder unit
 		public static final double MAX_VELOCITY = 4;
-		
-		
-		
+			
 		public static final double MAX_ACCELERATION = 3; //Meters per second
 		public static final double MAX_RPS = 183.33; // Max rotations per second
 
@@ -93,7 +91,6 @@ public final class RobotMap {
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);
-
 
 		static {
 			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
@@ -150,7 +147,6 @@ public final class RobotMap {
 		public static final double DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS = 0.59;
 		public static final double CAMERA_PITCH_RADIANS = 0; //NOT FINAL
 	}
-
 
 	public static final class IOConstants {
 

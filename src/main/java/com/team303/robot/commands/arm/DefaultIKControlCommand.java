@@ -4,7 +4,6 @@ import static com.team303.robot.Robot.arm;
 import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
 import com.team303.robot.RobotMap.Arm;
 import com.team303.robot.Robot;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -60,7 +59,6 @@ public class DefaultIKControlCommand extends CommandBase {
         cartesianStorage = new Translation3d(x, 0.0, z);
 
         arm.reachEmbedded(cartesianStorage);
-        // arm.reach(List.of(Math.toRadians(0.0),Math.toRadians(170.0),Math.toRadians(135.0)));
         ArmSubsystem.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
         effectorRoot.setPosition((Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX()/Arm.SIMULATION_SCALE,
             Arm.SIMULATION_OFFSET/Arm.SIMULATION_SCALE+cartesianStorage.getZ()/Arm.SIMULATION_SCALE);

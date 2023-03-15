@@ -12,9 +12,4 @@ public class ToggleClose extends CommandBase {
     public void execute() {
         Robot.claw.setRotateSpeed(-0.5);
     }
-
-    @Override
-    public boolean isFinished() {
-        return Robot.claw.innerLimitReached();
-    }
 }

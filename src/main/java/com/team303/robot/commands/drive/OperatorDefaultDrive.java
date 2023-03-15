@@ -21,11 +21,6 @@ public class OperatorDefaultDrive extends CommandBase {
         this.fieldOriented = fieldOriented;
     }
 
-//     @Override
-//     public void initialize() {
-//         Robot.swerve.resetToAbsoluteAngle();
-//     }
-
     @Override
     public void execute() {
 
@@ -59,27 +54,4 @@ public class OperatorDefaultDrive extends CommandBase {
                         fieldOriented);
                 }
         }
-    /*
-     * if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.APRILTAG) {
-     * photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.APRILTAG);
-     * }
-     */
-    /*
-     * //TODO: Find good area threshold
-     * if (photonvision.getBestTarget(CameraName.CAM1).getFiducialId() ==
-     * ALLIANCE_SUBSTATION_ID &&
-     * photonvision.getBestTarget(CameraName.CAM1).getArea() >= 1) {
-     * photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CUBE);
-     * if (!photonvision.hasTargets(CameraName.CAM1)) {
-     * photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CONE);
-     * }
-     * Translation3d armToPiece = poseTracker.getArmtoTargetTranslation();
-     * //TODO: Find optimal part of cone to grab
-     * arm.reach(armToPiece.plus(new Translation3d()));
-     * //FIXME: Change when we introduce more cameras
-     * //FIXME: Change when we create autonomous driving during teleop and move it
-     * to the autonomous part
-     * }
-     */
-
 }

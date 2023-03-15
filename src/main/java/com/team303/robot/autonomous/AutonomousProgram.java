@@ -2,9 +2,7 @@ package com.team303.robot.autonomous;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import com.team303.robot.Robot;
-
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 

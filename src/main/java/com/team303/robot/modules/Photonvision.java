@@ -6,11 +6,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.PhotonvisionConstants;
-import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
@@ -20,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import org.photonvision.targeting.TargetCorner;
 import edu.wpi.first.math.geometry.Transform3d;
+import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
 
 public class Photonvision extends SubsystemBase {
 
@@ -114,13 +112,8 @@ public class Photonvision extends SubsystemBase {
     }
     
     public double getObjectSkew(CameraName name) {
-        
-        // List<TargetCorner> corners = getRectCorners(name);
         PhotonTrackedTarget target = getBestTarget(name);
         double skew = target.getSkew();
-
-        // double height = (corners.get(0).y + corners.get(1).y) / 2 - (corners.get(3).y + corners.get(4).y) / 2;
-        // double width = (corners.get(1).y + corners.get(3).y) / 2 - (corners.get(0).y + corners.get(2).y) / 2;
 
         return skew;
     }
@@ -155,9 +148,6 @@ public class Photonvision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // if (getBestTarget(CameraName.CAM1) == null) {
-        //     return;
-        // }
 
         PhotonTrackedTarget target = getBestTarget(CameraName.CAM1);
 
@@ -170,7 +160,6 @@ public class Photonvision extends SubsystemBase {
             TARGET_YAW.setDouble(target.getYaw());
             TARGET_PITCH.setDouble(target.getPitch());
             TARGET_SKEW.setDouble(target.getSkew());
-        }
-        
+        } 
     }
 }

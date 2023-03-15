@@ -58,7 +58,6 @@ import com.team303.robot.commands.claw.DefaultClaw;
 import com.team303.robot.commands.claw.RotateClaw;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
-import com.team303.robot.commands.drive.AutolevelPID;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -75,6 +74,7 @@ public class Robot extends LoggedRobot {
 	public static final Operator operator = new Operator();
 	public static final ClawSubsystem claw = null; //new ClawSubsystem();
 	public static final Ultrasonic ultrasonic = new Ultrasonic(0, 4);
+
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
@@ -82,7 +82,6 @@ public class Robot extends LoggedRobot {
 	private static final XboxController operatorXboxController = new XboxController(IOConstants.OPERATOR_CONTROLLER);
 	private static final CommandXboxController driverCommandXboxController = new CommandXboxController(IOConstants.DRIVER_CONTROLLER);
 	private static final XboxController driverXboxController = new XboxController(IOConstants.DRIVER_CONTROLLER);
-
 
 	public static SendableChooser<String> controllerChooser = new SendableChooser<>();
 
@@ -118,6 +117,7 @@ public class Robot extends LoggedRobot {
 			this.fiducialId = fiducialId;
 		}
 	}
+
 	public static final int ALLIANCE_SUBSTATION_ID = DriverStation.getAlliance() == Alliance.Blue ? SubstationFiducialID.RED.fiducialId : SubstationFiducialID.BLUE.fiducialId;
 	private static final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -126,15 +126,12 @@ public class Robot extends LoggedRobot {
 	public static AHRS getNavX() {
 		return navX;
 	}
-
 	public static Joystick getRightJoyStick() {
 		return rightJoystick;
 	}
-
 	public static Joystick getLeftJoyStick() {
 		return leftJoystick;
 	}
-
 	public static XboxController getOperatorXbox() {
 		return operatorXboxController;
 	}
@@ -203,7 +200,8 @@ public class Robot extends LoggedRobot {
 		}
 
 		// Configure the joystick and controller bindings
-		// configureButtonBindings();
+		configureButtonBindings();
+
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
 		// Robot.claw.setDefaultCommand(new DefaultClaw());
@@ -211,8 +209,6 @@ public class Robot extends LoggedRobot {
 		// Robot.armtest.setDefaultCommand(new MoveArm());
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
-		// Place event markers here
-		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 		// add Autos to Shuffleboard
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
@@ -235,9 +231,6 @@ public class Robot extends LoggedRobot {
 							new DriveWait(autoDelayChooser.getSelected()),
 							autonomousCommand));
 		}
-
-		// Match LEDs color to team
-		//CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
 	}
 
 	@Override
@@ -245,18 +238,10 @@ public class Robot extends LoggedRobot {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
-			
-
-		// Match LEDs color to team
-		//CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
-
 	}
 
 	@Override
-	public void disabledInit() {
-		// Change LED color to signify disabled state
-		//CommandScheduler.getInstance().schedule(new LEDSolidColor(LED.DISABLED_COLOR));
-	}
+	public void disabledInit() {}
 
 	@Override
 	public void disabledPeriodic() {
@@ -283,7 +268,6 @@ public class Robot extends LoggedRobot {
 			driverCommandXboxController.x().whileTrue(Commands.runOnce(swerve::stop))
 											.whileFalse(new DefaultDrive(true));
 			driverCommandXboxController.x().onFalse(new DefaultDrive(true));
-			//riverCommandXboxController.leftBumper().onTrue(new RotateClaw(photonvision.getObjectSkew(CameraName.CAM2), 1.0));
 		} else {
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
 			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
@@ -293,23 +277,6 @@ public class Robot extends LoggedRobot {
 			new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
 		}
 
-	}
-
-	@Override
-	public void simulationInit() {
-		System.out.println(WPILibVersion.Version);
-		// set default commands
-
-
-		// Path Weaver Trajectory
-		try {
-			Trajectory trajectory = FollowTrajectory.convert("output/Test.wpilib.json");
-
-			// Push the trajectory to Field2d.
-			//SwerveSubsystem.field.getObject("traj").setTrajectory(trajectory);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	/*
@@ -329,21 +296,7 @@ public class Robot extends LoggedRobot {
 		 * block in order for anything in the Command-based framework to work.
 		 */
 
-		/* 
-		SmartDashboard.putNumber("X crosshair", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
-		SmartDashboard.putNumber("Y crosshair", Limelight.getLimelight().getEntry("ty").getDouble(0.0));
-		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tv").getDouble(0.0));
-		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("ta").getDouble(0.0));*/
 		operatorCommandXboxController.a().toggleOnTrue(swerve.driveToNode());
-		// operatorCommandXboxController.rightTrigger().toggleOnTrue(
-		// 	Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d()))
-		// );
-		// try {
-			CommandScheduler.getInstance().run();
-		// } catch (Exception e) {
-		// 	System.out.println("its shrey's fault");
-		// 	e.printStackTrace();
-		// }
-
+		CommandScheduler.getInstance().run();
 	}
 }

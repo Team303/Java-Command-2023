@@ -42,7 +42,6 @@ public class ClawSubsystem extends SubsystemBase {
 		clawOuterLimit = clawMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     }
 
-	//claw motor getter among us imposter mode
 	public CANSparkMax getClawMotor() {
 		return clawMotor;
 	}
@@ -59,6 +58,7 @@ public class ClawSubsystem extends SubsystemBase {
     public double getRotatePosition() {
         return clawRollEncoder.getPosition();
     }
+
 	public boolean getUltrasonicDistance() {
 		return ultrasonicSensor.get();
 	}
@@ -96,6 +96,5 @@ public class ClawSubsystem extends SubsystemBase {
 
 	public void resetEncoders() {
 		clawEncoder.setPosition(0.0);
-		// rotateEncoder.setPosition(0.0);
 	}
 }

@@ -9,7 +9,6 @@ public class RotateClaw extends CommandBase {
     private final double angle;
     private final double speed;
 
-
     public RotateClaw(double angle, double speed) {
         this.angle = angle;
         this.speed = speed;

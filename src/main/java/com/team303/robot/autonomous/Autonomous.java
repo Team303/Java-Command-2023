@@ -2,7 +2,6 @@ package com.team303.robot.autonomous;
 
 import static com.team303.robot.Robot.swerve;
 import static com.team303.robot.autonomous.AutonomousProgram.create;
-
 import java.util.List;
 import com.team303.robot.Robot;
 import com.team303.robot.commands.drive.DriveWait;
@@ -18,13 +17,10 @@ import com.pathplanner.lib.PathPlanner;
 import com.team303.robot.RobotMap.Swerve;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.awt.Point;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import com.team303.robot.commands.drive.FollowTrajectory;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
@@ -36,8 +32,6 @@ import com.team303.robot.commands.arm.AprilTagAlign;
 import com.team303.robot.commands.arm.ReachPoint;
 import static com.team303.robot.Robot.CONTROLLER_TAB;
 import edu.wpi.first.networktables.GenericEntry;
-import static com.team303.robot.modules.Operator.nodeStateValues;
-import com.team303.robot.modules.Operator.NodeState;
 
 /**
  * Quick guide to Comand Groups:
@@ -72,14 +66,8 @@ public class Autonomous {
     // Create the AutoBuilder. This only needs to be created once when robot code
     // starts, not every time you want to create an auto command. A good place to
     // put this is in RobotContainer along with your subsystems.
-    // static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("New Path", new PathConstraints(4, Swerve.MAX_VELOCITY));
 
     static List<PathPlannerTrajectory> pathGroup;
-    //static Path dir = Filesystem.getDeployDirectory().toPath().resolve("");
-    //static Iterator<Path> files = dir.iterator();
-    private static File dir = new File(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toString());
-    private static File[] directoryListing = dir.listFiles();
-    //private static List<PathPlannerTrajectory> pathGroup;
     private static SwerveAutoBuilder autoBuilder;
     public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
     public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
@@ -113,96 +101,74 @@ public class Autonomous {
                    // commands
             );
 
-        /* 
-        for (File file : directoryListing) {
-            String name = file.getName();
-            pathGroup = PathPlanner.loadPathGroup(name.substring(0, name.lastIndexOf(".")), new PathConstraints(4, Swerve.MAX_VELOCITY));
-            create(file.getName(), () -> autoBuilder.fullAuto(pathGroup));
-        }*/
-        //create("New Path", () -> autoBuilder.fullAuto(pathGroup));
+        create("New Path", () -> autoBuilder.fullAuto(pathGroup));
 
-       // pathGroup = PathPlanner.loadPathGroup("Top to Cone", new PathConstraints(3, Swerve.MAX_VELOCITY));
-       // create("Top to Cone", () -> new SequentialCommandGroup(new InstantCommand(Robot.swerve::resetOdometry), autoBuilder.fullAuto(pathGroup)));
+        pathGroup = PathPlanner.loadPathGroup("Top to Cone", new PathConstraints(3, Swerve.MAX_VELOCITY));
+        create("Top to Cone", () -> new SequentialCommandGroup(new InstantCommand(Robot.swerve::resetOdometry), autoBuilder.fullAuto(pathGroup)));
+        pathGroup = PathPlanner.loadPathGroup("Cone Top", new PathConstraints(3, Swerve.MAX_VELOCITY));
+        create("Cone Top", () -> autoBuilder.fullAuto(pathGroup));
+        pathGroup = PathPlanner.loadPathGroup("Cone Middle", new PathConstraints(3, Swerve.MAX_VELOCITY));
+        create("Cone Middle", () -> autoBuilder.fullAuto(pathGroup));
+        pathGroup = PathPlanner.loadPathGroup("Bottom Hybrid", new PathConstraints(3, Swerve.MAX_VELOCITY));
+        create("Bottom Hybrid", () -> autoBuilder.fullAuto(pathGroup));
+        pathGroup = PathPlanner.loadPathGroup("Top Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
+        create("Top Cube", () -> autoBuilder.fullAuto(pathGroup));
+        pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
+        create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
 
-    //    pathGroup = PathPlanner.loadPathGroup("Cone Top", new PathConstraints(3, Swerve.MAX_VELOCITY));
-    //    create("Cone Top", () -> autoBuilder.fullAuto(pathGroup));
-    //    pathGroup = PathPlanner.loadPathGroup("Cone Middle", new PathConstraints(3, Swerve.MAX_VELOCITY));
-    //    create("Cone Middle", () -> autoBuilder.fullAuto(pathGroup));
-    //    pathGroup = PathPlanner.loadPathGroup("Bottom Hybrid", new PathConstraints(3, Swerve.MAX_VELOCITY));
-    //    create("Bottom Hybrid", () -> autoBuilder.fullAuto(pathGroup));
-    //    pathGroup = PathPlanner.loadPathGroup("Top Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
-    //    create("Top Cube", () -> autoBuilder.fullAuto(pathGroup));
-    //    pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3, Swerve.MAX_VELOCITY));
-    //    create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
+        create("New", () -> {
+            try {
+                return new SequentialCommandGroup(
+                    new InstantCommand(Robot.getNavX()::reset),
+                    new FollowTrajectory("output/New.wpilib.json")
+                    );
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return new DriveWait(15);
+            }});
 
-        // create("New", () -> {
-        //     try {
-        //         return new SequentialCommandGroup(
-        //             new InstantCommand(Robot.getNavX()::reset),
-        //             new FollowTrajectory("output/New.wpilib.json")
-        //             );
-        //     } catch (FileNotFoundException e) {
-        //         e.printStackTrace();
-        //         return new DriveWait(15);
-        //     }});
-
-        // create("StraighForward1", () -> {
-        //     try {
-        //         return new SequentialCommandGroup(
-        //             new InstantCommand(Robot.getNavX()::reset),
-        //             new FollowTrajectory("output/StraightForward1.wpilib.json")
-        //             );
-        //     } catch (FileNotFoundException e) {
-        //         e.printStackTrace();
-        //         return new DriveWait(15);
-        //     }});
+        create("StraighForward1", () -> {
+            try {
+                return new SequentialCommandGroup(
+                    new InstantCommand(Robot.getNavX()::reset),
+                    new FollowTrajectory("output/StraightForward1.wpilib.json")
+                    );
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return new DriveWait(15);
+            }});
         
-        // create("NavX Test", () -> {
-        //     try {
-        //         return new SequentialCommandGroup(
-        //             new InstantCommand(Robot.getNavX()::reset),
-        //             new TurnToAngle(180),
-        //             new FollowTrajectory("output/New.wpilib.json")
-        //         );
-        //     } catch (FileNotFoundException e) {
-        //         e.printStackTrace();
-        //         return new DriveWait(15);
-        //     }
-        // }
-        // );
+        create("NavX Test", () -> {
+            try {
+                return new SequentialCommandGroup(
+                    new InstantCommand(Robot.getNavX()::reset),
+                    new TurnToAngle(180),
+                    new FollowTrajectory("output/New.wpilib.json")
+                );
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return new DriveWait(15);
+            }
+        }
+        );
 
-        // create("Drivepose", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
+        create("Drivepose", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
-        // // create("Apriltag", () -> new AlignAprilTag());
+        // create("Apriltag", () -> new AlignAprilTag());
 
-        // create("AprilTag", () -> new AprilTagAlign(2));
+        create("AprilTag", () -> new AprilTagAlign(2));
 
-        // create("Autolevel", () -> 
-        //     new AutolevelFeedforward()
-        //  );
+        create("Autolevel", () -> 
+            new AutolevelFeedforward()
+         );
 
-        // create("Reach Point", () ->
-        //     new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
-        // );
+        create("Reach Point", () ->
+            new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
+        );
 
-        // create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
+        create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
-        // create("drive to node", () -> swerve.driveToNode());
+        create("drive to node", () -> swerve.driveToNode());
 
     }
-
-    /* 
-    public static double getPathRunTime(String path) {
-        JSONParser parser = new JSONParser();
-        try {     
-            Object obj = parser.parse(new FileReader(path));
-            JSONArray jsonArray =  (JSONArray) obj;
-            Double runTime = (Double) jsonArray.get(jsonArray.lastIndexOf("time"));
-            System.out.printf("The run time for the path of \"%s\" takes %f seconds", path, runTime);
-            return runTime;
-        } catch (Exception e){
-            System.out.println(e.getLocalizedMessage());
-        }
-        return 0.0;
-    }*/
 }

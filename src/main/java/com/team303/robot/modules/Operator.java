@@ -1,12 +1,10 @@
 package com.team303.robot.modules;
 
 import static com.team303.robot.Robot.heldObject;
-
 import com.team303.robot.util.Alert;
 import com.team303.robot.util.Alert.AlertType;
 import java.awt.Point;
 import com.team303.robot.Robot.HeldObject;
-
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;

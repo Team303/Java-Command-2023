@@ -7,9 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.networktables.GenericEntry;
-
 import com.team303.robot.Robot;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ArmTest extends SubsystemBase {

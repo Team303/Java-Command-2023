@@ -1,11 +1,8 @@
 package com.team303.robot.commands.drive;
 
 import com.team303.robot.Robot;
-
 import java.io.FileNotFoundException;
-
 import com.team303.robot.RobotMap.Auto;
-
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -47,5 +44,4 @@ public class FollowTrajectory extends SwerveControllerCommand {
                 Robot.swerve);
         angleController.enableContinuousInput(-Math.PI, Math.PI);
     }
-
 }
