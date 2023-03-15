@@ -111,6 +111,9 @@ public final class RobotMap {
 		public static final int CLAW_JOINT_ID = 17;
 		public static final double SIMULATION_OFFSET = 0;
 		public static final double SIMULATION_SCALE = 84/2.54;
+		public static final double GEAR_RATIO_SHOULDER = 40 / 12 * 160;
+		public static final double GEAR_RATIO_ELBOW = 125;
+		public static final double GEAR_RATIO_CLAW = 45;
 		// public static final double INCHES_TO_
 		/*public static final int BOTTOM_LEFT_LIMIT_SWITCH = 0;
 		public static final int BOTTOM_RIGHT_LIMIT_SWITCH = 1;

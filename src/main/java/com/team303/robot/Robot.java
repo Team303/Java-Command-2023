@@ -61,6 +61,7 @@ import com.team303.robot.commands.drive.AutolevelFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Pose2d;
+import com.team303.robot.commands.arm.Homing;
 
 public class Robot extends LoggedRobot {
 
@@ -199,6 +200,8 @@ public class Robot extends LoggedRobot {
 			logger.addDataReceiver(new NT4Publisher());
 		}
 
+		CommandScheduler.getInstance().schedule(new Homing());
+
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
@@ -255,7 +258,7 @@ public class Robot extends LoggedRobot {
 		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
 		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
 		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setNone));
-		operatorCommandXboxController.start().toggleOnFalse(new ToggleOpen()).toggleOnTrue(new ToggleClose());
+		// operatorCommandXboxController.start().toggleOnFalse(new ToggleOpen()).toggleOnTrue(new ToggleClose());
 		
 		if (controllerChooser.getSelected().equals("Controller")) {
 			driverCommandXboxController.y().onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));

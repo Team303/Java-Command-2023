@@ -444,9 +444,9 @@ public class SwerveSubsystem extends SubsystemBase {
 						visionPoseEstimate.timestampSeconds);
 			}
 		}
-        poseEstimator.update(
-                Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
-                Robot.swerve.getModulePositions());
+        // poseEstimator.update(
+        //         Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
+        //         Robot.swerve.getModulePositions());
         field2d.setRobotPose(getRobotPose());
 
 		lastPeriodic = timer.get();
