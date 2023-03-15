@@ -77,5 +77,4 @@ public class AprilTagAlign extends CommandBase {
 
         return target != null && Math.abs(target.getBestCameraToTarget().getX()) < 0.85;
     }
-
 }
