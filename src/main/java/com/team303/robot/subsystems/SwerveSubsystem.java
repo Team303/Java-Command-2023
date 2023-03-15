@@ -74,7 +74,7 @@ import java.util.HashMap;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import com.team303.robot.commands.drive.TurnToAngle;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import com.team303.robot.commands.arm.ReachPoint;
+// import com.team303.robot.commands.arm.ReachPoint;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -539,9 +539,11 @@ public class SwerveSubsystem extends SubsystemBase {
 			reachNode = "Mid Cone";
 		}
 
+
+
 		return new ParallelCommandGroup(
-			driveToPose(Robot.swerve.getPose(), new Pose2d(1.75, nodePositions[posePoint.y], new Rotation2d())),
-			new ReachPoint(nodePoints.get(reachNode).x, nodePoints.get(reachNode).y)
+			driveToPose(Robot.swerve.getPose(), new Pose2d(1.75, nodePositions[posePoint.y], new Rotation2d()))
+			// new ReachPoint(nodePoints.get(reachNode).x, nodePoints.get(reachNode).y)
 			);
 	}
 

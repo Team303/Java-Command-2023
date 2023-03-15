@@ -14,7 +14,7 @@ import com.team303.robot.RobotMap.Arm;
 import java.util.List;
 
 public class DefaultIKControlCommand extends CommandBase {
-    public static Translation3d cartesianStorage = new Translation3d(0, 0, 0);
+    public static Translation3d cartesianStorage = new Translation3d(30, 0, 20);
     double x = cartesianStorage.getX();
     double z = cartesianStorage.getZ();
     double angle = Math.atan2(x, z);

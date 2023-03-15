@@ -6,7 +6,6 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
@@ -18,7 +17,6 @@ import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.drive.TurnToAngle;
 import com.team303.robot.subsystems.SwerveSubsystem;
 import frc.robot.BuildConstants;
-
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -70,7 +68,7 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final Photonvision photonvision = new Photonvision();
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmSubsystem arm = null; // new ArmSubsystem();
+	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final ArmTest armtest = null; //new ArmTest();
 	public static final Operator operator = new Operator();
 	public static final ClawSubsystem claw = null; //new ClawSubsystem();

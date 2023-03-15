@@ -36,7 +36,7 @@ public class Homing extends CommandBase {
 
         shoulderStartAngle = (Math.toRadians(Math.round(-10)) / (Math.PI * 2)) * arm.shoulderJoint.shoulderEncoder1.getCountsPerRevolution() * Arm.GEAR_RATIO_SHOULDER;
 		elbowStartAngle = (Math.toRadians(Math.round(170.0)) / (Math.PI * 2)) * arm.elbowJoint.elbowEncoder.getCountsPerRevolution() * Arm.GEAR_RATIO_ELBOW;
-
+        
         arm.setEncoders(shoulderStartAngle, elbowStartAngle, 0);
     }
 }

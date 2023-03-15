@@ -60,10 +60,9 @@ public class ArmSubsystem extends SubsystemBase {
 	public static final GenericEntry clawAngleAbsoludte = ARM_TAB.add("clawAngleAbsolute", 0).getEntry();
     public static final GenericEntry effectorAngle = ARM_TAB.add("effector angle", 0).getEntry();
 
-	public static final double INCHES_TO_METERS = 0.0254;
-	public static final double ARMLEN_METERS = INCHES_TO_METERS * 74;
+	// public static final double INCHES_TO_METERS = 0.0254;
+	public static final double ARMLEN_METERS = Units.inchesToMeters(74);
 	public static final double CIRCUMFERENCE = 2 * Math.PI * ARMLEN_METERS;
-	
 	// rotations/sec
 	public static final double VELOCITY = 0.1;
 	// rotations/sec^2
@@ -77,18 +76,6 @@ public class ArmSubsystem extends SubsystemBase {
 	public static final DoubleArrayPublisher JOINT_ANGLES_PUB = armNetwork.getDoubleArrayTopic("Joint Angles Out")
 			.publish();
 	public static final DoubleArrayPublisher JOINT_RPM_PUB = armNetwork.getDoubleArrayTopic("Joints RPM Out").publish();
-
-	public double degreesToEncoders(double angle, double gearRatio) {
-		return angle / 360 * 4096 * gearRatio;
-	}
-
-	public double radiansToEncoders(double angle, double gearRatio) {
-		return angle / (Math.PI * 2) * 4096 * gearRatio;
-	}
-
-	public double encodersToRadians(double encoders, double gearRatio) {
-		return encoders / gearRatio / 4096 * (Math.PI * 2);
-	}
 
 	public class ShoulderJoint {
 		private final CANSparkMax shoulderMotor1 = new CANSparkMax(Arm.SHOULDER_JOINT_ID1, MotorType.kBrushless);
@@ -159,6 +146,18 @@ public class ArmSubsystem extends SubsystemBase {
 				new TrapezoidProfile.Constraints(CIRCUMFERENCE * VELOCITY, CIRCUMFERENCE * ACCELERATION));
 		private final ArmFeedforward m_clawFeedForward = new ArmFeedforward(0.01, 0, 0, 0);
 		private MechanismLigament2d clawSimulator;
+	}
+
+	public double degreesToEncoders(double angle, double gearRatio) {
+		return angle / 360 * clawJoint.clawEncoder.getCountsPerRevolution() * gearRatio;
+	}
+
+	public double radiansToEncoders(double angle, double gearRatio) {
+		return angle / (Math.PI * 2) * clawJoint.clawEncoder.getCountsPerRevolution() * gearRatio;
+	}
+
+	public double encodersToRadians(double encoders, double gearRatio) {
+		return encoders / gearRatio / clawJoint.clawEncoder.getCountsPerRevolution() * (Math.PI * 2);
 	}
 
 	public static FabrikController armKinematics = new FabrikController();
@@ -279,7 +278,8 @@ public class ArmSubsystem extends SubsystemBase {
 				encodersToRadians(shoulderJoint.shoulderEncoder1.getPosition(), Arm.GEAR_RATIO_SHOULDER) * CIRCUMFERENCE,
 				shoulderJoint.shoulderControl.getGoal());
 		double elbowFeedback = elbowJoint.elbowControl.calculate(
-				encodersToRadians(elbowJoint.elbowEncoder.getPosition(), Arm.GEAR_RATIO_ELBOW) * CIRCUMFERENCE, elbowJoint.elbowControl.getGoal());
+				encodersToRadians(elbowJoint.elbowEncoder.getPosition(), Arm.GEAR_RATIO_ELBOW) * CIRCUMFERENCE, 
+				elbowJoint.elbowControl.getGoal());
 		// double clawFeedback = clawJoint.clawControl.calculate(
 		// 		Units.rotationsToRadians(clawJoint.clawEncoder.getPosition()), clawJoint.clawControl.getGoal());
 
@@ -289,13 +289,15 @@ public class ArmSubsystem extends SubsystemBase {
 		if (shoulderJoint.shoulderEncoder1.getPosition() < degreesToEncoders(shoulderLimits[0], Arm.GEAR_RATIO_SHOULDER) ||
 			shoulderJoint.shoulderEncoder1.getPosition() > degreesToEncoders(shoulderLimits[0], Arm.GEAR_RATIO_SHOULDER)) {
 				shoulderJoint.setMotors(-(shoulderFeedForward + shoulderFeedback) * 0.02);
-		} else {
-			shoulderJoint.setMotors((shoulderFeedForward + shoulderFeedback) * 0.02);
-		}
-
-		if (elbowJoint.elbowEncoder.getPosition() < degreesToEncoders(elbowLimits[0], Arm.GEAR_RATIO_ELBOW) ||
+				System.out.println("Shoulder hit soft limit!!!");
+			} else {
+				shoulderJoint.setMotors((shoulderFeedForward + shoulderFeedback) * 0.02);
+			}
+			
+			if (elbowJoint.elbowEncoder.getPosition() < degreesToEncoders(elbowLimits[0], Arm.GEAR_RATIO_ELBOW) ||
 			elbowJoint.elbowEncoder.getPosition() > degreesToEncoders(elbowLimits[0], Arm.GEAR_RATIO_ELBOW)) {
 				elbowJoint.elbowMotor.set(-(elbowFeedForward + elbowFeedback) * 0.02);
+				System.out.println("Elbow hit soft limit!!!");
 		} else {
 			elbowJoint.elbowMotor.set((elbowFeedForward + elbowFeedback) * 0.02);
 		}
@@ -355,14 +357,14 @@ public class ArmSubsystem extends SubsystemBase {
 			// clawAngleAbsolute.setDouble(absoluteClaw);
 		}
 
-		// if (shoulderJoint.shoulderSwitch2.isPressed() || shoulderJoint.shoulderSwitch1.isPressed()) {
-		// 	CommandScheduler.getInstance().cancel(new DefaultIKControlCommand(true));
-		// 	shoulderJoint.setMotors(0);
-		// }
-		// if (elbowJoint.elbowSwitch.isPressed()) {
-		// 	CommandScheduler.getInstance().cancel(new DefaultIKControlCommand(true));
-		// 	elbowJoint.elbowMotor.set(0);
-		// }
+		if (shoulderJoint.shoulderSwitch2.isPressed() || shoulderJoint.shoulderSwitch1.isPressed()) {
+			CommandScheduler.getInstance().cancelAll();
+			shoulderJoint.setMotors(0);
+		}
+		if (elbowJoint.elbowSwitch.isPressed()) {
+			CommandScheduler.getInstance().cancelAll();
+			elbowJoint.elbowMotor.set(0);
+		}
 		// if (clawJoint.clawSwitch.isPressed()) {
 		// 	CommandScheduler.getInstance().cancel(new DefaultIKControlCommand(true));
 		// 	clawJoint.clawMotor.set(0);

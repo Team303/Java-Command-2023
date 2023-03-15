@@ -2,8 +2,11 @@ package com.team303.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxLimitSwitch.Type;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.networktables.GenericEntry;
@@ -19,11 +22,18 @@ public class ArmTest extends SubsystemBase {
     RelativeEncoder shoulderEncoder;
     RelativeEncoder elbowEncoder;
     RelativeEncoder wristEncoder;
+    SparkMaxLimitSwitch motor1Switch;
+    SparkMaxLimitSwitch motor2Switch;
+    SparkMaxLimitSwitch elbowSwitch;
+
 
     public static final ShuffleboardTab ARM_TEST_TAB = Shuffleboard.getTab("Arm Test");
     GenericEntry shoulderEncodersTab = ARM_TEST_TAB.add("shoulder", 0).getEntry();
     GenericEntry elbowEncodersTab = ARM_TEST_TAB.add("elbow", 0).getEntry();
     GenericEntry wristEncodersTab = ARM_TEST_TAB.add("wrist", 0).getEntry();
+    GenericEntry shoulder1SwitchTab = ARM_TEST_TAB.add("shoulder switch", false).getEntry();
+    GenericEntry shoulder2SwitchTab = ARM_TEST_TAB.add("elbow switch", false).getEntry();
+    GenericEntry elbowSwitchTab = ARM_TEST_TAB.add("wrist switch", false).getEntry();
 
     public ArmTest() {
         motor1 = new CANSparkMax(15, MotorType.kBrushless);
@@ -49,6 +59,12 @@ public class ArmTest extends SubsystemBase {
         shoulderEncoder.setInverted(false);
         elbowEncoder.setInverted(false);
         wristEncoder.setInverted(false);
+
+        motor1Switch = motor1.getReverseLimitSwitch(Type.kNormallyOpen);
+        motor2Switch = motor2.getReverseLimitSwitch(Type.kNormallyOpen);
+        elbowSwitch = elbowMotor.getReverseLimitSwitch(Type.kNormallyOpen);
+
+
     }
 
     public void move(double speed, double elbowSpeed, double wristSpeed) {
@@ -64,5 +80,8 @@ public class ArmTest extends SubsystemBase {
         shoulderEncodersTab.setDouble(shoulderEncoder.getPosition());
         elbowEncodersTab.setDouble(elbowEncoder.getPosition());
         wristEncodersTab.setDouble(wristEncoder.getPosition());
+        shoulder1SwitchTab.setBoolean(motor1Switch.isPressed());
+        shoulder2SwitchTab.setBoolean(motor2Switch.isPressed());
+        elbowSwitchTab.setBoolean(elbowSwitch.isPressed());
     }
 }
