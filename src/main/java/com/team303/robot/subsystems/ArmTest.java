@@ -62,8 +62,8 @@ public class ArmTest extends SubsystemBase {
         elbowMotor.setIdleMode(IdleMode.kBrake);
         wristMotor.setIdleMode(IdleMode.kBrake);
         
-        motor1.setInverted(false);
-        motor2.setInverted(true);
+        motor1.setInverted(true);
+        motor2.setInverted(false);
         elbowMotor.setInverted(false);
         wristMotor.setInverted(true);
 
@@ -71,9 +71,9 @@ public class ArmTest extends SubsystemBase {
         elbowEncoder = elbowMotor.getEncoder();
         wristEncoder = wristMotor.getEncoder();
 
-        shoulderEncoder.setPositionConversionFactor(266.66);
-        elbowEncoder.setPositionConversionFactor(125);
-        wristEncoder.setPositionConversionFactor(45);
+        shoulderEncoder.setPositionConversionFactor(1/533);
+        elbowEncoder.setPositionConversionFactor(1/125);
+        wristEncoder.setPositionConversionFactor(1/45);
 
         // shoulderEncoder.setInverted(false);
         // elbowEncoder.setInverted(false);
@@ -86,6 +86,10 @@ public class ArmTest extends SubsystemBase {
         motor1SwitchForward = motor1.getForwardLimitSwitch(Type.kNormallyOpen);
         motor2SwitchForward = motor2.getForwardLimitSwitch(Type.kNormallyOpen);
         elbowSwitchForward = elbowMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+
+        shoulderEncoder.setPosition(0);
+        elbowEncoder.setPosition(0);
+        wristEncoder.setPosition(0);
     }
 
     public void move(double speed, double elbowSpeed, double wristSpeed) {

@@ -40,7 +40,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.BuildConstants;
 import com.team303.robot.commands.claw.ToggleOpen;
 import com.team303.robot.commands.claw.ToggleClose;
-
+import com.team303.robot.commands.arm.DefaultMove;
 import com.team303.robot.subsystems.ArmTest;
 import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.commands.MoveArm;
@@ -69,7 +69,7 @@ public class Robot extends LoggedRobot {
 	public static final Photonvision photonvision = null; // new Photonvision();
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
-	public static final ArmTest armtest = null;// new ArmTest();
+	public static final ArmTest armtest = null; //new ArmTest();
 	public static final Operator operator = null; //new Operator();
 	public static final ClawSubsystem claw = new ClawSubsystem();
 	public static final Ultrasonic ultrasonic = null; //new Ultrasonic(0, 4);
@@ -89,9 +89,9 @@ public class Robot extends LoggedRobot {
 	public static final ShuffleboardTab DATA_TAB = Shuffleboard.getTab("Data");
 	public static final ShuffleboardTab CONTROLLER_TAB = Shuffleboard.getTab("Controller");
 
-	public static final GenericEntry NAVX_ANGLE = DATA_TAB.add("NavX Angle", 0).getEntry();
 	public static final GenericEntry NAVX_Y_VELOCITY = DATA_TAB.add("Y velocity", 0).getEntry();
 	public static final GenericEntry NAVX_ACCELERATION = DATA_TAB.add("acceleration", 0).getEntry();
+	public static final GenericEntry NAVX_ANGLE = DATA_TAB.add("NavX Angle", 0).getEntry();
 	public static final GenericEntry L_AXIS = CONTROLLER_TAB.add("l trigger", 0).getEntry();
 
 	/* Shuffleboard Choosers */
@@ -198,15 +198,15 @@ public class Robot extends LoggedRobot {
 			logger.addDataReceiver(new NT4Publisher());
 		}
 
-		// CommandScheduler.getInstance().schedule(new Homing());
 
 		// Configure the joystick and controller bindings
-		// configureButtonBindings();
+		configureButtonBindings();
 
-		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
 		Robot.claw.setDefaultCommand(new DefaultClaw());
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		Robot.arm.setDefaultCommand(new DefaultMove());
+		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// add Autos to Shuffleboard
@@ -238,27 +238,32 @@ public class Robot extends LoggedRobot {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
+
+		// CommandScheduler.getInstance().schedule(x);
+		
 	}
 
 	@Override
 	public void disabledInit() {}
 
 	@Override
-	public void disabledPeriodic() {
-	}
+	public void disabledPeriodic() {}
 
 	private void configureButtonBindings() {
-		operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
-		operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
-		operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
-		operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
-		operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
-		operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
-		operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setNone));
+		// operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
+		// operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
+		// operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
+		// operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
+		// operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
+		// operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
+		// operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setNone));
+		// operatorCommandXboxController.a().onTrue(new InstantCommand(arm::resetEncodersNew));
 		// operatorCommandXboxController.start().toggleOnFalse(new ToggleOpen()).toggleOnTrue(new ToggleClose());
 		
 		if (controllerChooser.getSelected().equals("Controller")) {
-			driverCommandXboxController.y().onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
+			// driverCommandXboxController.y().onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
+			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
+			driverCommandXboxController.y().onTrue(new InstantCommand(swerve::resetOdometry));
 			driverCommandXboxController.a().whileTrue(new AutolevelFeedforward())
 											.whileFalse(new DefaultDrive(true));
 			driverCommandXboxController.pov(0).onTrue(new TurnToAngle(0));
@@ -297,6 +302,7 @@ public class Robot extends LoggedRobot {
 		 */
 
 		// operatorCommandXboxController.a().toggleOnTrue(swerve.driveToNode());
+		NAVX_ANGLE.setDouble(Robot.getNavX().getAngle() % 360, 0);
 		try {
 			CommandScheduler.getInstance().run();
 		} catch (Exception e) {

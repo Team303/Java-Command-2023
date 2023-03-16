@@ -451,7 +451,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		lastPeriodic = timer.get();
 
-		NAVX_ANGLE.setDouble(Robot.getNavX().getAngle() % 360, 0);
+
 		NAVX_Y_VELOCITY.setDouble(Robot.getNavX().getRawGyroZ(), 0);
 		NAVX_ACCELERATION.setDouble(Robot.getNavX().getRawAccelX());
 		SmartDashboard.putNumber("Pitch acceleration", -Robot.getNavX().getRawAccelY());
@@ -466,6 +466,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("Pose X", pose.getX());
 		SmartDashboard.putNumber("Pose Y", pose.getY());
 		// Logger.getInstance().recordOutput("Odometry 2", getRobotPose());
+
 
 	}
 

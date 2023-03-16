@@ -25,9 +25,9 @@ public class DefaultDrive extends CommandBase {
                 if (Robot.isReal())
                         Robot.swerve.drive(
                                 new Translation2d(
-                                        DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
+                                        DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
-                                        DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
+                                        DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
                                 DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
                                 fieldOriented);

@@ -32,6 +32,7 @@ import com.team303.robot.commands.arm.AprilTagAlign;
 // import com.team303.robot.commands.arm.ReachPoint;
 import static com.team303.robot.Robot.CONTROLLER_TAB;
 import edu.wpi.first.networktables.GenericEntry;
+import com.team303.robot.commands.arm.Homing;
 
 /**
  * Quick guide to Comand Groups:
@@ -169,6 +170,8 @@ public class Autonomous {
         // create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
         // create("drive to node", () -> swerve.driveToNode());
+
+        create("Homing", () -> new Homing());
 
     }
 }

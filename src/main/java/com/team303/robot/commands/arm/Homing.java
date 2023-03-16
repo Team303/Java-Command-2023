@@ -17,25 +17,25 @@ public class Homing extends CommandBase {
 
     @Override
     public void execute() {
-        while (!arm.shoulderJoint.shoulderSwitch1.isPressed()) {
-            arm.shoulderJoint.setMotors(-0.2);
+        if (!arm.shoulderJoint.shoulderSwitchReverse1.isPressed()) {
+            arm.shoulderJoint.setMotors(-0.05);
         }   
 
-        while(!arm.elbowJoint.elbowSwitch.isPressed()) {
-            arm.elbowJoint.elbowMotor.set(-0.2);
+        if (!arm.elbowJoint.elbowSwitchReverse.isPressed()) {
+            arm.elbowJoint.elbowMotor.set(0.05);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return arm.shoulderJoint.shoulderSwitch1.isPressed() && arm.elbowJoint.elbowSwitch.isPressed();
+        return arm.shoulderJoint.shoulderSwitchReverse1.isPressed() && arm.elbowJoint.elbowSwitchReverse.isPressed();
     }
 
     @Override
     public void end(boolean interrupted) {
 
-        shoulderStartAngle = (Math.toRadians(Math.round(-10)) / (Math.PI * 2)) * arm.shoulderJoint.shoulderEncoder1.getCountsPerRevolution() * Arm.GEAR_RATIO_SHOULDER;
-		elbowStartAngle = (Math.toRadians(Math.round(170.0)) / (Math.PI * 2)) * arm.elbowJoint.elbowEncoder.getCountsPerRevolution() * Arm.GEAR_RATIO_ELBOW;
+        shoulderStartAngle = (Math.toRadians(Math.round(-20)) / (Math.PI * 2)) * arm.shoulderJoint.shoulderEncoder1.getCountsPerRevolution();
+		elbowStartAngle = (Math.toRadians(Math.round(170.0)) / (Math.PI * 2)) * arm.elbowJoint.elbowEncoder.getCountsPerRevolution();
         
         arm.setEncoders(shoulderStartAngle, elbowStartAngle, 0);
     }
