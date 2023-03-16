@@ -232,9 +232,9 @@ public class SwerveSubsystem extends SubsystemBase {
         }
 
         aprilTagField = initialLayout;
-				// photonvision pose estimator
+		// photonvision pose estimator
 
-		if (Robot.photonvision != null) {
+		if (false) {
 			visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP, Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
 		}
 		poseEstimator = new SwerveDrivePoseEstimator(
@@ -436,7 +436,7 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
-		if (Robot.photonvision != null) {
+		if (false) {
 			Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
 			if (result.isPresent()) {
 				EstimatedRobotPose visionPoseEstimate = result.get();
@@ -465,7 +465,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.getInstance().recordOutput("Odometry", pose);
 		SmartDashboard.putNumber("Pose X", pose.getX());
 		SmartDashboard.putNumber("Pose Y", pose.getY());
-		Logger.getInstance().recordOutput("Odometry 2", getRobotPose());
+		// Logger.getInstance().recordOutput("Odometry 2", getRobotPose());
 
 	}
 
@@ -547,12 +547,12 @@ public class SwerveSubsystem extends SubsystemBase {
 			);
 	}
 
-	@Override
-    public String toString() {
-        var pose = getRobotPose();
-        return String.format("(%.2f, %.2f) %.2f degrees",
-                pose.getX(),
-                pose.getY(),
-                pose.getRotation().getDegrees());
-    }
+	// @Override
+    // public String toString() {
+    //     var pose = getRobotPose();
+    //     return String.format("(%.2f, %.2f) %.2f degrees",
+    //             pose.getX(),
+    //             pose.getY(),
+    //             pose.getRotation().getDegrees());
+    // }
 }

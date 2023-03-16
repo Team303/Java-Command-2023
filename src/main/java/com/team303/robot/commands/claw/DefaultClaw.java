@@ -10,6 +10,7 @@ public class DefaultClaw extends CommandBase {
 
     @Override
     public void execute() {
-        Robot.claw.setRotateSpeed(Robot.getOperatorCommandXbox().getRightTriggerAxis() - Robot.getOperatorCommandXbox().getLeftTriggerAxis());
+        Robot.claw.setRotateSpeed(Robot.getOperatorCommandXbox().getRightX() );
+        Robot.claw.setClawSpeed(Robot.getOperatorCommandXbox().getLeftX() * 0.5);
     }
 }

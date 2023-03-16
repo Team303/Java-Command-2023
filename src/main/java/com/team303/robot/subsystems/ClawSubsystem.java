@@ -22,12 +22,12 @@ public class ClawSubsystem extends SubsystemBase {
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
 	public static final double GEAR_RATIO_WRIST = 27;
 
-	private final CANSparkMax clawMotor = new CANSparkMax(20, MotorType.kBrushless);
-	private final CANSparkMax clawRollMotor = new CANSparkMax(21, MotorType.kBrushless);
+	private final CANSparkMax clawMotor = new CANSparkMax(19, MotorType.kBrushless);
+	private final CANSparkMax clawRollMotor = new CANSparkMax(18, MotorType.kBrushless);
 	private final RelativeEncoder clawEncoder;
 	private final RelativeEncoder clawRollEncoder;
 	public final SparkMaxLimitSwitch  clawOuterLimit;
-	private final DigitalInput ultrasonicSensor = new DigitalInput(Claw.ULTRASONIC_ID);
+	// private final DigitalInput ultrasonicSensor = new DigitalInput(Claw.ULTRASONIC_ID);
 
 	public ClawSubsystem() {
 		clawMotor.setInverted(true);
@@ -59,12 +59,12 @@ public class ClawSubsystem extends SubsystemBase {
         return clawRollEncoder.getPosition();
     }
 
-	public boolean getUltrasonicDistance() {
-		return ultrasonicSensor.get();
-	}
+	// public boolean getUltrasonicDistance() {
+	// 	return ultrasonicSensor.get();
+	// }
 
 	public void setRotateSpeed(double wrist) {
-		clawMotor.set(wrist);
+		clawRollMotor.set(wrist);
 	}
 
 	public void setClawSpeed(double claw) {

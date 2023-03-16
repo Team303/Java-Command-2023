@@ -47,9 +47,9 @@ public final class RobotMap {
 
 		/* Motor Encoder Calculations */
 		public static final double WHEEL_DIAMTER = 0.1524; // Diameter in meters
-		public static final int ENCODER_COUNTS_PER_REV = 4096; // ctre CANCoder
+		// public static final int ENCODER_COUNTS_PER_REV = ; // ctre CANCoder
 		public static final double DRIVE_GEAR_RATIO = 12.75; // Toughbox mini 12.75:1
-		public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for each encoder unit
+		// public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for each encoder unit
 		public static final double MAX_VELOCITY = 4;
 			
 		public static final double MAX_ACCELERATION = 3; //Meters per second
@@ -92,15 +92,15 @@ public final class RobotMap {
             false
     	);
 
-		static {
-			double wheelCircumference = WHEEL_DIAMTER * Math.PI;
-			double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
-			double axelRotationsPerMotorRotation = 1 / MK4I_L2_LEFT_FRONT.getDriveReduction();
+		// static {
+		// 	double wheelCircumference = WHEEL_DIAMTER * Math.PI;
+		// 	double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
+		// 	double axelRotationsPerMotorRotation = 1 / MK4I_L2_LEFT_FRONT.getDriveReduction();
 
-			DISTANCE_PER_ENCODER_PULSE = motorRotationsPerEncoderPulse
-					* axelRotationsPerMotorRotation
-					* wheelCircumference;
-		}
+		// 	DISTANCE_PER_ENCODER_PULSE = motorRotationsPerEncoderPulse
+		// 			* axelRotationsPerMotorRotation
+		// 			* wheelCircumference;
+		// }
 	}
 
 	public static final class Arm {

@@ -33,7 +33,8 @@ public class Photonvision extends SubsystemBase {
 
     private static PhotonCamera[] camera = {
         new PhotonCamera("PhotonVision1"), 
-        new PhotonCamera("PhotonVision2")};
+        // new PhotonCamera("PhotonVision2")
+    };
 
     public static enum PhotonPipeline {
         AprilTag,
@@ -43,7 +44,7 @@ public class Photonvision extends SubsystemBase {
 
     public static enum CameraName {
         CAM1,
-        CAM2
+        // CAM2
     }
 
     public static enum ConePosition {
@@ -150,6 +151,9 @@ public class Photonvision extends SubsystemBase {
     public void periodic() {
 
         PhotonTrackedTarget target = getBestTarget(CameraName.CAM1);
+
+        if (target == null)
+            return;
 
         if (target != null) {
             if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
