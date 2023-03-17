@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.subsystems.SwerveSubsystem;
+import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;
 
 public class DefaultDrive extends CommandBase {
 
@@ -21,6 +22,12 @@ public class DefaultDrive extends CommandBase {
 
     @Override
     public void execute() {
+
+        // double speedConstant = Math.abs(1 - Math.hypot(cartesianStorage.getX(), cartesianStorage.getZ())/48);
+        double a1 =  31;
+        double a2 = 31 + 12;
+        // double speedConstant = 
+
         if (Robot.controllerChooser.getSelected().equals("Controller")) {
                 if (Robot.isReal())
                         Robot.swerve.drive(

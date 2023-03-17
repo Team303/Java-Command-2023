@@ -18,11 +18,11 @@ public class Homing extends CommandBase {
     @Override
     public void execute() {
         if (!arm.shoulderJoint.shoulderSwitchReverse1.isPressed()) {
-            arm.shoulderJoint.setMotors(-0.05);
+            arm.shoulderJoint.setMotors(-0.1);
         }   
 
         if (!arm.elbowJoint.elbowSwitchReverse.isPressed()) {
-            arm.elbowJoint.elbowMotor.set(0.05);
+            arm.elbowJoint.elbowMotor.set(0.1);
         }
     }
 
@@ -34,8 +34,8 @@ public class Homing extends CommandBase {
     @Override
     public void end(boolean interrupted) {
 
-        shoulderStartAngle = (Math.toRadians(Math.round(-20)) / (Math.PI * 2)) * arm.shoulderJoint.shoulderEncoder1.getCountsPerRevolution();
-		elbowStartAngle = (Math.toRadians(Math.round(170.0)) / (Math.PI * 2)) * arm.elbowJoint.elbowEncoder.getCountsPerRevolution();
+        shoulderStartAngle = -20;
+		elbowStartAngle = 170.0;
         
         arm.setEncoders(shoulderStartAngle, elbowStartAngle, 0);
     }

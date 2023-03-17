@@ -205,13 +205,13 @@ public class Robot extends LoggedRobot {
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
 		Robot.claw.setDefaultCommand(new DefaultClaw());
-		Robot.arm.setDefaultCommand(new DefaultMove());
-		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		// Robot.arm.setDefaultCommand(new DefaultMove());
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// add Autos to Shuffleboard
-		// Autonomous.init();
-		// AutonomousProgram.addAutosToShuffleboard();
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -302,7 +302,7 @@ public class Robot extends LoggedRobot {
 		 */
 
 		// operatorCommandXboxController.a().toggleOnTrue(swerve.driveToNode());
-		NAVX_ANGLE.setDouble(Robot.getNavX().getAngle() % 360, 0);
+		// NAVX_ANGLE.setDouble(Robot.getNavX().getAngle() % 360, 0);
 		try {
 			CommandScheduler.getInstance().run();
 		} catch (Exception e) {
