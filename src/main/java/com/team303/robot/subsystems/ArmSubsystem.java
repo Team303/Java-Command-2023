@@ -42,6 +42,7 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;
 import com.team303.robot.RobotMap.Arm;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import com.team303.robot.commands.arm.DefaultIKControlCommand;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -195,7 +196,7 @@ public class ArmSubsystem extends SubsystemBase {
 		return encoders / ENCODERS_PER_REV * (Math.PI * 2);
 	}
 
-	public static FabrikController armKinematics = new FabrikController();
+	public FabrikController armKinematics = new FabrikController();
 	
 	public ShoulderJoint shoulderJoint = new ShoulderJoint();
 	public ElbowJoint elbowJoint = new ElbowJoint();
@@ -250,8 +251,10 @@ public class ArmSubsystem extends SubsystemBase {
 		effectorRoot = armSimulation.getRoot("End Effector", (Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX(), (Arm.SIMULATION_OFFSET)/Arm.SIMULATION_SCALE+cartesianStorage.getZ());
 
 		effectorPoint = effectorRoot.append(new MechanismLigament2d("effector",1.0/Arm.SIMULATION_SCALE,0.0,5.0,new Color8Bit(255,0,0)));
-		storedShoulderAngle = -90+armKinematics.getIKAnglesDegrees().get(0);
+		storedShoulderAngle = armKinematics.getIKAnglesDegrees().get(0);
 		storedElbowAngle = storedShoulderAngle-armKinematics.getIKAnglesDegrees().get(1);
+		// reach(armKinematics.getIKAnglesRadians());
+
 		// storedClawAngle = storedElbowAngle+armKinematics.getIKAnglesDegrees().get(2);
 		SmartDashboard.putNumber("Counts per rev", shoulderJoint.shoulderEncoder1.getCountsPerRevolution());
 	}
@@ -277,6 +280,9 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void reach(List<Double> desiredRadianAngles) {
+
+		storedShoulderAngle = desiredRadianAngles.get(0);
+		storedElbowAngle = desiredRadianAngles.get(1);
 
 		shoulderAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(0)));
 		jointAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(1)));
@@ -314,8 +320,6 @@ public class ArmSubsystem extends SubsystemBase {
 		// elbowGoalVel.setDouble(elbowJoint.elbowControl.getGoal().velocity);
 		// double clawFeedback = clawJoint.clawControl.calculate(
 		// 		Units.rotationsToRadians(clawJoint.clawEncoder.getPosition()), clawJoint.clawControl.getGoal());
-
-
 
 		// if (shoulderJoint.shoulderEncoder1.getPosition() < shoulderLimits[0] ||
 		// 	shoulderJoint.shoulderEncoder1.getPosition() > shoulderLimits[1]) {

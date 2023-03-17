@@ -31,7 +31,7 @@ public class DefaultIKControlCommand extends CommandBase {
     @Override
     public void execute() {
         angle = Math.atan2(cartesianStorage.getZ(), cartesianStorage.getX());
-        angle += Math.toRadians(Robot.getOperatorXbox().getLeftTriggerAxis() - Robot.getOperatorXbox().getRightTriggerAxis());
+        // angle += Math.toRadians(Robot.getOperatorXbox().getLeftTriggerAxis() - Robot.getOperatorXbox().getRightTriggerAxis());
         length = Math.hypot(cartesianStorage.getZ(), cartesianStorage.getX());
 
         double robotAngle;
@@ -59,7 +59,7 @@ public class DefaultIKControlCommand extends CommandBase {
         cartesianStorage = new Translation3d(x, 0.0, z);
 
         arm.reachEmbedded(cartesianStorage);
-        ArmSubsystem.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
+        arm.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
         effectorRoot.setPosition((Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianStorage.getX()/Arm.SIMULATION_SCALE,
             Arm.SIMULATION_OFFSET/Arm.SIMULATION_SCALE+cartesianStorage.getZ()/Arm.SIMULATION_SCALE);
     }

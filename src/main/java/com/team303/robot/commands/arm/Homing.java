@@ -3,6 +3,7 @@ package com.team303.robot.commands.arm;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import static com.team303.robot.Robot.arm;
 import com.team303.robot.RobotMap.Arm;
+import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;;
 
 public class Homing extends CommandBase {
 
@@ -13,6 +14,7 @@ public class Homing extends CommandBase {
 
     public Homing() {
         addRequirements(arm);
+        System.out.println("\n\n\n\n\n\n\n\nik angles" + arm.armKinematics.getIKAnglesDegrees().get(0) + arm.armKinematics.getIKAnglesDegrees().get(1));
     }
 
     @Override
@@ -38,5 +40,10 @@ public class Homing extends CommandBase {
 		elbowStartAngle = 170.0;
         
         arm.setEncoders(shoulderStartAngle, elbowStartAngle, 0);
+
+        System.out.println("ik angles" + arm.armKinematics.getIKAnglesDegrees().get(0) + arm.armKinematics.getIKAnglesDegrees().get(1));
+        
+        // arm.reach(arm.armKinematics.getIKAnglesRadians());
+        // cartesianStorage = new Translation3d(cartesianCoords.getX(), 0, cartesianCoords.getZ());
     }
 }
