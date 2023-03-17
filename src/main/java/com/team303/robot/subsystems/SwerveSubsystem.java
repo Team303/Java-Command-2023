@@ -358,13 +358,22 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	// generic drive method
 
+	public void lockWheels() {
+		// lockWheels
+		leftFrontModule.set(0, Math.PI/2);
+		rightFrontModule.set(0, Math.PI/2);
+		leftBackModule.set(0, Math.PI/2);
+		rightBackModule.set(0, Math.PI/2);
+	}
+
+	
 	public void drive(SwerveModuleState[] state) {
 		chassisSpeeds = kinematics.toChassisSpeeds(state);
 		// map speed of swerve modules to voltage
 		leftFrontModule.set(state[0].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[0].angle.getRadians());
 		rightFrontModule.set(state[1].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
-				state[1].angle.getRadians());
+				Math.PI/2);
 		leftBackModule.set(state[2].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[2].angle.getRadians());
 		rightBackModule.set(state[3].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,

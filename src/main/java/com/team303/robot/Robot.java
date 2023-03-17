@@ -60,6 +60,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import com.team303.robot.commands.arm.Homing;
+import java.util.List;
 
 public class Robot extends LoggedRobot {
 
@@ -71,7 +72,7 @@ public class Robot extends LoggedRobot {
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final ArmTest armtest = null; //new ArmTest();
 	public static final Operator operator = null; //new Operator();
-	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final ClawSubsystem claw = null; //new ClawSubsystem();
 	public static final Ultrasonic ultrasonic = null; //new Ultrasonic(0, 4);
 
 	/* Robot IO Controls */
@@ -83,6 +84,7 @@ public class Robot extends LoggedRobot {
 	private static final XboxController driverXboxController = new XboxController(IOConstants.DRIVER_CONTROLLER);
 
 	public static SendableChooser<String> controllerChooser = new SendableChooser<>();
+	public static SendableChooser<String> operatorModeChooser = new SendableChooser<>();
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -165,7 +167,11 @@ public class Robot extends LoggedRobot {
 		controllerChooser.addOption("Controller", "Controller");
 		controllerChooser.addOption("JoySticks", "JoySticks");
 		controllerChooser.setDefaultOption("Controller", "Controller");
+		operatorModeChooser.addOption("Manual", "Manual");
+		operatorModeChooser.addOption("IK", "IK");
+		operatorModeChooser.setDefaultOption("Manual", "Manual");
 		CONTROLLER_TAB.add("Controller", controllerChooser);
+		CONTROLLER_TAB.add("Control Type", operatorModeChooser);
 
 		Logger logger = Logger.getInstance();
 
@@ -204,9 +210,9 @@ public class Robot extends LoggedRobot {
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
-		Robot.claw.setDefaultCommand(new DefaultClaw());
-		// Robot.arm.setDefaultCommand(new DefaultMove());
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		// Robot.claw.setDefaultCommand(new DefaultClaw());
+		Robot.arm.setDefaultCommand(new DefaultMove());
+		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// add Autos to Shuffleboard
@@ -229,6 +235,7 @@ public class Robot extends LoggedRobot {
 					// command
 					new SequentialCommandGroup(
 							new DriveWait(autoDelayChooser.getSelected()),
+							new Homing(),
 							autonomousCommand));
 		}
 	}
@@ -252,14 +259,20 @@ public class Robot extends LoggedRobot {
 	private void configureButtonBindings() {
 		// operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
 		// operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
-		// operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
+		// operatorCommandXboxController.pov(180.33).onTrue(new InstantCommand(operator::moveDown));
 		// operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
 		// operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
 		// operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
 		// operatorCommandXboxController.x().onTrue(new InstantCommand(operator::setNone));
 		// operatorCommandXboxController.a().onTrue(new InstantCommand(arm::resetEncodersNew));
 		// operatorCommandXboxController.start().toggleOnFalse(new ToggleOpen()).toggleOnTrue(new ToggleClose());
-		
+
+		//just testing manual angles
+		//try reaching this configuration
+		operatorCommandXboxController.a().onTrue(new InstantCommand(() -> arm.reach(List.of(20.0, 45.0, 0.0))));
+		operatorCommandXboxController.leftTrigger().whileTrue(new DefaultIKControlCommand(false)).whileFalse(new DefaultMove());
+
+
 		if (controllerChooser.getSelected().equals("Controller")) {
 			// driverCommandXboxController.y().onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
 			driverCommandXboxController.y().onTrue(new InstantCommand(navX::reset));
@@ -270,7 +283,7 @@ public class Robot extends LoggedRobot {
 			driverCommandXboxController.pov(90).onTrue(new TurnToAngle(90));
 			driverCommandXboxController.pov(180).onTrue(new TurnToAngle(180));
 			driverCommandXboxController.pov(270).onTrue(new TurnToAngle(270));
-			driverCommandXboxController.x().whileTrue(Commands.runOnce(swerve::stop))
+			driverCommandXboxController.x().whileTrue(Commands.runOnce(swerve::lockWheels))
 											.whileFalse(new DefaultDrive(true));
 			driverCommandXboxController.x().onFalse(new DefaultDrive(true));
 		} else {
@@ -306,6 +319,7 @@ public class Robot extends LoggedRobot {
 		try {
 			CommandScheduler.getInstance().run();
 		} catch (Exception e) {
+			System.out.println("It's shrey's fault");
 			e.printStackTrace();
 		}
 

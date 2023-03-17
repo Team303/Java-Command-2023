@@ -25,9 +25,9 @@ public class AutolevelFeedforward extends CommandBase {
 
     @Override
     public void execute() {
-        angle = Math.toRadians(Robot.getNavX().getAngle());
-        magnitude = (FeedbackController.calculate(-Robot.getNavX().getPitch(), 0) 
-            + FeedforwardController.calculate(-Robot.getNavX().getPitch())) * 0.04;
+        angle = Math.toRadians(-Robot.getNavX().getAngle());
+        magnitude = (FeedbackController.calculate(-Robot.getNavX().getPitch() * Math.cos(angle) - Robot.getNavX().getRoll() * Math.sin(angle), 0) 
+            + FeedforwardController.calculate(-Robot.getNavX().getPitch() * Math.cos(angle) - Robot.getNavX().getRoll() * Math.sin(angle))) * 0.04;
 
         Robot.swerve.drive(new Translation2d(magnitude * Math.cos(angle), magnitude * Math.sin(angle)), 
             0, true);
@@ -35,7 +35,7 @@ public class AutolevelFeedforward extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(Robot.getNavX().getPitch()) < 4.80 || FeedbackController.atSetpoint();
+        return Math.abs(-Robot.getNavX().getPitch() * Math.cos(angle) - Robot.getNavX().getRoll() * Math.cos(angle)) < 4.80 || FeedbackController.atSetpoint();
     }
 }
 
