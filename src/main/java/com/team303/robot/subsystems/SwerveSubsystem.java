@@ -2,27 +2,39 @@
 
 package com.team303.robot.subsystems;
 
-import java.io.IOException;
-import java.util.Optional;
+import static com.team303.robot.Robot.NAVX_ACCELERATION;
+import static com.team303.robot.Robot.NAVX_ANGLE;
+import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
+import static com.team303.robot.modules.Operator.nodeSuperStateValues;
+
 import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
+import com.team303.robot.modules.Operator.NodeSuperState;
+import com.team303.robot.modules.Photonvision.CameraName;
 // import com.team303.robot.commands.arm.AprilTagAlign;
 import com.team303.swervelib.MkSwerveModuleBuilder;
 import com.team303.swervelib.MotorType;
 import com.team303.swervelib.SwerveModule;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
@@ -38,9 +50,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -49,32 +58,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.GenericEntry;
-import com.team303.robot.Robot;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.team303.robot.modules.Photonvision.CameraName;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import static com.team303.robot.Robot.NAVX_ACCELERATION;
-import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
-import static com.team303.robot.Robot.NAVX_ANGLE;
-import com.team303.robot.modules.Operator.NodeSuperState;
-import java.awt.geom.Point2D;
-import static com.team303.robot.modules.Operator.nodeStateValues;
-import static com.team303.robot.modules.Operator.nodeSuperStateValues;
-import java.util.HashMap;
 // import com.team303.robot.commands.arm.ReachPoint;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import com.team303.robot.commands.drive.TurnToAngle;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-// import com.team303.robot.commands.arm.ReachPoint;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -86,10 +73,10 @@ public class SwerveSubsystem extends SubsystemBase {
 	public final AprilTagFieldLayout aprilTagField;
 	private final Field2d field2d = new Field2d();
 	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
-    private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5));
+	private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5));
 
 	public PhotonPoseEstimator visionPoseEstimator;
-    public SwerveDrivePoseEstimator poseEstimator;
+	public SwerveDrivePoseEstimator poseEstimator;
 
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Data");
 
@@ -205,31 +192,31 @@ public class SwerveSubsystem extends SubsystemBase {
 							rightFrontModule.getPosition(),
 							leftBackModule.getPosition(),
 							rightBackModule.getPosition(),
-							
+
 					}, pose);
 		} else {
 			odometry = new SwerveDriveOdometry(
-				kinematics, Rotation2d.fromDegrees(0),
-				new SwerveModulePosition[] {
-						new SwerveModulePosition(0, new Rotation2d()),
-						new SwerveModulePosition(0, new Rotation2d()),
-						new SwerveModulePosition(0, new Rotation2d()),
-						new SwerveModulePosition(0, new Rotation2d())
-				}, pose);
+					kinematics, Rotation2d.fromDegrees(0),
+					new SwerveModulePosition[] {
+							new SwerveModulePosition(0, new Rotation2d()),
+							new SwerveModulePosition(0, new Rotation2d()),
+							new SwerveModulePosition(0, new Rotation2d()),
+							new SwerveModulePosition(0, new Rotation2d())
+					}, pose);
 		}
-		
+
 		AprilTagFieldLayout initialLayout;
 
-        try {
-            initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-            var alliance = DriverStation.getAlliance();
+		try {
+			initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+			var alliance = DriverStation.getAlliance();
 			System.out.println(alliance.name());
-            initialLayout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
-                    : OriginPosition.kRedAllianceWallRightSide);
-        } catch (IOException e) {
-            DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
-            initialLayout = null;
-        }
+			initialLayout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+					: OriginPosition.kRedAllianceWallRightSide);
+		} catch (IOException e) {
+			DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+			initialLayout = null;
+		}
 
         aprilTagField = initialLayout;
 		// photonvision pose estimator
@@ -238,19 +225,19 @@ public class SwerveSubsystem extends SubsystemBase {
 			visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP, Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
 		}
 		poseEstimator = new SwerveDrivePoseEstimator(
-			kinematics,
-			new Rotation2d(),
-			new SwerveModulePosition[] {
-					new SwerveModulePosition(0.0, new Rotation2d()),
-					new SwerveModulePosition(0.0, new Rotation2d()),
-					new SwerveModulePosition(0.0, new Rotation2d()),
-					new SwerveModulePosition(0.0, new Rotation2d()),
-			},
-			pose,
-			swerveStandardDeviations,
-			photonStandardDeviations);
-			DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
-			DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
+				kinematics,
+				new Rotation2d(),
+				new SwerveModulePosition[] {
+						new SwerveModulePosition(0.0, new Rotation2d()),
+						new SwerveModulePosition(0.0, new Rotation2d()),
+						new SwerveModulePosition(0.0, new Rotation2d()),
+						new SwerveModulePosition(0.0, new Rotation2d()),
+				},
+				pose,
+				swerveStandardDeviations,
+				photonStandardDeviations);
+		DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
+		DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
 	}
 
 	public void resetToAbsoluteAngle() {
@@ -261,7 +248,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void setMaxSpeed(double maxSpeed) {
-		MAX_DRIVE_SPEED=maxSpeed;
+		MAX_DRIVE_SPEED = maxSpeed;
 	}
 
 	// return kinematics instance
@@ -284,23 +271,23 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (Robot.isReal()) {
 			newSwervePositions = new SwerveModulePosition[] {
-				leftFrontModule.getPosition(),
-				rightFrontModule.getPosition(),
-				leftBackModule.getPosition(),
-				rightBackModule.getPosition()
+					leftFrontModule.getPosition(),
+					rightFrontModule.getPosition(),
+					leftBackModule.getPosition(),
+					rightBackModule.getPosition()
 			};
 		} else {
 			newSwervePositions = new SwerveModulePosition[] {
-				new SwerveModulePosition(positions[0], state[0].angle),
-				new SwerveModulePosition(positions[1], state[1].angle),
-				new SwerveModulePosition(positions[2], state[2].angle),
-				new SwerveModulePosition(positions[3], state[3].angle)
+					new SwerveModulePosition(positions[0], state[0].angle),
+					new SwerveModulePosition(positions[1], state[1].angle),
+					new SwerveModulePosition(positions[2], state[2].angle),
+					new SwerveModulePosition(positions[3], state[3].angle)
 			};
 		}
 		System.out.println("Resetting");
 
 		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions,
-			new Pose2d(2,2, new Rotation2d()));
+				new Pose2d(2, 2, new Rotation2d()));
 		this.angle = 0;
 
 	}
@@ -341,8 +328,8 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void offCenterDrive(Translation2d translation, double rotation, Translation2d centerOfRotation,
 			boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
-		
-		if ( Math.abs(rotation) <= 1) {
+
+		if (Math.abs(rotation) <= 1) {
 			rotation = 0.0;
 		}
 
@@ -381,21 +368,21 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public Pose2d getRobotPose() {
-        return poseEstimator.getEstimatedPosition();
-    }
+		return poseEstimator.getEstimatedPosition();
+	}
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return visionPoseEstimator.update();
-    }
+		visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+		return visionPoseEstimator.update();
+	}
 
-    // Sets the pose estimation to a new pose
-    public void setRobotPose(Pose2d newPose) {
-        poseEstimator.resetPosition(
-                Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
-                Robot.swerve.getModulePositions(),
-                newPose);
-    }
+	// Sets the pose estimation to a new pose
+	public void setRobotPose(Pose2d newPose) {
+		poseEstimator.resetPosition(
+				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+				Robot.swerve.getModulePositions(),
+				newPose);
+	}
 
 	public void stop() {
 		leftFrontModule.set(0, 0);
@@ -408,26 +395,26 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		double triggerPressure=Robot.getDriverXbox().getRightTriggerAxis();
-		if (Robot.getDriverXbox().getBButton()==true) {
-			MAX_DRIVE_SPEED=1.0;
-		} else if (triggerPressure>0.01) {
-			//Map max speed from 0-100 to 50-10
-			MAX_DRIVE_SPEED=triggerPressure*-4/10+0.5;
-		} else if (Robot.getDriverXbox().getBButton()==false) {
-			MAX_DRIVE_SPEED=0.75;
+		double triggerPressure = Robot.getDriverXbox().getRightTriggerAxis();
+		if (Robot.getDriverXbox().getBButton() == true) {
+			MAX_DRIVE_SPEED = 1.0;
+		} else if (triggerPressure > 0.01) {
+			// Map max speed from 0-100 to 50-10
+			MAX_DRIVE_SPEED = triggerPressure * -4 / 10 + 0.5;
+		} else if (Robot.getDriverXbox().getBButton() == false) {
+			MAX_DRIVE_SPEED = 0.75;
 		}
-		
+
 		if (Robot.isReal()) {
 			// Update Poses
 			pose = odometry.update(
-				Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
-				new SwerveModulePosition[] {
-						leftFrontModule.getPosition(),
-						rightFrontModule.getPosition(),
-						leftBackModule.getPosition(),
-						rightBackModule.getPosition(),
-				});
+					Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
+					new SwerveModulePosition[] {
+							leftFrontModule.getPosition(),
+							rightFrontModule.getPosition(),
+							leftBackModule.getPosition(),
+							rightBackModule.getPosition(),
+					});
 		} else {
 			SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
 			timeElapsed = (timer.get() - lastPeriodic) * SECOND_TO_MS;
@@ -453,10 +440,10 @@ public class SwerveSubsystem extends SubsystemBase {
 						visionPoseEstimate.timestampSeconds);
 			}
 		}
-        // poseEstimator.update(
-        //         Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
-        //         Robot.swerve.getModulePositions());
-        field2d.setRobotPose(getRobotPose());
+		// poseEstimator.update(
+		// Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
+		// Robot.swerve.getModulePositions());
+		field2d.setRobotPose(getRobotPose());
 
 		lastPeriodic = timer.get();
 
@@ -482,33 +469,32 @@ public class SwerveSubsystem extends SubsystemBase {
 	public CommandBase followTrajectoryCommand(PathPlannerTrajectory traj) {
 		// Reset odometry for the first path you run during auto
 		return new PPSwerveControllerCommand(
-			traj,
-			Robot.swerve::getPose, // Pose supplier
-			Robot.swerve.getKinematics(), // SwerveDriveKinematics
-			new PIDController(0, 0.2, 0), // X controller. Tune these values for your robot. Leaving them 0
-										// will only use feedforwards.
-			new PIDController(0, 0.2, 0), // Y controller (usually the same values as X controller)
-			new PIDController(1, 0.13, 0), // Rotation controller. Tune these values for your robot. Leaving
-										// them 0 will only use feedforwards.
-			Robot.swerve::drive, // Module states consumer
-			true, // Should the path be automatically mirrored depending on alliance color.
-			Robot.swerve);
+				traj,
+				Robot.swerve::getPose, // Pose supplier
+				Robot.swerve.getKinematics(), // SwerveDriveKinematics
+				new PIDController(0, 0.2, 0), // X controller. Tune these values for your robot. Leaving them 0
+												// will only use feedforwards.
+				new PIDController(0, 0.2, 0), // Y controller (usually the same values as X controller)
+				new PIDController(1, 0.13, 0), // Rotation controller. Tune these values for your robot. Leaving
+												// them 0 will only use feedforwards.
+				Robot.swerve::drive, // Module states consumer
+				true, // Should the path be automatically mirrored depending on alliance color.
+				Robot.swerve);
 	}
-	
+
 	public CommandBase driveToPose(Pose2d point1, Pose2d point2, Pose2d... poses) {
 
 		PathPoint[] points = new PathPoint[poses.length];
-	
+
 		for (int i = 0; i < poses.length; i++) {
 			points[i] = new PathPoint(poses[i].getTranslation(), poses[i].getRotation());
 		}
 
 		PathPlannerTrajectory trajectory = PathPlanner.generatePath(
-			new PathConstraints(4, 3), 
-			new PathPoint(point1.getTranslation(), point1.getRotation()),
-			new PathPoint(point2.getTranslation(), point2.getRotation()),
-			points
-		);
+				new PathConstraints(4, 3),
+				new PathPoint(point1.getTranslation(), point1.getRotation()),
+				new PathPoint(point2.getTranslation(), point2.getRotation()),
+				points);
 
 		return followTrajectoryCommand(trajectory);
 	}
@@ -516,11 +502,15 @@ public class SwerveSubsystem extends SubsystemBase {
 	public CommandBase driveToPose(Pose2d point1, Pose2d point2) {
 
 		PathPlannerTrajectory trajectory = PathPlanner.generatePath(
-			new PathConstraints(4, 3), 
-			new PathPoint(point1.getTranslation(), point1.getRotation()),
-			new PathPoint(new Translation2d(point1.getTranslation().plus(point2.getTranslation().div(2).minus(new Translation2d(0, 0.5))).getX(), point2.getTranslation().getY()), point2.getRotation()),
-			new PathPoint(point2.getTranslation(), point2.getRotation())
-		);
+				new PathConstraints(4, 3),
+				new PathPoint(point1.getTranslation(), point1.getRotation()),
+				new PathPoint(
+						new Translation2d(
+								point1.getTranslation()
+										.plus(point2.getTranslation().div(2).minus(new Translation2d(0, 0.5))).getX(),
+								point2.getTranslation().getY()),
+						point2.getRotation()),
+				new PathPoint(point2.getTranslation(), point2.getRotation()));
 
 		return followTrajectoryCommand(trajectory);
 	}
@@ -530,12 +520,12 @@ public class SwerveSubsystem extends SubsystemBase {
 		Point posePoint = new Point(0, 0);
 
 		for (int i = 0; i < nodeSuperStateValues.length; i++) {
-            for (int j = 0; j < nodeSuperStateValues[i].length; j++) {
-                if (nodeSuperStateValues[i][j] == NodeSuperState.QUEUED.value) {
-                    posePoint = new Point(i, j);
-                }
+			for (int j = 0; j < nodeSuperStateValues[i].length; j++) {
+				if (nodeSuperStateValues[i][j] == NodeSuperState.QUEUED.value) {
+					posePoint = new Point(i, j);
+				}
 			}
-        }
+		}
 
 		String reachNode = "Bottom";
 
@@ -549,12 +539,10 @@ public class SwerveSubsystem extends SubsystemBase {
 			reachNode = "Mid Cone";
 		}
 
-
-
 		return new ParallelCommandGroup(
-			driveToPose(Robot.swerve.getPose(), new Pose2d(1.75, nodePositions[posePoint.y], new Rotation2d()))
-			// new ReachPoint(nodePoints.get(reachNode).x, nodePoints.get(reachNode).y)
-			);
+				driveToPose(Robot.swerve.getPose(), new Pose2d(1.75, nodePositions[posePoint.y], new Rotation2d()))
+		// new ReachPoint(nodePoints.get(reachNode).x, nodePoints.get(reachNode).y)
+		);
 	}
 
 	// @Override

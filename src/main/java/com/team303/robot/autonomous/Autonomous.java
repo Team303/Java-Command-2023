@@ -1,26 +1,31 @@
 package com.team303.robot.autonomous;
 
+// import com.team303.robot.commands.arm.ReachPoint;
+import static com.team303.robot.Robot.CONTROLLER_TAB;
 import static com.team303.robot.Robot.swerve;
 import static com.team303.robot.autonomous.AutonomousProgram.create;
+
+import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
-import com.team303.robot.Robot;
-import com.team303.robot.commands.drive.DriveWait;
-import com.team303.robot.commands.drive.TurnToAngle;
-import org.json.simple.parser.JSONParser;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.pathplanner.lib.auto.PIDConstants;
-import org.json.simple.JSONArray;
-import java.io.FileReader;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
-import java.io.File;
-import java.io.FileNotFoundException;
+import com.team303.robot.commands.arm.AprilTagAlign;
+import com.team303.robot.commands.drive.AutolevelFeedforward;
+import com.team303.robot.commands.drive.DriveWait;
+import com.team303.robot.commands.drive.FollowTrajectory;
+import com.team303.robot.commands.drive.TurnToAngle;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Filesystem;
-import com.team303.robot.commands.drive.FollowTrajectory;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
@@ -164,7 +169,7 @@ public class Autonomous {
         //  );
 
         // create("Reach Point", () ->
-        //     new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
+        // new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
         // );
 
         // create("reach selected", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));

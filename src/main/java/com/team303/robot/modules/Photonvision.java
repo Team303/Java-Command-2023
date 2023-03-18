@@ -1,23 +1,25 @@
 package com.team303.robot.modules;
 
+import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
+
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import com.team303.robot.Robot;
+import org.photonvision.targeting.TargetCorner;
+
 import com.team303.robot.RobotMap.PhotonvisionConstants;
+
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import org.photonvision.targeting.TargetCorner;
-import edu.wpi.first.math.geometry.Transform3d;
-import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
 
 public class Photonvision extends SubsystemBase {
 
@@ -50,7 +52,7 @@ public class Photonvision extends SubsystemBase {
     public static enum ConePosition {
         Up,
         Down
-    } 
+    }
 
     public PhotonCamera getCamera(CameraName name) {
         return camera[name.ordinal()];
@@ -111,7 +113,7 @@ public class Photonvision extends SubsystemBase {
             return ConePosition.Down;
         }
     }
-    
+
     public double getObjectSkew(CameraName name) {
         PhotonTrackedTarget target = getBestTarget(name);
         double skew = target.getSkew();
@@ -129,7 +131,7 @@ public class Photonvision extends SubsystemBase {
     public double getDistanceToTarget() {
         if (!hasTargets(CameraName.CAM1)) {
             return Double.NaN;
-        } 
+        }
 
         int id = getBestTarget(CameraName.CAM1).getFiducialId();
         if (id != ALLIANCE_SUBSTATION_ID) {
@@ -159,11 +161,11 @@ public class Photonvision extends SubsystemBase {
             if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
                 APRILTAG_ID.setInteger(target.getFiducialId());
             }
-    
+
             TARGET_AMBIGUITY.setDouble(target.getPoseAmbiguity());
             TARGET_YAW.setDouble(target.getYaw());
             TARGET_PITCH.setDouble(target.getPitch());
             TARGET_SKEW.setDouble(target.getSkew());
-        } 
+        }
     }
 }

@@ -1,24 +1,24 @@
 package com.team303.robot.commands.drive;
 
-import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
-import static com.team303.robot.subsystems.SwerveSubsystem.MAX_DRIVE_SPEED;
 import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
+import static com.team303.robot.subsystems.SwerveSubsystem.MAX_DRIVE_SPEED;
+
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
+
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.subsystems.SwerveSubsystem;
 import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;
 
 public class DefaultDrive extends CommandBase {
 
-    boolean fieldOriented;
+        boolean fieldOriented;
 
-    public DefaultDrive(boolean fieldOriented) {
-        addRequirements(Robot.swerve);
-        this.fieldOriented = fieldOriented;
-    }
+        public DefaultDrive(boolean fieldOriented) {
+                addRequirements(Robot.swerve);
+                this.fieldOriented = fieldOriented;
+        }
 
     @Override
     public void execute() {
