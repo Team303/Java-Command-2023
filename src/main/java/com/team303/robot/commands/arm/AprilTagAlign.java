@@ -1,22 +1,20 @@
 package com.team303.robot.commands.arm;
 
-import static com.team303.robot.Robot.arm;
-import static com.team303.robot.Robot.swerve;
 import static com.team303.robot.Robot.photonvision;
-import org.photonvision.targeting.PhotonTrackedTarget;
-import com.team303.robot.modules.Photonvision.PhotonPipeline;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.team303.robot.modules.Photonvision.CameraName;
-import com.team303.robot.modules.Photonvision.PhotonPipeline;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import static com.team303.robot.Robot.swerve;
 import static com.team303.robot.subsystems.SwerveSubsystem.DIFFERENCE;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import com.team303.robot.modules.Photonvision.CameraName;
+import com.team303.robot.modules.Photonvision.PhotonPipeline;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+
 public class AprilTagAlign extends CommandBase {
-    
+
     public static PIDController xControl;
     public static PIDController yControl;
     public static PIDController yawControl;
@@ -26,9 +24,15 @@ public class AprilTagAlign extends CommandBase {
     public AprilTagAlign(int node) {
 
         switch (node % 3) {
-            case 0: alignOffset = -DIFFERENCE; break; //left
-            case 2: alignOffset = DIFFERENCE; break; //right
-            default: alignOffset = 0; break; //middle
+            case 0:
+                alignOffset = -DIFFERENCE;
+                break; // left
+            case 2:
+                alignOffset = DIFFERENCE;
+                break; // right
+            default:
+                alignOffset = 0;
+                break; // middle
         }
 
         // addRequirements(swerve, arm, photonvision);
@@ -60,11 +64,11 @@ public class AprilTagAlign extends CommandBase {
                         new Translation2d(
                                 -xControl.calculate((target.getBestCameraToTarget().getY() + alignOffset) * 5, 0),
                                 yControl.calculate(target.getBestCameraToTarget().getX() * 10, 0)),
-                        //yawControl.calculate(target.getYaw(), 0),
+                        // yawControl.calculate(target.getYaw(), 0),
                         0,
                         true);
 
-                System.out.println("robot x PID: " +-xControl.calculate(target.getBestCameraToTarget().getY() * 5, 0));
+                System.out.println("robot x PID: " + -xControl.calculate(target.getBestCameraToTarget().getY() * 5, 0));
                 System.out.println("robot y: " + target.getBestCameraToTarget().getX());
             } catch (Exception e) {
                 e.printStackTrace();

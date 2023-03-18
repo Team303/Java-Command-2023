@@ -1,8 +1,8 @@
 package com.team303.robot.commands.claw;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import static com.team303.robot.Robot.claw;
-import com.team303.robot.Robot;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class RotateClaw extends CommandBase {
 
@@ -14,7 +14,7 @@ public class RotateClaw extends CommandBase {
         this.speed = speed;
         addRequirements(claw);
     }
-    
+
     @Override
     public void execute() {
         claw.rotate(angle, speed);
