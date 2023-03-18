@@ -10,6 +10,6 @@ public class ToggleClose extends CommandBase {
 
     @Override
     public void execute() {
-        Robot.claw.setRotateSpeed(-0.5);
+        Robot.claw.setRotateSpeed(0.2);
     }
 }
