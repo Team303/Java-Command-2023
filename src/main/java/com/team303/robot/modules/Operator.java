@@ -3,7 +3,6 @@ package com.team303.robot.modules;
 import static com.team303.robot.Robot.heldObject;
 
 import java.awt.Point;
-import java.util.Arrays;
 
 import com.team303.robot.Robot.HeldObject;
 import com.team303.robot.util.Alert;
@@ -212,21 +211,19 @@ public class Operator extends SubsystemBase {
             }
         }
     }
+
     private boolean partOfCompleteLink(int i, int j) {
-        int baseNineIndex = 9*i+j;
-        if (baseNineIndex%9==0) {
-            return linkComplete[i*7];
-        } else if (baseNineIndex%9==1) {
-            // System.out.println(linkComplete[i*7+1]);
-            // System.out.println(linkComplete[i*7]);
-            return (linkComplete[i*7+1] || linkComplete[i*7]);
-        } else if (baseNineIndex%9>=2 && baseNineIndex%9<=6) {
-            //System.out.println(baseNineIndex);
-            return linkComplete[i*7+(j-2)] || linkComplete[i*7+j-1] || linkComplete[i*7+j];
-        } else if (baseNineIndex%9==7) {
-            return (linkComplete[i*7+j-2] || linkComplete[i*7+j-1]);
+        int baseNineIndex = 9 * i + j;
+        if (baseNineIndex % 9 == 0) {
+            return linkComplete[i * 7];
+        } else if (baseNineIndex % 9 == 1) {
+            return (linkComplete[i * 7 + 1] || linkComplete[i * 7]);
+        } else if (baseNineIndex % 9 >= 2 && baseNineIndex % 9 <= 6) {
+            return linkComplete[i * 7 + (j - 2)] || linkComplete[i * 7 + j - 1] || linkComplete[i * 7 + j];
+        } else if (baseNineIndex % 9 == 7) {
+            return (linkComplete[i * 7 + j - 2] || linkComplete[i * 7 + j - 1]);
         } else {
-            return linkComplete[i*7+6];
+            return linkComplete[i * 7 + 6];
         }
     }
 
@@ -242,12 +239,12 @@ public class Operator extends SubsystemBase {
                         || (nodeStateValues[i][4] != NodeState.NONE.value
                                 && nodeStateValues[i][5] != NodeState.NONE.value)) {
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    System.out.println(0);
+
                     return;
                 } else if ((nodeStateValues[i][3] != NodeState.NONE.value
                         && nodeStateValues[i][5] != NodeState.NONE.value)) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    System.out.println(1);
+
                     return;
 
                 }
@@ -260,7 +257,7 @@ public class Operator extends SubsystemBase {
                     && nodeStateValues[i][2] == NodeState.NONE.value) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    System.out.println(2);
+
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
@@ -270,114 +267,116 @@ public class Operator extends SubsystemBase {
                     && nodeStateValues[i][0] == NodeState.NONE.value) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    System.out.println(3);
+
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                System.out.println(4);
+
                 return;
             } else if ((nodeStateValues[i][0] != NodeState.NONE.value
                     && nodeStateValues[i][2] != NodeState.NONE.value)
                     && nodeStateValues[i][1] == NodeState.NONE.value) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    System.out.println(5);
+
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CUBE.value);
-                System.out.println(6);
+
                 return;
             }
             for (int j = 1; j < 5; j++) {
                 if ((nodeStateValues[i][j] != NodeState.NONE.value
                         && nodeStateValues[i][j + 1] != NodeState.NONE.value)
-                        && nodeStateValues[i][j + 2] == NodeState.NONE.value && nodeStateValues[i][j -1] == NodeState.NONE.value) {
+                        && nodeStateValues[i][j + 2] == NodeState.NONE.value
+                        && nodeStateValues[i][j - 1] == NodeState.NONE.value) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        System.out.println(7);
+
                         return;
                     }
                     if ((j + 2) % 3 == 1) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        System.out.println(8);
+
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    System.out.println(9);
+
                     return;
                 } else if ((nodeStateValues[i][j + 1] != NodeState.NONE.value
                         && nodeStateValues[i][j + 2] != NodeState.NONE.value)
-                        && nodeStateValues[i][j] == NodeState.NONE.value && nodeStateValues[i][j + 3] == NodeState.NONE.value) {
+                        && nodeStateValues[i][j] == NodeState.NONE.value
+                        && nodeStateValues[i][j + 3] == NodeState.NONE.value) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        System.out.println(10);
+
                         return;
                     }
                     if (j % 3 == 1) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        System.out.println(11);
+
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    System.out.println(12);
+
                     return;
                 } else if ((nodeStateValues[i][j] != NodeState.NONE.value
                         && nodeStateValues[i][j + 2] != NodeState.NONE.value)
                         && nodeStateValues[i][j + 1] == NodeState.NONE.value) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        System.out.println(13);
+
                         return;
                     }
                     if ((j + 1) % 3 == 1) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        System.out.println(14);
+
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    System.out.println(15);
+
                     return;
                 }
             }
-            
-        if ((nodeStateValues[i][6] != NodeState.NONE.value
-        && nodeStateValues[i][7] != NodeState.NONE.value)
-        && nodeStateValues[i][8] == NodeState.NONE.value) {
-    if (i == 2) {
-        hpSuggestion.setInteger(NodeState.CUBE.value);
-        System.out.println(16);
-        return;
-    }
-    hpSuggestion.setInteger(NodeState.CONE.value);
-    return;
-} else if ((nodeStateValues[i][7] != NodeState.NONE.value
-        && nodeStateValues[i][8] != NodeState.NONE.value)
-        && nodeStateValues[i][6] == NodeState.NONE.value) {
-    if (i == 2) {
-        hpSuggestion.setInteger(NodeState.CUBE.value);
-        System.out.println(17);
-        return;
-    }
-    hpSuggestion.setInteger(NodeState.CONE.value);
-    return;
-} else if ((nodeStateValues[i][6] != NodeState.NONE.value
-        && nodeStateValues[i][8] != NodeState.NONE.value)
-        && nodeStateValues[i][7] == NodeState.NONE.value) {
-    if (i == 2) {
-        hpSuggestion.setInteger(NodeState.CUBE.value);
-        System.out.println(18);
-        return;
-    }
-    hpSuggestion.setInteger(NodeState.CUBE.value);
-    System.out.println(19);
-    return;
-}
-            
+
+            if ((nodeStateValues[i][6] != NodeState.NONE.value
+                    && nodeStateValues[i][7] != NodeState.NONE.value)
+                    && nodeStateValues[i][8] == NodeState.NONE.value) {
+                if (i == 2) {
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+
+                    return;
+                }
+                hpSuggestion.setInteger(NodeState.CONE.value);
+                return;
+            } else if ((nodeStateValues[i][7] != NodeState.NONE.value
+                    && nodeStateValues[i][8] != NodeState.NONE.value)
+                    && nodeStateValues[i][6] == NodeState.NONE.value) {
+                if (i == 2) {
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+
+                    return;
+                }
+                hpSuggestion.setInteger(NodeState.CONE.value);
+                return;
+            } else if ((nodeStateValues[i][6] != NodeState.NONE.value
+                    && nodeStateValues[i][8] != NodeState.NONE.value)
+                    && nodeStateValues[i][7] == NodeState.NONE.value) {
+                if (i == 2) {
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+
+                    return;
+                }
+                hpSuggestion.setInteger(NodeState.CUBE.value);
+
+                return;
+            }
+
         }
         // Otherwise, there is no valid reason to choose between cones and cubes. Random
         // choice
         hpSuggestion.setInteger((int) (Math.random() * 2) + 1);
-        System.out.println(20);
+
     }
 
     public void autoQueuePlacement() {
@@ -574,28 +573,29 @@ public class Operator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        //Check which links are complete
-        for (int i=0;i<3;i++) {
-            for (int j=1;j<8;) {
-                if (nodeStateValues[i][j]!=NodeState.NONE.value && nodeStateValues[i][j+1]!=NodeState.NONE.value && nodeStateValues[i][j-1]!=NodeState.NONE.value) {                 
-                    linkComplete[7*i+(j-1)]=true;
-                    if (j>1 && linkComplete[7*i+(j-2)]) {
-                        linkComplete[7*i+(j-2)]=false;
+        // Check which links are complete
+        for (int i = 0; i < 3; i++) {
+            for (int j = 1; j < 8;) {
+                if (nodeStateValues[i][j] != NodeState.NONE.value && nodeStateValues[i][j + 1] != NodeState.NONE.value
+                        && nodeStateValues[i][j - 1] != NodeState.NONE.value) {
+                    linkComplete[7 * i + (j - 1)] = true;
+                    if (j > 1 && linkComplete[7 * i + (j - 2)]) {
+                        linkComplete[7 * i + (j - 2)] = false;
                     }
-                    if (j>2 && linkComplete[7*i+(j-3)]) {
-                        linkComplete[7*i+(j-3)]=false;
+                    if (j > 2 && linkComplete[7 * i + (j - 3)]) {
+                        linkComplete[7 * i + (j - 3)] = false;
                     }
-                    if (j<4) {
-                    j=((j-1)/3+1)*3+1;
-                    }else {
-                        j=8;
+                    if (j < 4) {
+                        j = ((j - 1) / 3 + 1) * 3 + 1;
+                    } else {
+                        j = 8;
                     }
                 } else {
-                    linkComplete[7*i+(j-1)]=false;
+                    linkComplete[7 * i + (j - 1)] = false;
                     j++;
                 }
             }
-        }   
+        }
         if (heldObject != heldObjectChooser.getSelected()) {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 9; j++) {

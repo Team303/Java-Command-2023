@@ -1,9 +1,8 @@
-/*package com.team303.robot.commands.arm;
+package com.team303.robot.commands.arm;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import static com.team303.robot.Robot.arm;
-import com.team303.robot.RobotMap.Arm;
-import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;;
 
 public class Homing extends CommandBase {
 
@@ -14,14 +13,15 @@ public class Homing extends CommandBase {
 
     public Homing() {
         addRequirements(arm);
-        System.out.println("\n\n\n\n\n\n\n\nik angles" + arm.armKinematics.getIKAnglesDegrees().get(0) + arm.armKinematics.getIKAnglesDegrees().get(1));
+        System.out.println("\n\n\n\n\n\n\n\nik angles" + arm.armKinematics.getIKAnglesDegrees().get(0)
+                + arm.armKinematics.getIKAnglesDegrees().get(1));
     }
 
     @Override
     public void execute() {
         if (!arm.shoulderJoint.shoulderSwitchReverse1.isPressed()) {
             arm.shoulderJoint.setMotors(-0.1);
-        }   
+        }
 
         if (!arm.elbowJoint.elbowSwitchReverse.isPressed()) {
             arm.elbowJoint.elbowMotor.set(0.1);
@@ -37,13 +37,15 @@ public class Homing extends CommandBase {
     public void end(boolean interrupted) {
 
         shoulderStartAngle = -20;
-		elbowStartAngle = 170.0;
-        
+        elbowStartAngle = 170.0;
+
         arm.setEncoders(shoulderStartAngle, elbowStartAngle, 0);
 
-        System.out.println("ik angles" + arm.armKinematics.getIKAnglesDegrees().get(0) + arm.armKinematics.getIKAnglesDegrees().get(1));
-        
+        System.out.println("ik angles" + arm.armKinematics.getIKAnglesDegrees().get(0)
+                + arm.armKinematics.getIKAnglesDegrees().get(1));
+
         // arm.reach(arm.armKinematics.getIKAnglesRadians());
-        // cartesianStorage = new Translation3d(cartesianCoords.getX(), 0, cartesianCoords.getZ());
+        // cartesianStorage = new Translation3d(cartesianCoords.getX(), 0,
+        // cartesianCoords.getZ());
     }
-}*/
+}

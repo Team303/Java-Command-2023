@@ -3,7 +3,6 @@
 package com.team303.robot.subsystems;
 
 import static com.team303.robot.Robot.NAVX_ACCELERATION;
-import static com.team303.robot.Robot.NAVX_ANGLE;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
 import static com.team303.robot.modules.Operator.nodeSuperStateValues;
 
@@ -218,11 +217,12 @@ public class SwerveSubsystem extends SubsystemBase {
 			initialLayout = null;
 		}
 
-        aprilTagField = initialLayout;
+		aprilTagField = initialLayout;
 		// photonvision pose estimator
 
 		if (false) {
-			visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP, Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
+			visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP,
+					Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
 		}
 		poseEstimator = new SwerveDrivePoseEstimator(
 				kinematics,
@@ -347,20 +347,19 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public void lockWheels() {
 		// lockWheels
-		leftFrontModule.set(0, Math.PI/2);
-		rightFrontModule.set(0, Math.PI/2);
-		leftBackModule.set(0, Math.PI/2);
-		rightBackModule.set(0, Math.PI/2);
+		leftFrontModule.set(0, Math.PI / 2);
+		rightFrontModule.set(0, Math.PI / 2);
+		leftBackModule.set(0, Math.PI / 2);
+		rightBackModule.set(0, Math.PI / 2);
 	}
 
-	
 	public void drive(SwerveModuleState[] state) {
 		chassisSpeeds = kinematics.toChassisSpeeds(state);
 		// map speed of swerve modules to voltage
 		leftFrontModule.set(state[0].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[0].angle.getRadians());
 		rightFrontModule.set(state[1].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
-				Math.PI/2);
+				Math.PI / 2);
 		leftBackModule.set(state[2].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[2].angle.getRadians());
 		rightBackModule.set(state[3].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
@@ -447,7 +446,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		lastPeriodic = timer.get();
 
-
 		NAVX_Y_VELOCITY.setDouble(Robot.getNavX().getRawGyroZ(), 0);
 		NAVX_ACCELERATION.setDouble(Robot.getNavX().getRawAccelX());
 		SmartDashboard.putNumber("Pitch acceleration", -Robot.getNavX().getRawAccelY());
@@ -462,7 +460,6 @@ public class SwerveSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("Pose X", pose.getX());
 		SmartDashboard.putNumber("Pose Y", pose.getY());
 		// Logger.getInstance().recordOutput("Odometry 2", getRobotPose());
-
 
 	}
 
@@ -546,11 +543,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	// @Override
-    // public String toString() {
-    //     var pose = getRobotPose();
-    //     return String.format("(%.2f, %.2f) %.2f degrees",
-    //             pose.getX(),
-    //             pose.getY(),
-    //             pose.getRotation().getDegrees());
-    // }
+	// public String toString() {
+	// var pose = getRobotPose();
+	// return String.format("(%.2f, %.2f) %.2f degrees",
+	// pose.getX(),
+	// pose.getY(),
+	// pose.getRotation().getDegrees());
+	// }
 }

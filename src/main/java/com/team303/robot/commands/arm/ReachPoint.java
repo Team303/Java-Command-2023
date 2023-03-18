@@ -5,7 +5,6 @@ import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianSt
 
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Arm;
-import com.team303.robot.subsystems.ArmSubsystem;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -27,7 +26,9 @@ public class ReachPoint extends CommandBase {
     public void execute() {
         arm.reachEmbedded(cartesianCoords);
         Robot.arm.armKinematics.updateEmbedded((float) cartesianCoords.getX(), (float) cartesianCoords.getZ());
-        Robot.arm.effectorRoot.setPosition((Arm.SIMULATION_OFFSET + 150)/Arm.SIMULATION_SCALE+cartesianCoords.getX(),Arm.SIMULATION_OFFSET/Arm.SIMULATION_OFFSET+cartesianStorage.getZ());
+        Robot.arm.effectorRoot.setPosition(
+                (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
+                Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
     }
 
     @Override

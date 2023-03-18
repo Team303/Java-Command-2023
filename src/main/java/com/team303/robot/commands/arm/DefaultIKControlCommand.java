@@ -5,7 +5,6 @@ import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
 
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Arm;
-import com.team303.robot.subsystems.ArmSubsystem;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -30,7 +29,8 @@ public class DefaultIKControlCommand extends CommandBase {
     @Override
     public void execute() {
         angle = Math.atan2(cartesianStorage.getZ(), cartesianStorage.getX());
-        // angle += Math.toRadians(Robot.getOperatorXbox().getLeftTriggerAxis() - Robot.getOperatorXbox().getRightTriggerAxis());
+        // angle += Math.toRadians(Robot.getOperatorXbox().getLeftTriggerAxis() -
+        // Robot.getOperatorXbox().getRightTriggerAxis());
         length = Math.hypot(cartesianStorage.getZ(), cartesianStorage.getX());
 
         double robotAngle;
