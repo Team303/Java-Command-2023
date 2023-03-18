@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.List;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class RetractToDefaultCommand extends CommandBase {
-    List<Double> desiredAngles = Arrays.asList(0.0,90.0,90.0);
-    public RetractToDefaultCommand() {
+public class ReachAngles extends CommandBase {
+    List<Double> desiredAngles;
+    public ReachAngles(double shoulder, double elbow, double wrist) {
         addRequirements(arm);
+        desiredAngles = Arrays.asList(shoulder ,elbow , wrist);
     }
 
     @Override
     public void execute() {
-        // TODO: Find optimal angles
         arm.reach(desiredAngles);
     }
 }

@@ -47,6 +47,7 @@ import frc.robot.BuildConstants;
 import com.team303.robot.commands.claw.ToggleOpen;
 import com.team303.robot.commands.claw.ToggleClose;
 import com.team303.robot.commands.claw.DefaultClaw;
+import com.team303.robot.commands.arm.ReachAngles;
 
 public class Robot extends LoggedRobot {
 
@@ -278,7 +279,7 @@ public class Robot extends LoggedRobot {
 
 		// just testing manual angles
 		// try reaching this configuration
-		operatorCommandXboxController.a().onTrue(new InstantCommand(() -> arm.reach(List.of(20.0, 45.0, 0.0))));
+		operatorCommandXboxController.a().onTrue(new ReachAngles(20, 45, 0));
 		operatorCommandXboxController.b().toggleOnTrue(new ToggleClose()).toggleOnFalse(new ToggleOpen());
 		operatorCommandXboxController.leftTrigger().whileTrue(new DefaultIKControlCommand(false)).whileFalse(new DefaultMove());
 
