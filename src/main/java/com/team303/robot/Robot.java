@@ -53,7 +53,7 @@ import com.team303.robot.modules.Operator;
 //import com.team303.robot.modules.Photonvision;
 import com.team303.robot.modules.Photonvision.CameraName;
 import com.team303.robot.commands.claw.DefaultClaw;
-import com.team303.robot.commands.claw.RotateClaw;
+// import com.team303.robot.commands.claw.RotateClaw;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import edu.wpi.first.networktables.GenericEntry;
@@ -68,11 +68,11 @@ public class Robot extends LoggedRobot {
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
 	public static final Photonvision photonvision = null; // new Photonvision();
-	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final SwerveSubsystem swerve = null; //new SwerveSubsystem();
+	public static final ArmSubsystem arm = null; //new ArmSubsystem();
 	public static final ArmTest armtest = null; //new ArmTest();
 	public static final Operator operator = null; //new Operator();
-	public static final ClawSubsystem claw = null; //new ClawSubsystem();
+	public static final ClawSubsystem claw = new ClawSubsystem();
 	public static final Ultrasonic ultrasonic = null; //new Ultrasonic(0, 4);
 
 	/* Robot IO Controls */
@@ -206,18 +206,18 @@ public class Robot extends LoggedRobot {
 
 
 		// Configure the joystick and controller bindings
-		configureButtonBindings();
+		// configureButtonBindings();
 
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
-		// Robot.claw.setDefaultCommand(new DefaultClaw());
-		Robot.arm.setDefaultCommand(new DefaultMove());
+		Robot.claw.setDefaultCommand(new DefaultClaw());
+		// Robot.arm.setDefaultCommand(new DefaultMove());
 		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// add Autos to Shuffleboard
-		Autonomous.init();
-		AutonomousProgram.addAutosToShuffleboard();
+		// Autonomous.init();
+		// AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -235,7 +235,7 @@ public class Robot extends LoggedRobot {
 					// command
 					new SequentialCommandGroup(
 							new DriveWait(autoDelayChooser.getSelected()),
-							new Homing(),
+							// new Homing(),
 							autonomousCommand));
 		}
 	}
@@ -270,6 +270,7 @@ public class Robot extends LoggedRobot {
 		//just testing manual angles
 		//try reaching this configuration
 		operatorCommandXboxController.a().onTrue(new InstantCommand(() -> arm.reach(List.of(20.0, 45.0, 0.0))));
+		operatorCommandXboxController.b().toggleOnTrue(new ToggleClose()).toggleOnFalse(new ToggleOpen());
 		operatorCommandXboxController.leftTrigger().whileTrue(new DefaultIKControlCommand(false)).whileFalse(new DefaultMove());
 
 

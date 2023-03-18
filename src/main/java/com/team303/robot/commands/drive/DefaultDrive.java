@@ -36,7 +36,7 @@ public class DefaultDrive extends CommandBase {
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
                                         DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
-                                DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                                DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4 * MAX_DRIVE_SPEED,
                                 fieldOriented);
                 else 
                         Robot.swerve.drive(
@@ -45,7 +45,7 @@ public class DefaultDrive extends CommandBase {
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
                                         DEADBAND_FILTER.applyDeadband(-Robot.getDriverXbox().getLeftX(), DEADBAND_FILTER.getLowerBound())
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
-                                DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                                DEADBAND_FILTER.applyDeadband(Robot.getDriverXbox().getRightX(), DEADBAND_FILTER.getLowerBound()) * 4 * MAX_DRIVE_SPEED,
                                 fieldOriented);    
         } else {
                 Robot.swerve.drive(
@@ -54,7 +54,7 @@ public class DefaultDrive extends CommandBase {
                                         * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
                                 DEADBAND_FILTER.applyDeadband(-Robot.getLeftJoyStick().getX(), DEADBAND_FILTER.getLowerBound())
                                         * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED),
-                        DEADBAND_FILTER.applyDeadband(-Robot.getRightJoyStick().getX(), DEADBAND_FILTER.getLowerBound()) * 4,
+                        DEADBAND_FILTER.applyDeadband(-Robot.getRightJoyStick().getX(), DEADBAND_FILTER.getLowerBound()) * 4 * MAX_DRIVE_SPEED,
                         fieldOriented);
                 }
         }
