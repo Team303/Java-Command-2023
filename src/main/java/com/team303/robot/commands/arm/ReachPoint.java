@@ -33,7 +33,7 @@ public class ReachPoint extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(arm.getError()) < 3.0;
+        return Math.abs(arm.getPositionError()) < 3.0;
     }
 
     @Override

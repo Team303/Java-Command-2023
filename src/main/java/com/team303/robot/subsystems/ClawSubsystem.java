@@ -15,11 +15,13 @@ import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.team303.robot.RobotMap.Claw;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.networktables.GenericEntry;
 
 public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
-	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
+	public static final ShuffleboardTab CLAW_TAB = Shuffleboard.getTab("Claw");
 	public static final double GEAR_RATIO_WRIST = 27;
+	public static final GenericEntry clawEncodersTab = CLAW_TAB.add("Encoders", 0).getEntry();
 
 	private final CANSparkMax clawMotor = new CANSparkMax(19, MotorType.kBrushless);
 	private final CANSparkMax clawRollMotor = new CANSparkMax(18, MotorType.kBrushless);
@@ -29,8 +31,10 @@ public class ClawSubsystem extends SubsystemBase {
 	// private final DigitalInput ultrasonicSensor = new DigitalInput(Claw.ULTRASONIC_ID);
 
 	public ClawSubsystem() {
-		clawMotor.setInverted(true);
+		clawMotor.setInverted(false);
 		clawMotor.setIdleMode(IdleMode.kBrake);
+
+		clawMotor.setSmartCurrentLimit(15);
 
 		clawRollMotor.setInverted(false);
 		clawRollMotor.setIdleMode(IdleMode.kBrake);
@@ -73,6 +77,12 @@ public class ClawSubsystem extends SubsystemBase {
 
 	public void setClawPosition(double position) {
 		clawEncoder.setPosition(position);
+	}
+
+	@Override
+	public void periodic() {
+		clawEncodersTab.setDouble(clawEncoder.getPosition());
+
 	}
 
 	// public void rotate(double angle, double speed) {

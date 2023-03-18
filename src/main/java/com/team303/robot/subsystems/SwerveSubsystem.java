@@ -359,7 +359,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		leftFrontModule.set(state[0].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[0].angle.getRadians());
 		rightFrontModule.set(state[1].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
-				Math.PI / 2);
+				state[1].angle.getRadians());
 		leftBackModule.set(state[2].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
 				state[2].angle.getRadians());
 		rightBackModule.set(state[3].speedMetersPerSecond / Swerve.MAX_VELOCITY * MAX_VOLTAGE,
@@ -394,13 +394,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		double triggerPressure = Robot.getDriverXbox().getRightTriggerAxis();
-		if (Robot.getDriverXbox().getBButton() == true) {
+		double triggerPressure = Robot.getDriverXbox().getLeftTriggerAxis();
+		if (Robot.getDriverXbox().getBButton()) {
 			MAX_DRIVE_SPEED = 1.0;
 		} else if (triggerPressure > 0.01) {
 			// Map max speed from 0-100 to 50-10
 			MAX_DRIVE_SPEED = triggerPressure * -4 / 10 + 0.5;
-		} else if (Robot.getDriverXbox().getBButton() == false) {
+		} else if (!Robot.getDriverXbox().getBButton()) {
 			MAX_DRIVE_SPEED = 0.75;
 		}
 

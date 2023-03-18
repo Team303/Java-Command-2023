@@ -9,7 +9,18 @@ import java.util.List;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.commands.arm.Homing;
+import com.team303.robot.commands.drive.AutoLevelBasic;
 
+import java.util.HashMap;
+import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.wpilibj2.command.Command;
+import com.pathplanner.lib.PathConstraints;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import com.team303.robot.RobotMap.Swerve;
+import com.team303.robot.Robot;
+import static com.team303.robot.Robot.swerve;
+import com.pathplanner.lib.auto.PIDConstants;
 import edu.wpi.first.networktables.GenericEntry;
 
 /**
@@ -53,7 +64,7 @@ public class Autonomous {
 
         public static void init() {
 
-                // HashMap<String,Command> eventMap = new HashMap<>();
+                HashMap<String, Command> eventMap = new HashMap<>();
                 // //In Inches
                 // // eventMap.put("Top Cone", new ReachPoint(-42, 48));
                 // // eventMap.put("Middle Cone", new ReachPoint(-24, 35)); //TEST THESE
@@ -62,29 +73,28 @@ public class Autonomous {
                 // // eventMap.put("Bottom Hybrid", new ReachPoint(-16, 5)); //TEST THESE
                 // // eventMap.put("Reach Cone", new ReachPoint(36, 0));
 
-                // autoBuilder = new SwerveAutoBuilder(
-                // swerve::getPose, // Pose2d supplier
-                // swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the
-                // beginning of auto
-                // swerve.getKinematics(), // SwerveDriveKinematics
-                // new PIDConstants(5, 0.0, 0.0), // PID constants to correct for translation
-                // error (used to create the X
-                // // and Y
-                // // PID controllers)
-                // new PIDConstants(0.1, 0.0, 0.0), // PID constants to correct for rotation
-                // error (used to create the
-                // // rotation
-                // // controller)
-                // swerve::drive, // Module states consumer used to output to the drive
-                // subsystem
-                // eventMap,
-                // false, // Should the path be automatically mirrored depending on alliance
-                // color.
-                // // Optional, defaults to true
-                // swerve // The drive subsystem. Used to properly set the requirements of path
-                // following
-                // // commands
-                // );
+                autoBuilder = new SwerveAutoBuilder(
+                                swerve::getPose, // Pose2d supplier
+                                swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the
+                                // beginning of auto
+                                swerve.getKinematics(), // SwerveDriveKinematics
+                                new PIDConstants(5, 0.0, 0.0), // PID constants to correct for translation
+                                // error (used to create the X
+                                // and Y
+                                // PID controllers)
+                                new PIDConstants(0.1, 0.0, 0.0), // PID constants to correct for rotation
+                                // error (used to create the
+                                // rotation
+                                // controller)
+                                swerve::drive, // Module states consumer used to output to the drive
+                                // subsystem
+                                eventMap,
+                                false, // Should the path be automatically mirrored depending on allianc color.
+                                       // Optional, defaults to true
+                                swerve // The drive subsystem. Used to properly set the requirements of path
+                                       // following
+                                       // commands
+                );
 
                 // create("New Path", () -> autoBuilder.fullAuto(pathGroup));
 
@@ -108,6 +118,8 @@ public class Autonomous {
                 // pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3,
                 // Swerve.MAX_VELOCITY));
                 // create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
+                pathGroup = PathPlanner.loadPathGroup("Basic Auto", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Taxi", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroup), new AutoLevelBasic()));
 
                 // create("New", () -> {
                 // try {
