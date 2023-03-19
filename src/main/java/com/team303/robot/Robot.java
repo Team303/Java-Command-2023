@@ -256,6 +256,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+		swerve.resetToAbsoluteAngle();
 	}
 
 	private void configureButtonBindings() {
