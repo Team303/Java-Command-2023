@@ -23,6 +23,7 @@ import com.team303.robot.Robot;
 import static com.team303.robot.Robot.swerve;
 import com.pathplanner.lib.auto.PIDConstants;
 import edu.wpi.first.networktables.GenericEntry;
+import com.team303.robot.commands.arm.ReachPoint;
 
 /**
  * Quick guide to Comand Groups:
@@ -179,9 +180,9 @@ public class Autonomous {
                 // new AutolevelFeedforward()
                 // );
 
-                // create("Reach Point", () ->
-                // new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
-                // );
+                create("Reach Point", () ->
+                new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
+                );
 
                 // create("reach selected", () ->
                 // Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new
@@ -190,6 +191,7 @@ public class Autonomous {
                 // create("drive to node", () -> swerve.driveToNode());
 
                 create("Homing", () -> new Homing());
+
 
         }
 }
