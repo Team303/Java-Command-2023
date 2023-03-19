@@ -10,6 +10,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.commands.arm.Homing;
 import com.team303.robot.commands.drive.AutoLevelBasic;
+import com.team303.robot.commands.arm.ReachPoint;
 
 import java.util.HashMap;
 import com.pathplanner.lib.PathPlanner;
@@ -66,11 +67,11 @@ public class Autonomous {
 
                 HashMap<String, Command> eventMap = new HashMap<>();
                 // //In Inches
-                // // eventMap.put("Top Cone", new ReachPoint(-42, 48));
-                // // eventMap.put("Middle Cone", new ReachPoint(-24, 35)); //TEST THESE
-                // // eventMap.put("Top Cube", new ReachPoint(-42, 36)); //TEST THESE
-                // // eventMap.put("Middle Cone", new ReachPoint(-24, 25)); //TEST THESE
-                // // eventMap.put("Bottom Hybrid", new ReachPoint(-16, 5)); //TEST THESE
+                eventMap.put("Top Cone", new ReachPoint(42, 48));
+                // // eventMap.put("Middle Cone", new ReachPoint(24, 35)); //TEST THESE
+                // // eventMap.put("Top Cube", new ReachPoint(42, 36)); //TEST THESE
+                // // eventMap.put("Middle Cone", new ReachPoint(24, 25)); //TEST THESE
+                // // eventMap.put("Bottom Hybrid", new ReachPoint(16, 5)); //TEST THESE
                 // // eventMap.put("Reach Cone", new ReachPoint(36, 0));
 
                 autoBuilder = new SwerveAutoBuilder(
@@ -120,7 +121,8 @@ public class Autonomous {
                 // create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
                 pathGroup = PathPlanner.loadPathGroup("Basic Auto", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Taxi", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroup), new AutoLevelBasic()));
-
+                create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16, 5)));
+                create("Middle Node", () -> new ReachPoint(24, 35));
                 // create("New", () -> {
                 // try {
                 // return new SequentialCommandGroup(

@@ -398,8 +398,8 @@ public class SwerveSubsystem extends SubsystemBase {
 		if (Robot.getDriverXbox().getBButton()) {
 			MAX_DRIVE_SPEED = 1.0;
 		} else if (triggerPressure > 0.01) {
-			// Map max speed from 0-100 to 50-10
-			MAX_DRIVE_SPEED = triggerPressure * -4 / 10 + 0.5;
+			// Map max speed from 0-100 to 50-20
+			MAX_DRIVE_SPEED = triggerPressure * -3 / 10 + 0.5;
 		} else if (!Robot.getDriverXbox().getBButton()) {
 			MAX_DRIVE_SPEED = 0.75;
 		}
@@ -431,20 +431,20 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
-		if (false) {
-			Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-			if (result.isPresent()) {
-				EstimatedRobotPose visionPoseEstimate = result.get();
-				poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-						visionPoseEstimate.timestampSeconds);
-			}
-		}
+		// if (false) {
+		// 	Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+		// 	if (result.isPresent()) {
+		// 		EstimatedRobotPose visionPoseEstimate = result.get();
+		// 		poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+		// 				visionPoseEstimate.timestampSeconds);
+		// 	}
+		// }
 		// poseEstimator.update(
 		// Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
 		// Robot.swerve.getModulePositions());
-		field2d.setRobotPose(getRobotPose());
+		 field2d.setRobotPose(getRobotPose());
 
-		lastPeriodic = timer.get();
+		 lastPeriodic = timer.get();
 
 		NAVX_Y_VELOCITY.setDouble(Robot.getNavX().getRawGyroZ(), 0);
 		NAVX_ACCELERATION.setDouble(Robot.getNavX().getRawAccelX());

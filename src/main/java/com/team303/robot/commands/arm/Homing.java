@@ -14,9 +14,9 @@ public class Homing extends CommandBase {
     public Homing() {
         addRequirements(arm);
         
-        // System.out.println("\n\n\n\n\n\n\n\nik angles" +
-        // arm.armKinematics.getIKAnglesDegrees().get(0)
-        // + arm.armKinematics.getIKAnglesDegrees().get(1));
+        System.out.println("\n\n\n\n\n\n\n\nik angles" +
+        arm.armKinematics.getIKAnglesDegrees().get(0)
+        + arm.armKinematics.getIKAnglesDegrees().get(1));
     }
 
     @Override
