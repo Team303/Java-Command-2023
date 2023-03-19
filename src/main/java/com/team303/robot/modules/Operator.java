@@ -3,6 +3,7 @@ package com.team303.robot.modules;
 import static com.team303.robot.Robot.heldObject;
 
 import java.awt.Point;
+import java.util.Arrays;
 
 import com.team303.robot.Robot.HeldObject;
 import com.team303.robot.util.Alert;
@@ -36,6 +37,8 @@ public class Operator extends SubsystemBase {
             "No more space to place cones, queue canceled", AlertType.WARNING);
     private final Alert logNoMorePieceSpaceCubes = new Alert("Operator Terminal",
             "No more space to place cubes, queue canceled", AlertType.WARNING);
+    private final Alert logCommandLoopOverrun = new Alert("Operator Terminal",
+            "Attempted to queu on already-filled node, queue not performed", AlertType.ERROR);
 
     public static enum NodeState {
         NONE(0),
@@ -69,7 +72,8 @@ public class Operator extends SubsystemBase {
                         .withWidget("State of Node").getEntry();
             }
         }
-        heldObjectChooser.addOption("None", HeldObject.NONE);
+        heldObjectChooser.setDefaultOption("None", HeldObject.NONE);
+        // heldObjectChooser.addOption("None", HeldObject.NONE);
         heldObjectChooser.addOption("Cube", HeldObject.CUBE);
         heldObjectChooser.addOption("Cone", HeldObject.CONE);
         OPERATOR_TAB.add("Held Object Chooser", heldObjectChooser).withPosition(2, 0);
@@ -254,7 +258,7 @@ public class Operator extends SubsystemBase {
         for (int i = 0; i < 3; i++) {
             if ((nodeStateValues[i][0] != NodeState.NONE.value
                     && nodeStateValues[i][1] != NodeState.NONE.value)
-                    && nodeStateValues[i][2] == NodeState.NONE.value) {
+                    && !partOfCompleteLink(i, 0) && !partOfCompleteLink(i, 1)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -264,7 +268,7 @@ public class Operator extends SubsystemBase {
                 return;
             } else if ((nodeStateValues[i][1] != NodeState.NONE.value
                     && nodeStateValues[i][2] != NodeState.NONE.value)
-                    && nodeStateValues[i][0] == NodeState.NONE.value) {
+                    && !partOfCompleteLink(i, 1) && !partOfCompleteLink(i, 2)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -275,7 +279,7 @@ public class Operator extends SubsystemBase {
                 return;
             } else if ((nodeStateValues[i][0] != NodeState.NONE.value
                     && nodeStateValues[i][2] != NodeState.NONE.value)
-                    && nodeStateValues[i][1] == NodeState.NONE.value) {
+                    && !partOfCompleteLink(i, 0) && !partOfCompleteLink(i, 2)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -287,9 +291,8 @@ public class Operator extends SubsystemBase {
             }
             for (int j = 1; j < 5; j++) {
                 if ((nodeStateValues[i][j] != NodeState.NONE.value
-                        && nodeStateValues[i][j + 1] != NodeState.NONE.value)
-                        && nodeStateValues[i][j + 2] == NodeState.NONE.value
-                        && nodeStateValues[i][j - 1] == NodeState.NONE.value) {
+                        && nodeStateValues[i][j + 1] != NodeState.NONE.value) && !partOfCompleteLink(i, j)
+                        && !partOfCompleteLink(i, j + 1)) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -305,8 +308,7 @@ public class Operator extends SubsystemBase {
                     return;
                 } else if ((nodeStateValues[i][j + 1] != NodeState.NONE.value
                         && nodeStateValues[i][j + 2] != NodeState.NONE.value)
-                        && nodeStateValues[i][j] == NodeState.NONE.value
-                        && nodeStateValues[i][j + 3] == NodeState.NONE.value) {
+                        && !partOfCompleteLink(i, j + 1) && !partOfCompleteLink(i, j + 2)) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -322,7 +324,7 @@ public class Operator extends SubsystemBase {
                     return;
                 } else if ((nodeStateValues[i][j] != NodeState.NONE.value
                         && nodeStateValues[i][j + 2] != NodeState.NONE.value)
-                        && nodeStateValues[i][j + 1] == NodeState.NONE.value) {
+                        && !partOfCompleteLink(i, j) && !partOfCompleteLink(i, j + 2)) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -341,7 +343,7 @@ public class Operator extends SubsystemBase {
 
             if ((nodeStateValues[i][6] != NodeState.NONE.value
                     && nodeStateValues[i][7] != NodeState.NONE.value)
-                    && nodeStateValues[i][8] == NodeState.NONE.value) {
+                    && !partOfCompleteLink(i, 6) && !partOfCompleteLink(i, 7)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -351,7 +353,7 @@ public class Operator extends SubsystemBase {
                 return;
             } else if ((nodeStateValues[i][7] != NodeState.NONE.value
                     && nodeStateValues[i][8] != NodeState.NONE.value)
-                    && nodeStateValues[i][6] == NodeState.NONE.value) {
+                    && !partOfCompleteLink(i, 7) && !partOfCompleteLink(i, 8)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -361,7 +363,7 @@ public class Operator extends SubsystemBase {
                 return;
             } else if ((nodeStateValues[i][6] != NodeState.NONE.value
                     && nodeStateValues[i][8] != NodeState.NONE.value)
-                    && nodeStateValues[i][7] == NodeState.NONE.value) {
+                    && !partOfCompleteLink(i, 6) && !partOfCompleteLink(i, 7)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
 
@@ -393,21 +395,26 @@ public class Operator extends SubsystemBase {
                 for (int i = 0; i < 3; i++) {
                     int j = 3;
                     if ((nodeStateValues[i][j] != NodeState.NONE.value
-                            && nodeStateValues[i][j + 1] != NodeState.NONE.value)) {
+                            && nodeStateValues[i][j + 1] != NodeState.NONE.value) && !partOfCompleteLink(i, j)
+                            && !partOfCompleteLink(i, j + 1)) {
                         queuedValue = new Point(i, j + 2);
                         nodeSuperStateValues[i][j + 2] = NodeSuperState.QUEUED.value;
                         return;
-                    } else if ((nodeStateValues[i][j + 1] != NodeState.NONE.value
-                            && nodeStateValues[i][j + 2] != NodeState.NONE.value)) {
+                    } else if (nodeStateValues[i][j + 1] != NodeState.NONE.value
+                            && nodeStateValues[i][j + 2] != NodeState.NONE.value && !partOfCompleteLink(i, j + 1)
+                            && !partOfCompleteLink(i, j + 2)) {
                         queuedValue = new Point(i, j);
                         nodeSuperStateValues[i][j] = NodeSuperState.QUEUED.value;
                         return;
                     } else if (i == 2 && ((nodeStateValues[i][j] != NodeState.NONE.value
-                            && nodeStateValues[i][j + 1] != NodeState.NONE.value)
+                            && nodeStateValues[i][j + 1] != NodeState.NONE.value && !partOfCompleteLink(i, j)
+                            && !partOfCompleteLink(i, j + 1))
                             || (nodeStateValues[i][j + 1] != NodeState.NONE.value
-                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value)
+                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value
+                                    && !partOfCompleteLink(i, j + 2) && !partOfCompleteLink(i, j + 1))
                             || (nodeStateValues[i][j] != NodeState.NONE.value
-                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value))) {
+                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value && !partOfCompleteLink(i, j)
+                                    && !partOfCompleteLink(i, j + 2)))) {
                         for (int k = 0; k < 3; k++) {
                             if (nodeStateValues[i][j + k] == NodeState.NONE.value) {
                                 queuedValue = new Point(i, j + k);
@@ -422,23 +429,26 @@ public class Operator extends SubsystemBase {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 8; j += 3) {
                     if ((nodeStateValues[i][j] != NodeState.NONE.value
-                            && nodeStateValues[i][j + 1] != NodeState.NONE.value)
-                            && nodeStateValues[i][j + 2] == NodeState.NONE.value) {
+                            && nodeStateValues[i][j + 1] != NodeState.NONE.value) && !partOfCompleteLink(i, j)
+                            && !partOfCompleteLink(i, j + 1)) {
                         queuedValue = new Point(i, j + 2);
                         nodeSuperStateValues[i][j + 2] = NodeSuperState.QUEUED.value;
                         return;
-                    } else if ((nodeStateValues[i][j + 1] != NodeState.NONE.value
-                            && nodeStateValues[i][j + 2] != NodeState.NONE.value)
-                            && nodeStateValues[i][j] == NodeState.NONE.value) {
+                    } else if (nodeStateValues[i][j + 1] != NodeState.NONE.value
+                            && nodeStateValues[i][j + 2] != NodeState.NONE.value && !partOfCompleteLink(i, j + 1)
+                            && !partOfCompleteLink(i, j + 2)) {
                         queuedValue = new Point(i, j);
                         nodeSuperStateValues[i][j] = NodeSuperState.QUEUED.value;
                         return;
                     } else if (i == 2 && ((nodeStateValues[i][j] != NodeState.NONE.value
-                            && nodeStateValues[i][j + 1] != NodeState.NONE.value)
+                            && nodeStateValues[i][j + 1] != NodeState.NONE.value && !partOfCompleteLink(i, j)
+                            && !partOfCompleteLink(i, j + 1))
                             || (nodeStateValues[i][j + 1] != NodeState.NONE.value
-                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value)
+                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value
+                                    && !partOfCompleteLink(i, j + 2) && !partOfCompleteLink(i, j + 1))
                             || (nodeStateValues[i][j] != NodeState.NONE.value
-                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value))) {
+                                    && nodeStateValues[i][j + 2] != NodeState.NONE.value && !partOfCompleteLink(i, j)
+                                    && !partOfCompleteLink(i, j + 2)))) {
                         for (int k = 0; k < 3; k++) {
                             if (nodeStateValues[i][j + k] == NodeState.NONE.value) {
                                 queuedValue = new Point(i, j + k);
@@ -579,17 +589,20 @@ public class Operator extends SubsystemBase {
                 if (nodeStateValues[i][j] != NodeState.NONE.value && nodeStateValues[i][j + 1] != NodeState.NONE.value
                         && nodeStateValues[i][j - 1] != NodeState.NONE.value) {
                     linkComplete[7 * i + (j - 1)] = true;
-                    if (j > 1 && linkComplete[7 * i + (j - 2)]) {
-                        linkComplete[7 * i + (j - 2)] = false;
+                    if ((7 * i + j) % 7 == 1) {
+                        linkComplete[7 * i + j] = false;
+                        linkComplete[7 * i + j + 1] = false;
+                    } else if ((7 * i + j) % 7 == 4) {
+                        linkComplete[7 * i + j] = false;
+                        linkComplete[7 * i + j + 1] = false;
+                        linkComplete[7 * i + j - 2] = false;
+                        linkComplete[7 * i + j - 3] = false;
+                    } else if ((7 * i + j) % 7 == 0) {
+                        linkComplete[7 * i + j - 2] = false;
+                        linkComplete[7 * i + j - 3] = false;
                     }
-                    if (j > 2 && linkComplete[7 * i + (j - 3)]) {
-                        linkComplete[7 * i + (j - 3)] = false;
-                    }
-                    if (j < 4) {
-                        j = ((j - 1) / 3 + 1) * 3 + 1;
-                    } else {
-                        j = 8;
-                    }
+                    j = ((j - 1) / 3 + 1) * 3 + 1;
+
                 } else {
                     linkComplete[7 * i + (j - 1)] = false;
                     j++;
@@ -651,5 +664,4 @@ public class Operator extends SubsystemBase {
             }
         }
     }
-
 }

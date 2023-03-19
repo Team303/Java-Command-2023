@@ -55,12 +55,12 @@ public class Robot extends LoggedRobot {
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
 	public static final Photonvision photonvision = null; // new Photonvision();
-	public static final SwerveSubsystem swerve = null; //new SwerveSubsystem();
-	public static final ArmSubsystem arm = null; //new ArmSubsystem();
-	public static final ArmTest armtest = null; //new ArmTest();
-	public static final Operator operator = null; //new Operator();
-	public static final ClawSubsystem claw = new ClawSubsystem();
-	public static final Ultrasonic ultrasonic = null; //new Ultrasonic(0, 4);
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final ArmTest armtest = null; // new ArmTest();
+	public static final Operator operator =  new Operator();
+	public static final ClawSubsystem claw =  new ClawSubsystem();
+	public static final Ultrasonic ultrasonic =  new Ultrasonic(0, 4);
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -258,18 +258,18 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		// operatorCommandXboxController.pov(0).onTrue(new
-		// InstantCommand(operator::moveUp));
-		// operatorCommandXboxController.pov(90).onTrue(new
-		// InstantCommand(operator::moveRight));
-		// operatorCommandXboxController.pov(180.33).onTrue(new
-		// InstantCommand(operator::moveDown));
-		// operatorCommandXboxController.pov(270).onTrue(new
-		// InstantCommand(operator::moveLeft));
-		// operatorCommandXboxController.y().onTrue(new
-		// InstantCommand(operator::setPiece));
-		// operatorCommandXboxController.b().onTrue(new
-		// InstantCommand(operator::queuePlacement));
+		operatorCommandXboxController.pov(0).onTrue(new
+		InstantCommand(operator::moveUp));
+		operatorCommandXboxController.pov(90).onTrue(new
+		InstantCommand(operator::moveRight));
+		operatorCommandXboxController.pov(180).onTrue(new
+		InstantCommand(operator::moveDown));
+		operatorCommandXboxController.pov(270).onTrue(new
+		InstantCommand(operator::moveLeft));
+		operatorCommandXboxController.y().onTrue(new
+		InstantCommand(operator::setPiece));
+		operatorCommandXboxController.b().onTrue(new
+		InstantCommand(operator::queuePlacement));
 		// operatorCommandXboxController.x().onTrue(new
 		// InstantCommand(operator::setNone));
 		// operatorCommandXboxController.a().onTrue(new
