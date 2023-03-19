@@ -57,7 +57,10 @@ public class Autonomous {
         // starts, not every time you want to create an auto command. A good place to
         // put this is in RobotContainer along with your subsystems.
 
-        static List<PathPlannerTrajectory> pathGroup;
+        static List<PathPlannerTrajectory> pathGroupForward;
+        static List<PathPlannerTrajectory> pathGroupSubstation;
+        static List<PathPlannerTrajectory> pathGroupGate;
+        static List<PathPlannerTrajectory> pathGroupLevel;
         private static SwerveAutoBuilder autoBuilder;
         public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
         public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
@@ -118,8 +121,14 @@ public class Autonomous {
                 // pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3,
                 // Swerve.MAX_VELOCITY));
                 // create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
-                pathGroup = PathPlanner.loadPathGroup("Basic Auto", new PathConstraints(3, Swerve.MAX_VELOCITY));
-                create("Taxi", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroup), new AutoLevelBasic()));
+                pathGroupLevel = PathPlanner.loadPathGroup("Level", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Auto Level", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevel), new AutoLevelBasic()));
+                pathGroupSubstation = PathPlanner.loadPathGroup("Towards Substation", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Taxi Substation", () -> autoBuilder.fullAuto(pathGroupSubstation));
+                pathGroupGate = PathPlanner.loadPathGroup("Towards Gate", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Taxi Gate", () -> autoBuilder.fullAuto(pathGroupGate));
+                pathGroupForward = PathPlanner.loadPathGroup("Forward", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Taxi Forward", () -> autoBuilder.fullAuto(pathGroupForward));
 
                 // create("New", () -> {
                 // try {
