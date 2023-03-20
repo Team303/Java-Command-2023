@@ -11,7 +11,7 @@ public class TurnToAngle extends PIDCommand {
 
     public TurnToAngle(double angle) {
         super(new PIDController(0.07, 0, 0),
-                () -> Robot.getNavX().getAngle() % 360.0,
+                () -> Robot.navX.getAngle() % 360.0,
                 angle,
                 (output) -> Robot.swerve.drive(new Translation2d(0, 0), output, true),
                 Robot.swerve);

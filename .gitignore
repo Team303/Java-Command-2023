@@ -136,12 +136,9 @@ $RECYCLE.BIN/
 
 ### Gradle ###
 .gradle
-/build/
-/robot/build/
-/kinematics/build/
-/math/build/
-/shuffleboard/build/
-
+**/build/
+**/bin/
+/src/main/java/frc/robot/BuildConstants.java
 
 
 
