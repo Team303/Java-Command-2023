@@ -141,7 +141,7 @@ $RECYCLE.BIN/
 /kinematics/build/
 /math/build/
 /shuffleboard/build/
-
+/src/main/java/frc/robot/BuildConstants.java
 
 
 
