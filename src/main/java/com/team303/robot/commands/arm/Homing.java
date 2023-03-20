@@ -13,8 +13,10 @@ public class Homing extends CommandBase {
 
     public Homing() {
         addRequirements(arm);
-        System.out.println("\n\n\n\n\n\n\n\nik angles" + arm.armKinematics.getIKAnglesDegrees().get(0)
-                + arm.armKinematics.getIKAnglesDegrees().get(1));
+        
+        System.out.println("\n\n\n\n\n\n\n\nik angles" +
+        arm.armKinematics.getIKAnglesDegrees().get(0)
+        + arm.armKinematics.getIKAnglesDegrees().get(1));
     }
 
     @Override
@@ -41,8 +43,9 @@ public class Homing extends CommandBase {
 
         arm.setEncoders(shoulderStartAngle, elbowStartAngle, 0);
 
-        System.out.println("ik angles" + arm.armKinematics.getIKAnglesDegrees().get(0)
-                + arm.armKinematics.getIKAnglesDegrees().get(1));
+        // System.out.println("ik angles" +
+        // arm.armKinematics.getIKAnglesDegrees().get(0)
+        // + arm.armKinematics.getIKAnglesDegrees().get(1));
 
         // arm.reach(arm.armKinematics.getIKAnglesRadians());
         // cartesianStorage = new Translation3d(cartesianCoords.getX(), 0,

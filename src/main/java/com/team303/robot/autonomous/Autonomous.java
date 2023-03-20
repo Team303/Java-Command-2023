@@ -9,8 +9,21 @@ import java.util.List;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.commands.arm.Homing;
+import com.team303.robot.commands.drive.AutoLevelBasic;
+import com.team303.robot.commands.arm.ReachPoint;
 
+import java.util.HashMap;
+import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.wpilibj2.command.Command;
+import com.pathplanner.lib.PathConstraints;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import com.team303.robot.RobotMap.Swerve;
+import com.team303.robot.Robot;
+import static com.team303.robot.Robot.swerve;
+import com.pathplanner.lib.auto.PIDConstants;
 import edu.wpi.first.networktables.GenericEntry;
+import com.team303.robot.commands.arm.ReachPoint;
 
 /**
  * Quick guide to Comand Groups:
@@ -46,45 +59,47 @@ public class Autonomous {
         // starts, not every time you want to create an auto command. A good place to
         // put this is in RobotContainer along with your subsystems.
 
-        static List<PathPlannerTrajectory> pathGroup;
+        static List<PathPlannerTrajectory> pathGroupForward;
+        static List<PathPlannerTrajectory> pathGroupSubstation;
+        static List<PathPlannerTrajectory> pathGroupGate;
+        static List<PathPlannerTrajectory> pathGroupLevel;
         private static SwerveAutoBuilder autoBuilder;
         public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
         public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
 
         public static void init() {
 
-                // HashMap<String,Command> eventMap = new HashMap<>();
+                HashMap<String, Command> eventMap = new HashMap<>();
                 // //In Inches
-                // // eventMap.put("Top Cone", new ReachPoint(-42, 48));
-                // // eventMap.put("Middle Cone", new ReachPoint(-24, 35)); //TEST THESE
-                // // eventMap.put("Top Cube", new ReachPoint(-42, 36)); //TEST THESE
-                // // eventMap.put("Middle Cone", new ReachPoint(-24, 25)); //TEST THESE
-                // // eventMap.put("Bottom Hybrid", new ReachPoint(-16, 5)); //TEST THESE
+                eventMap.put("Top Cone", new ReachPoint(42, 48));
+                // // eventMap.put("Middle Cone", new ReachPoint(24, 35)); //TEST THESE
+                // // eventMap.put("Top Cube", new ReachPoint(42, 36)); //TEST THESE
+                // // eventMap.put("Middle Cone", new ReachPoint(24, 25)); //TEST THESE
+                // // eventMap.put("Bottom Hybrid", new ReachPoint(16, 5)); //TEST THESE
                 // // eventMap.put("Reach Cone", new ReachPoint(36, 0));
 
-                // autoBuilder = new SwerveAutoBuilder(
-                // swerve::getPose, // Pose2d supplier
-                // swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the
-                // beginning of auto
-                // swerve.getKinematics(), // SwerveDriveKinematics
-                // new PIDConstants(5, 0.0, 0.0), // PID constants to correct for translation
-                // error (used to create the X
-                // // and Y
-                // // PID controllers)
-                // new PIDConstants(0.1, 0.0, 0.0), // PID constants to correct for rotation
-                // error (used to create the
-                // // rotation
-                // // controller)
-                // swerve::drive, // Module states consumer used to output to the drive
-                // subsystem
-                // eventMap,
-                // false, // Should the path be automatically mirrored depending on alliance
-                // color.
-                // // Optional, defaults to true
-                // swerve // The drive subsystem. Used to properly set the requirements of path
-                // following
-                // // commands
-                // );
+                autoBuilder = new SwerveAutoBuilder(
+                                swerve::getPose, // Pose2d supplier
+                                swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the
+                                // beginning of auto
+                                swerve.getKinematics(), // SwerveDriveKinematics
+                                new PIDConstants(5, 0.0, 0.0), // PID constants to correct for translation
+                                // error (used to create the X
+                                // and Y
+                                // PID controllers)
+                                new PIDConstants(0.1, 0.0, 0.0), // PID constants to correct for rotation
+                                // error (used to create the
+                                // rotation
+                                // controller)
+                                swerve::drive, // Module states consumer used to output to the drive
+                                // subsystem
+                                eventMap,
+                                false, // Should the path be automatically mirrored depending on allianc color.
+                                       // Optional, defaults to true
+                                swerve // The drive subsystem. Used to properly set the requirements of path
+                                       // following
+                                       // commands
+                );
 
                 // create("New Path", () -> autoBuilder.fullAuto(pathGroup));
 
@@ -108,7 +123,16 @@ public class Autonomous {
                 // pathGroup = PathPlanner.loadPathGroup("Middle Cube", new PathConstraints(3,
                 // Swerve.MAX_VELOCITY));
                 // create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
-
+                pathGroupLevel = PathPlanner.loadPathGroup("Level", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Auto Level", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevel), new AutoLevelBasic()));
+                pathGroupSubstation = PathPlanner.loadPathGroup("Towards Substation", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Taxi Substation", () -> autoBuilder.fullAuto(pathGroupSubstation));
+                pathGroupGate = PathPlanner.loadPathGroup("Towards Gate", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Taxi Gate", () -> autoBuilder.fullAuto(pathGroupGate));
+                pathGroupForward = PathPlanner.loadPathGroup("Forward", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Taxi Forward", () -> autoBuilder.fullAuto(pathGroupForward));
+                create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16, 5)));
+                create("Middle Node", () -> new ReachPoint(24, 35));
                 // create("New", () -> {
                 // try {
                 // return new SequentialCommandGroup(
@@ -156,9 +180,9 @@ public class Autonomous {
                 // new AutolevelFeedforward()
                 // );
 
-                // create("Reach Point", () ->
-                // new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
-                // );
+                create("Reach Point", () ->
+                new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
+                );
 
                 // create("reach selected", () ->
                 // Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new
@@ -167,6 +191,7 @@ public class Autonomous {
                 // create("drive to node", () -> swerve.driveToNode());
 
                 create("Homing", () -> new Homing());
+
 
         }
 }

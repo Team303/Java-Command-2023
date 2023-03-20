@@ -1,6 +1,7 @@
 package com.team303.robot.commands.arm;
 
 import static com.team303.robot.Robot.arm;
+import static com.team303.robot.subsystems.ArmSubsystem.armKinematics;
 import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;
 
 import com.team303.robot.Robot;
@@ -13,7 +14,7 @@ public class ReachPoint extends CommandBase {
     public Translation3d cartesianCoords;
 
     public ReachPoint(double x, double z) {
-        this.cartesianCoords = new Translation3d(x, 0, z);
+        this.cartesianCoords = new Translation3d(x, 0.0, z);
         addRequirements(arm);
     }
 
@@ -25,7 +26,7 @@ public class ReachPoint extends CommandBase {
     @Override
     public void execute() {
         arm.reachEmbedded(cartesianCoords);
-        Robot.arm.armKinematics.updateEmbedded((float) cartesianCoords.getX(), (float) cartesianCoords.getZ());
+        armKinematics.updateEmbedded((float) cartesianCoords.getX(), (float) cartesianCoords.getZ());
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
@@ -33,7 +34,7 @@ public class ReachPoint extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(arm.getError()) < 3.0;
+        return Math.abs(arm.getPositionError()) < 3.0;
     }
 
     @Override

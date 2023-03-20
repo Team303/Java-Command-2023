@@ -158,55 +158,31 @@ public class FabrikController {
      * @return joint angles in radians
      */
     public List<Double> getIKAnglesRadians() {
-        Vec2f baseVectorDirection;
-        double baseRadianDirection;
-        List<Double> outputRadianAngles = new ArrayList<Double>();
-        baseVectorDirection = chain.getBone(0).getDirectionUV()
-                .minus(new Vec2f((float) Math.cos(Math.PI / 2), (float) Math.sin(Math.PI / 2)));
-        baseRadianDirection = Math.atan2(baseVectorDirection.y, baseVectorDirection.x);
-        if (baseRadianDirection < -Math.PI / 2) {
-            baseRadianDirection += Math.PI;
-        }
-        outputRadianAngles.add(-baseRadianDirection);
-        for (int i = 1; i < chain.getNumBones(); i++) {
-            Vec2f rotatedAngle = chain.getBone(i).getDirectionUV().rotateRads((float) -Math
-                    .atan2(chain.getBone(i - 1).getDirectionUV().y, chain.getBone(i - 1).getDirectionUV().x));
-            outputRadianAngles
-                    .add(-Math.atan2(rotatedAngle.y, rotatedAngle.x));
-        }
-        return outputRadianAngles;
+    Vec2f baseVectorDirection;
+    double baseRadianDirection;
+    List<Double> outputRadianAngles = new ArrayList<Double>();
+    baseVectorDirection = chain.getBone(0).getDirectionUV().minus(new
+    Vec2f((float)Math.cos(Math.PI/2),(float)Math.sin(Math.PI/2)));
+    baseRadianDirection = Math.atan2(baseVectorDirection.y,
+    baseVectorDirection.x);
+    if (baseRadianDirection < -Math.PI / 2) {
+    baseRadianDirection += Math.PI;
     }
 
-    // public List<Double> getIKAnglesRadians() {
-    // Vec2f baseVectorDirection;
-    // double baseRadianDirection;
-    // List<Double> outputRadianAngles = new ArrayList<Double>();
-    // baseVectorDirection = chain.getBone(0).getDirectionUV().minus(new
-    // Vec2f((float)Math.cos(Math.PI/2),(float)Math.sin(Math.PI/2)));
-    // baseRadianDirection = Math.atan2(baseVectorDirection.y,
-    // baseVectorDirection.x);
-    // if (baseRadianDirection < -Math.PI / 2) {
-    // baseRadianDirection += Math.PI;
-    // }
+    List<Float> location = getEffectorPoint();
 
-    // List<Float> location = getEffectorPoint();
-
-    // outputRadianAngles.add(-baseRadianDirection);
-
-    // double coefficient = 1;
-
-    // // if (Math.abs(Math.atan2(location.get(1), location.get(0))) > Math.PI/2) {
-    // // coefficient = -1;
-    // // }
-
-    // for (int i = 1; i < chain.getNumBones(); i++) {
-    // Vec2f rotatedAngle =
-    // chain.getBone(i).getDirectionUV().rotateRads((float)-Math.atan2(chain.getBone(i-1).getDirectionUV().y,chain.getBone(i-1).getDirectionUV().x));
-    // outputRadianAngles
-    // .add(-Math.atan2(rotatedAngle.y,rotatedAngle.x) * coefficient);
-    // }
-    // return outputRadianAngles;
-    // }
+    outputRadianAngles.add(-baseRadianDirection);
+    for (int i = 1; i < chain.getNumBones(); i++) {
+    Vec2f rotatedAngle =
+    chain.getBone(i).getDirectionUV().rotateRads((float)-Math.atan2(chain.getBone(i-1).getDirectionUV().y,chain.getBone(i-1).getDirectionUV().x));
+    outputRadianAngles
+    .add(-Math.atan2(rotatedAngle.y,rotatedAngle.x));
+    }
+    if (outputRadianAngles.get(0)==-Math.PI) {
+        outputRadianAngles.set(0,0.0);
+       }
+    return outputRadianAngles;
+    }
 
     public List<Double> getIKAnglesDegrees() {
         List<Double> outputDegreeAngles = new ArrayList<Double>();

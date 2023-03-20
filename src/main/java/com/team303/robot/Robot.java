@@ -1,5 +1,6 @@
 package com.team303.robot;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -13,7 +14,7 @@ import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
 import com.team303.robot.commands.arm.DefaultIKControlCommand;
-import com.team303.robot.commands.arm.DefaultMove;
+//import com.team303.robot.commands.arm.DefaultMove;
 import com.team303.robot.commands.arm.Homing;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.DefaultDrive;
@@ -44,8 +45,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.BuildConstants;
-import com.team303.robot.commands.claw.ToggleOpen;
-import com.team303.robot.commands.claw.ToggleClose;
+import com.team303.robot.commands.claw.ClawOpwn;
+import com.team303.robot.commands.claw.ClawClose;
 import com.team303.robot.commands.claw.DefaultClaw;
 import com.team303.robot.commands.arm.ReachAngles;
 
@@ -54,13 +55,13 @@ public class Robot extends LoggedRobot {
 	/* RoboRio Sensors */
 	private static final AHRS navX = new AHRS();
 	/* Robot Subsystems */
-	public static final Photonvision photonvision = null; // new Photonvision();
+	public static final Photonvision photonvision = null; //new Photonvision();
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final ArmTest armtest = null; // new ArmTest();
-	public static final Operator operator =  new Operator();
-	public static final ClawSubsystem claw =  new ClawSubsystem();
-	public static final Ultrasonic ultrasonic =  new Ultrasonic(0, 4);
+	public static final Operator operator = null; //new Operator();
+	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final Ultrasonic ultrasonic = null; //new Ultrasonic(0, 4);
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -73,7 +74,6 @@ public class Robot extends LoggedRobot {
 	private static final XboxController driverXboxController = new XboxController(IOConstants.DRIVER_CONTROLLER);
 
 	public static SendableChooser<String> controllerChooser = new SendableChooser<>();
-	public static SendableChooser<String> operatorModeChooser = new SendableChooser<>();
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -167,13 +167,10 @@ public class Robot extends LoggedRobot {
 		controllerChooser.addOption("Controller", "Controller");
 		controllerChooser.addOption("JoySticks", "JoySticks");
 		controllerChooser.setDefaultOption("Controller", "Controller");
-		operatorModeChooser.addOption("Manual", "Manual");
-		operatorModeChooser.addOption("IK", "IK");
-		operatorModeChooser.setDefaultOption("Manual", "Manual");
 		CONTROLLER_TAB.add("Controller", controllerChooser);
-		CONTROLLER_TAB.add("Control Type", operatorModeChooser);
 
 		Logger logger = Logger.getInstance();
+		navX.reset();
 
 		// Record metadata
 		logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -205,18 +202,18 @@ public class Robot extends LoggedRobot {
 		}
 
 		// Configure the joystick and controller bindings
-		// configureButtonBindings();
+		configureButtonBindings();
 
-		// Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.claw.setDefaultCommand(new ClawOpwn());
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(true));
 		// Robot.armtest.setDefaultCommand(new MoveArm());
-		Robot.claw.setDefaultCommand(new DefaultClaw());
-		// Robot.arm.setDefaultCommand(new DefaultMove());
 		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
 
 		// add Autos to Shuffleboard
-		// Autonomous.init();
-		// AutonomousProgram.addAutosToShuffleboard();
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -234,7 +231,7 @@ public class Robot extends LoggedRobot {
 					// command
 					new SequentialCommandGroup(
 							new DriveWait(autoDelayChooser.getSelected()),
-							// new Homing(),
+							new Homing(),
 							autonomousCommand));
 		}
 	}
@@ -255,6 +252,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+		swerve.resetToAbsoluteAngle();
 	}
 
 	private void configureButtonBindings() {
@@ -279,30 +277,39 @@ public class Robot extends LoggedRobot {
 
 		// just testing manual angles
 		// try reaching this configuration
-		operatorCommandXboxController.a().onTrue(new ReachAngles(20, 45, 0));
-		operatorCommandXboxController.b().toggleOnTrue(new ToggleClose()).toggleOnFalse(new ToggleOpen());
-		operatorCommandXboxController.leftTrigger().whileTrue(new DefaultIKControlCommand(false)).whileFalse(new DefaultMove());
-
+		// operatorCommandXboxController.a().onTrue(new ReachAngles(20, 45, 0));
+		operatorCommandXboxController.b().whileTrue(new ClawClose());
+		// operatorCommandXboxController.leftTrigger().whileTrue(new DefaultIKControlCommand(false))
+		// 		.whileFalse(new DefaultMove());
 
 		if (controllerChooser.getSelected().equals("Controller")) {
+			// Reset Drive
 			driverCommandXboxController.y()
 					.onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
+
+			// Auto Level
 			driverCommandXboxController.a().whileTrue(new AutolevelFeedforward())
 					.whileFalse(new DefaultDrive(true));
-			driverCommandXboxController.pov(0).onTrue(new TurnToAngle(0));
-			driverCommandXboxController.pov(90).onTrue(new TurnToAngle(90));
-			driverCommandXboxController.pov(180).onTrue(new TurnToAngle(180));
-			driverCommandXboxController.pov(270).onTrue(new TurnToAngle(270));
+
+			// Turn to angles
+			driverCommandXboxController.pov(0).onTrue(Commands.runOnce(()->{arm.reach(Arrays.asList(0.0,0.0,0.0));}));
+			driverCommandXboxController.pov(90).onTrue(Commands.runOnce(()->{arm.reach(Arrays.asList(0.0,0.0,0.0));}));
+			driverCommandXboxController.pov(180).onTrue(Commands.runOnce(()->{arm.reach(Arrays.asList(-9.0,122.67,0.0));}));
+			driverCommandXboxController.pov(270).onTrue(Commands.runOnce(()->{arm.reach(Arrays.asList(0.0,0.0,0.0));}));
+
+
 			driverCommandXboxController.x().whileTrue(Commands.runOnce(swerve::lockWheels))
 					.whileFalse(new DefaultDrive(true));
+
 			driverCommandXboxController.x().onFalse(new DefaultDrive(true));
 		} else {
-			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
-			new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(swerve::resetOdometry));
-			new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
-			new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
-			new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
-			new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
+			// new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
+			// new JoystickButton(leftJoystick, 3).onTrue(new
+			// InstantCommand(swerve::resetOdometry));
+			// new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
+			// new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
+			// new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
+			// new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
 		}
 
 	}
