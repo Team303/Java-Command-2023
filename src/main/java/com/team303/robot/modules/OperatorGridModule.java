@@ -3,7 +3,6 @@ package com.team303.robot.modules;
 import static com.team303.robot.Robot.heldObject;
 
 import java.awt.Point;
-import java.util.Arrays;
 
 import com.team303.robot.Robot.HeldObject;
 import com.team303.robot.util.Alert;
@@ -17,7 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Operator extends SubsystemBase {
+public class OperatorGridModule extends SubsystemBase {
     public static final ShuffleboardTab OPERATOR_TAB = Shuffleboard.getTab("Operator");
     public static final NetworkTable operator = NetworkTableInstance.getDefault().getTable("Operator");
     public static final SendableChooser<HeldObject> heldObjectChooser = new SendableChooser<HeldObject>();
@@ -65,7 +64,7 @@ public class Operator extends SubsystemBase {
         }
     }
 
-    public Operator() {
+    public OperatorGridModule() {
         for (int i = 0; i < nodes.length; i++) {
             for (int j = 0; j < nodes[i].length; j++) {
                 nodes[i][j] = OPERATOR_TAB.add("Node r" + i + " c" + j, 0).withPosition(j + 1, i + 1)

@@ -20,13 +20,13 @@ public class AutoLevelBasic extends CommandBase {
 
     @Override
     public void execute() {
-        Robot.swerve.drive(new Translation2d(-(FeedbackController.calculate(-Robot.getNavX().getPitch(), 0)
-        + FeedforwardController.calculate(-Robot.getNavX().getPitch())) * 0.04,0),
+        Robot.swerve.drive(new Translation2d(-(FeedbackController.calculate(-Robot.navX.getPitch(), 0)
+        + FeedforwardController.calculate(-Robot.navX.getPitch())) * 0.04,0),
                 0, true);
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(Robot.getNavX().getPitch()) < 4.80 || FeedbackController.atSetpoint();
+        return Math.abs(Robot.navX.getPitch()) < 4.80 || FeedbackController.atSetpoint();
     }
 }

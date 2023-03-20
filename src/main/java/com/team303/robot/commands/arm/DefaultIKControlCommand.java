@@ -29,13 +29,13 @@ public class DefaultIKControlCommand extends CommandBase {
     @Override
     public void execute() {
         angle = Math.atan2(cartesianStorage.getZ(), cartesianStorage.getX());
-        // angle += Math.toRadians(Robot.getOperatorXbox().getLeftTriggerAxis() -
-        // Robot.getOperatorXbox().getRightTriggerAxis());
+        // angle += Math.toRadians(Robot.operatorController.getLeftTriggerAxis() -
+        // Robot.operatorController.getRightTriggerAxis());
         length = Math.hypot(cartesianStorage.getZ(), cartesianStorage.getX());
 
         double robotAngle;
         if (Robot.isReal()) {
-            robotAngle = Math.toRadians(-Robot.getNavX().getAngle());
+            robotAngle = Math.toRadians(-Robot.navX.getAngle());
         } else {
             robotAngle = Robot.swerve.angle;
         }
@@ -44,12 +44,12 @@ public class DefaultIKControlCommand extends CommandBase {
         z = Math.sin(angle) * length;
 
         if (fieldOriented) {
-            x += (MathUtil.applyDeadband(-Robot.getOperatorXbox().getLeftY(), 0.03) * Math.cos(robotAngle)
-                    - MathUtil.applyDeadband(Robot.getOperatorXbox().getLeftX(), 0.03) * Math.sin(robotAngle));
+            x += (MathUtil.applyDeadband(-Robot.operatorController.getLeftY(), 0.03) * Math.cos(robotAngle)
+                    - MathUtil.applyDeadband(Robot.operatorController.getLeftX(), 0.03) * Math.sin(robotAngle));
         } else {
-            x += DEADBAND_FILTER.applyDeadband(Robot.getOperatorXbox().getLeftX(), DEADBAND_FILTER.getLowerBound());
+            x += DEADBAND_FILTER.applyDeadband(Robot.operatorController.getLeftX(), DEADBAND_FILTER.getLowerBound());
         }
-        z -= DEADBAND_FILTER.applyDeadband(Robot.getOperatorXbox().getRightY(), DEADBAND_FILTER.getLowerBound());
+        z -= DEADBAND_FILTER.applyDeadband(Robot.operatorController.getRightY(), DEADBAND_FILTER.getLowerBound());
 
         x = Math.min(x, 48);
         x = Math.max(x, -48);

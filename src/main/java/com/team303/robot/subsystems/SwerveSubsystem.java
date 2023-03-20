@@ -4,7 +4,7 @@ package com.team303.robot.subsystems;
 
 import static com.team303.robot.Robot.NAVX_ACCELERATION;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
-import static com.team303.robot.modules.Operator.nodeSuperStateValues;
+import static com.team303.robot.modules.OperatorGridModule.nodeSuperStateValues;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -24,8 +24,8 @@ import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Swerve;
-import com.team303.robot.modules.Operator.NodeSuperState;
-import com.team303.robot.modules.Photonvision.CameraName;
+import com.team303.robot.modules.OperatorGridModule.NodeSuperState;
+import com.team303.robot.modules.PhotonvisionModule.CameraName;
 // import com.team303.robot.commands.arm.AprilTagAlign;
 import com.team303.swervelib.MkSwerveModuleBuilder;
 import com.team303.swervelib.MotorType;
@@ -185,7 +185,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (Robot.isReal()) {
 			odometry = new SwerveDriveOdometry(
-					kinematics, Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+					kinematics, Rotation2d.fromDegrees(Robot.navX.getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
 							rightFrontModule.getPosition(),
@@ -286,7 +286,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		}
 		System.out.println("Resetting");
 
-		odometry.resetPosition(Robot.getNavX().getRotation2d(), newSwervePositions,
+		odometry.resetPosition(Robot.navX.getRotation2d(), newSwervePositions,
 				new Pose2d(2, 2, new Rotation2d()));
 		this.angle = 0;
 
@@ -294,7 +294,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public void resetOdometry(Pose2d pose) {
 		if (Robot.isReal()) {
-			odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
+			odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
 		} else {
 			odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
 		}
@@ -314,7 +314,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), -rotation,
-					Rotation2d.fromDegrees(-Robot.getNavX().getAngle()));
+					Rotation2d.fromDegrees(-Robot.navX.getAngle()));
 		} else if (fieldOriented && !Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), -rotation,
 					Rotation2d.fromRadians(angle));
@@ -335,7 +335,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (fieldOriented) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-					Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
+					Rotation2d.fromDegrees(Robot.navX.getAngle()));
 		} else {
 			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 		}
@@ -378,7 +378,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	// Sets the pose estimation to a new pose
 	public void setRobotPose(Pose2d newPose) {
 		poseEstimator.resetPosition(
-				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+				Rotation2d.fromDegrees(Robot.navX.getAngle()),
 				Robot.swerve.getModulePositions(),
 				newPose);
 	}
@@ -394,20 +394,20 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		double triggerPressure = Robot.getDriverXbox().getLeftTriggerAxis();
-		if (Robot.getDriverXbox().getBButton()) {
+		double triggerPressure = Robot.driverController.getLeftTriggerAxis();
+		if (Robot.driverController.b().getAsBoolean()) {
 			MAX_DRIVE_SPEED = 1.0;
 		} else if (triggerPressure > 0.01) {
 			// Map max speed from 0-100 to 50-20
 			MAX_DRIVE_SPEED = triggerPressure * -3 / 10 + 0.5;
-		} else if (!Robot.getDriverXbox().getBButton()) {
+		} else if (!Robot.driverController.b().getAsBoolean()) {
 			MAX_DRIVE_SPEED = 0.75;
 		}
 
 		if (Robot.isReal()) {
 			// Update Poses
 			pose = odometry.update(
-					Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
+					Rotation2d.fromDegrees(-Robot.navX.getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
 							rightFrontModule.getPosition(),
@@ -440,22 +440,22 @@ public class SwerveSubsystem extends SubsystemBase {
 		// 	}
 		// }
 		// poseEstimator.update(
-		// Rotation2d.fromDegrees(-Robot.getNavX().getAngle()),
+		// Rotation2d.fromDegrees(-Robot.navX.getAngle()),
 		// Robot.swerve.getModulePositions());
 		 field2d.setRobotPose(getRobotPose());
 
 		 lastPeriodic = timer.get();
 
-		NAVX_Y_VELOCITY.setDouble(Robot.getNavX().getRawGyroZ(), 0);
-		NAVX_ACCELERATION.setDouble(Robot.getNavX().getRawAccelX());
-		SmartDashboard.putNumber("Pitch acceleration", -Robot.getNavX().getRawAccelY());
-		SmartDashboard.putNumber("Pitch ", -Robot.getNavX().getPitch());
+		NAVX_Y_VELOCITY.setDouble(Robot.navX.getRawGyroZ(), 0);
+		NAVX_ACCELERATION.setDouble(Robot.navX.getRawAccelX());
+		SmartDashboard.putNumber("Pitch acceleration", -Robot.navX.getRawAccelY());
+		SmartDashboard.putNumber("Pitch ", -Robot.navX.getPitch());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
-		Logger.getInstance().recordOutput("Acceleration X", Robot.getNavX().getWorldLinearAccelX());
-		Logger.getInstance().recordOutput("Acceleration Y", Robot.getNavX().getWorldLinearAccelY());
-		Logger.getInstance().recordOutput("Acceleration Z", Robot.getNavX().getWorldLinearAccelZ());
-		Logger.getInstance().recordOutput("Velocity X", Robot.getNavX().getVelocityX());
-		Logger.getInstance().recordOutput("Raw Acceleration", Robot.getNavX().getRawAccelX());
+		Logger.getInstance().recordOutput("Acceleration X", Robot.navX.getWorldLinearAccelX());
+		Logger.getInstance().recordOutput("Acceleration Y", Robot.navX.getWorldLinearAccelY());
+		Logger.getInstance().recordOutput("Acceleration Z", Robot.navX.getWorldLinearAccelZ());
+		Logger.getInstance().recordOutput("Velocity X", Robot.navX.getVelocityX());
+		Logger.getInstance().recordOutput("Raw Acceleration", Robot.navX.getRawAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
 		SmartDashboard.putNumber("Pose X", pose.getX());
 		SmartDashboard.putNumber("Pose Y", pose.getY());

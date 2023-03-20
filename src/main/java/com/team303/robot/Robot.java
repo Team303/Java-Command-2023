@@ -13,331 +13,248 @@ import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
-import com.team303.robot.commands.arm.DefaultIKControlCommand;
-//import com.team303.robot.commands.arm.DefaultMove;
-import com.team303.robot.commands.arm.Homing;
-import com.team303.robot.commands.claw.ClawClose;
-import com.team303.robot.commands.claw.ClawOpwn;
+import com.team303.robot.commands.arm.DefaultArm;
+import com.team303.robot.commands.arm.HomeArm;
+import com.team303.robot.commands.claw.DefaultClaw;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
-import com.team303.robot.modules.Operator;
-import com.team303.robot.modules.Photonvision;
-import com.team303.robot.modules.Ultrasonic;
+import com.team303.robot.modules.OperatorGridModule;
+import com.team303.robot.modules.PhotonvisionModule;
+import com.team303.robot.modules.UltrasonicModule;
 import com.team303.robot.subsystems.ArmSubsystem;
-import com.team303.robot.subsystems.ArmTest;
+import com.team303.robot.subsystems.ArmTestSubsystem;
 import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.BuildConstants;
 
 public class Robot extends LoggedRobot {
 
-    /* RoboRio Sensors */
-    private static final AHRS navX = new AHRS();
-    /* Robot Subsystems */
-    public static final Photonvision photonvision = null; // new Photonvision();
-    public static final SwerveSubsystem swerve = new SwerveSubsystem();
-    public static final ArmSubsystem arm = new ArmSubsystem();
-    public static final ArmTest armtest = null; // new ArmTest();
-    public static final Operator operator = null; // new Operator();
-    public static final ClawSubsystem claw = new ClawSubsystem();
-    public static final Ultrasonic ultrasonic = null; // new Ultrasonic(0, 4);
+	/* roboRIO Sensors */
+	public static final AHRS navX = new AHRS();
 
-    /* Robot IO Controls */
-    private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
-    private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
-    private static final CommandXboxController operatorCommandXboxController = new CommandXboxController(
-            IOConstants.OPERATOR_CONTROLLER);
-    private static final XboxController operatorXboxController = new XboxController(IOConstants.OPERATOR_CONTROLLER);
-    private static final CommandXboxController driverCommandXboxController = new CommandXboxController(
-            IOConstants.DRIVER_CONTROLLER);
-    private static final XboxController driverXboxController = new XboxController(IOConstants.DRIVER_CONTROLLER);
+	/* Robot Subsystems */
+	public static final PhotonvisionModule photonvision = null; // new Photonvision();
+	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
+	public static final OperatorGridModule operatorGrid = null; // new Operator();
 
-    public static SendableChooser<String> controllerChooser = new SendableChooser<>();
+	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final ArmTestSubsystem armTest = null; // new ArmTest();
 
-    /* Shufflebaord Tabs */
-    public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
-    public static final ShuffleboardTab DATA_TAB = Shuffleboard.getTab("Data");
-    public static final ShuffleboardTab CONTROLLER_TAB = Shuffleboard.getTab("Controller");
+	/* Robot IO Controls */
+	public static final CommandXboxController operatorController = new CommandXboxController(
+			IOConstants.OPERATOR_CONTROLLER);
+	public static final CommandXboxController driverController = new CommandXboxController(
+			IOConstants.DRIVER_CONTROLLER);
 
-    public static final GenericEntry NAVX_Y_VELOCITY = DATA_TAB.add("Y velocity", 0).getEntry();
-    public static final GenericEntry NAVX_ACCELERATION = DATA_TAB.add("acceleration", 0).getEntry();
-    public static final GenericEntry NAVX_ANGLE = DATA_TAB.add("NavX Angle", 0).getEntry();
-    public static final GenericEntry L_AXIS = CONTROLLER_TAB.add("l trigger", 0).getEntry();
+	/* Shufflebaord Tabs */
+	public static final ShuffleboardTab CONTROLLER_TAB = Shuffleboard.getTab("Controller");
+	public static final ShuffleboardTab NAVX_TAB = Shuffleboard.getTab("NavX");
 
-    /* Shuffleboard Choosers */
-    public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
-    public static HashMap<String, Command> eventMap = new HashMap<>();
+	public static final GenericEntry NAVX_Y_VELOCITY = NAVX_TAB.add("Y Velocity", 0).getEntry();
+	public static final GenericEntry NAVX_ACCELERATION = NAVX_TAB.add("Acceleration", 0).getEntry();
+	public static final GenericEntry NAVX_ANGLE = NAVX_TAB.add("NavX Angle", 0).getEntry();
 
-    public static enum HeldObject {
-        CUBE,
-        CONE,
-        NONE
-    }
+	/* Robot State */
+	public static final Color ALLIANCE_COLOR = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
 
-    public static HeldObject heldObject = HeldObject.NONE;
+	public static enum HeldObject {
+		NONE,
+		CUBE,
+		CONE
+	}
 
-    /* Robot alliance color */
-    public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
+	public static HeldObject heldObject = HeldObject.NONE;
 
-    public static enum SubstationFiducialID {
-        RED(5),
-        BLUE(4);
+	public static enum SubstationFiducialID {
+		RED(5),
+		BLUE(4);
 
-        public final int fiducialId;
+		public final int fiducialId;
 
-        private SubstationFiducialID(int fiducialId) {
-            this.fiducialId = fiducialId;
-        }
-    }
+		private SubstationFiducialID(int fiducialId) {
+			this.fiducialId = fiducialId;
+		}
+	}
 
-    public static final int ALLIANCE_SUBSTATION_ID = DriverStation.getAlliance() == Alliance.Blue
-            ? SubstationFiducialID.RED.fiducialId
-            : SubstationFiducialID.BLUE.fiducialId;
-    private static final NetworkTableInstance inst = NetworkTableInstance.getDefault();
+	public static final int ALLIANCE_SUBSTATION_ID = DriverStation.getAlliance() == Alliance.Blue
+			? SubstationFiducialID.RED.fiducialId
+			: SubstationFiducialID.BLUE.fiducialId;
 
-    /* Getter Methods */
+	/* Currently running auto routine */
 
-    public static AHRS getNavX() {
-        return navX;
-    }
+	private Command autonomousCommand;
 
-    public static Joystick getRightJoyStick() {
-        return rightJoystick;
-    }
+	@Override
+	public void robotInit() {
+		Logger logger = Logger.getInstance();
+		navX.reset();
 
-    public static Joystick getLeftJoyStick() {
-        return leftJoystick;
-    }
+		// Record metadata
+		logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+		logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+		logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+		logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+		logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
 
-    public static XboxController getOperatorXbox() {
-        return operatorXboxController;
-    }
+		switch (BuildConstants.DIRTY) {
+			case 0:
+				logger.recordMetadata("GitDirty", "All changes committed");
+				break;
+			case 1:
+				logger.recordMetadata("GitDirty", "Uncomitted changes");
+				break;
+			default:
+				logger.recordMetadata("GitDirty", "Unknown");
+				break;
+		}
 
-    public static CommandXboxController getOperatorCommandXbox() {
-        return operatorCommandXboxController;
-    }
+		// Set up data receivers & replay source
+		if (Robot.isReal()) {
+			// Running on a real robot, log to a USB stick
+			logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+			logger.addDataReceiver(new NT4Publisher());
+		} else {
+			logger.addDataReceiver(new WPILOGWriter(""));
+			logger.addDataReceiver(new NT4Publisher());
+		}
 
-    public static XboxController getDriverXbox() {
-        return driverXboxController;
-    }
+		// Configure the joystick and controller bindings
+		configureButtonBindings();
 
-    public static CommandXboxController getDriverCommandXbox() {
-        return driverCommandXboxController;
-    }
+		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.claw.setDefaultCommand(new DefaultClaw());
+		Robot.arm.setDefaultCommand(new DefaultArm());
+		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 
-    /**
-     * Defines all the options for the autonomous delay
-     */
-    static {
-        for (double i = 0; i < 15; i += 0.25)
-            autoDelayChooser.addOption(String.format("%.2f", i), i);
+		// add Autos to Shuffleboard
+		Autonomous.init();
 
-        autoDelayChooser.setDefaultOption("0.0", 0.0D);
+		// Start Camera
+		logger.start();
+	}
 
-        AUTO_TAB.add("Auto Start Delay", autoDelayChooser);
-    }
+	@Override
+	public void autonomousInit() {
+		// Chooses which auto we do from Shuffleboard
+		Command autonomousRoutine = AutonomousProgram.construcSelectedRoutine();
 
-    // The command configured to run during auto
-    private Command autonomousCommand;
+		// Schedule the selected autonomous command group
+		if (autonomousRoutine != null) {
+			// Home the arm while waiting for the drivebase delay
+			Command delay = new ParallelCommandGroup(
+					new DriveWait(AutonomousProgram.getAutonomousDelay()),
+					new HomeArm());
 
-    @Override
-    public void robotInit() {
+			// Run the delay/home and the selected routine sequentially
+			this.autonomousCommand = new SequentialCommandGroup(
+					delay,
+					autonomousRoutine);
 
-        controllerChooser.addOption("Controller", "Controller");
-        controllerChooser.addOption("JoySticks", "JoySticks");
-        controllerChooser.setDefaultOption("Controller", "Controller");
-        CONTROLLER_TAB.add("Controller", controllerChooser);
+			// Schedule the combined command group
+			CommandScheduler.getInstance().schedule(this.autonomousCommand);
+		}
+	}
 
-        Logger logger = Logger.getInstance();
-        navX.reset();
+	@Override
+	public void teleopInit() {
+		// This makes sure that the autonomous stops running when teleop starts running.
+		if (autonomousCommand != null) {
+			autonomousCommand.cancel();
+		}
+	}
 
-        // Record metadata
-        logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-        logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-        logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-        logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-        logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+	@Override
+	public void disabledInit() {
+	}
 
-        switch (BuildConstants.DIRTY) {
-            case 0:
-                logger.recordMetadata("GitDirty", "All changes committed");
-                break;
-            case 1:
-                logger.recordMetadata("GitDirty", "Uncomitted changes");
-                break;
-            default:
-                logger.recordMetadata("GitDirty", "Unknown");
-                break;
-        }
+	@Override
+	public void disabledPeriodic() {
+		// While disabled, continuously reset the angle of the swerve modules
+		swerve.resetToAbsoluteAngle();
+	}
 
-        // Set up data receivers & replay source
-        if (Robot.isReal()) {
-            // Running on a real robot, log to a USB stick
-            logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
-            logger.addDataReceiver(new NT4Publisher());
-        } else {
-            logger.addDataReceiver(new WPILOGWriter(""));
-            logger.addDataReceiver(new NT4Publisher());
-        }
+	private void configureButtonBindings() {
+		/* Operator Controls */
 
-        // Configure the joystick and controller bindings
-        configureButtonBindings();
+		// Custom grid widget button bindings
+		operatorController.pov(0).onTrue(new InstantCommand(operatorGrid::moveUp));
+		operatorController.pov(90).onTrue(new InstantCommand(operatorGrid::moveRight));
+		operatorController.pov(180).onTrue(new InstantCommand(operatorGrid::moveDown));
+		operatorController.pov(270).onTrue(new InstantCommand(operatorGrid::moveLeft));
 
-        Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-        Robot.claw.setDefaultCommand(new ClawOpwn());
-        Robot.arm.setDefaultCommand(new DefaultIKControlCommand(true));
-        // Robot.armtest.setDefaultCommand(new MoveArm());
-        // Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
-        // Robot.photonvision.setDefaultCommand(new ReachCubeToNode());
+		operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
+		operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
-        // add Autos to Shuffleboard
-        Autonomous.init();
-        AutonomousProgram.addAutosToShuffleboard();
+		// Claw Control
+		operatorController.b().onTrue(new InstantCommand(claw::toggleState));
+		operatorController.a().onTrue(new InstantCommand(claw::toggleMode));
 
-        // Start Camera
-        logger.start();
-    }
+		/* Driver Controls */
 
-    @Override
-    public void autonomousInit() {
-        // Chooses which auto we do from SmartDashboard
-        autonomousCommand = AutonomousProgram.autoChooser.getSelected().construct();
+		// Reset field oriented drive when y is pressed
+		driverController.y()
+				.onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
 
-        // Schedule the selected autonomous command group
-        if (autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(
-                    // To achieve the configured delay, use a sequential group that contains a wait
-                    // command
-                    new SequentialCommandGroup(
-                            new DriveWait(autoDelayChooser.getSelected()),
-                            new Homing(),
-                            autonomousCommand));
-        }
-    }
+		// Auto level while a is held
+		driverController.a().whileTrue(new AutolevelFeedforward());
 
-    @Override
-    public void teleopInit() {
-        // This makes sure that the autonomous stops running when teleop starts running.
-        if (autonomousCommand != null)
-            autonomousCommand.cancel();
+		// Turn to angles on POV buttons
+		driverController.pov(0).onTrue(Commands.runOnce(() -> {
+			arm.reach(Arrays.asList(0.0, 0.0, 0.0));
+		}));
+		driverController.pov(90).onTrue(Commands.runOnce(() -> {
+			arm.reach(Arrays.asList(0.0, 0.0, 0.0));
+		}));
+		driverController.pov(180).onTrue(Commands.runOnce(() -> {
+			arm.reach(Arrays.asList(-9.0, 122.67, 0.0));
+		}));
+		driverController.pov(270).onTrue(Commands.runOnce(() -> {
+			arm.reach(Arrays.asList(0.0, 0.0, 0.0));
+		}));
 
-        // CommandScheduler.getInstance().schedule(x);
+		// Lock swerve wheels while x is held
+		driverController.x().whileTrue(Commands.runOnce(swerve::lockWheels));
+	}
 
-    }
+	/*
+	 * This Robot is configured to run with the WPILib CommandScheduler.
+	 * ⛔ Nothing should be handled in the below methods ⛔
+	 */
 
-    @Override
-    public void disabledInit() {
-    }
+	@Override
+	public void robotPeriodic() {
+		/*
+		 * Runs the Scheduler. This is responsible for polling buttons, adding
+		 * newly-scheduled
+		 * commands, running already-scheduled commands, removing finished or
+		 * interrupted commands,
+		 * and running subsystem periodic() methods. This must be called from the
+		 * robot's periodicd
+		 * block in order for anything in the Command-based framework to work.
+		 */
 
-    @Override
-    public void disabledPeriodic() {
-        swerve.resetToAbsoluteAngle();
-    }
+		try {
+			CommandScheduler.getInstance().run();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-    private void configureButtonBindings() {
-        operatorCommandXboxController.pov(0).onTrue(new InstantCommand(operator::moveUp));
-        operatorCommandXboxController.pov(90).onTrue(new InstantCommand(operator::moveRight));
-        operatorCommandXboxController.pov(180).onTrue(new InstantCommand(operator::moveDown));
-        operatorCommandXboxController.pov(270).onTrue(new InstantCommand(operator::moveLeft));
-        operatorCommandXboxController.y().onTrue(new InstantCommand(operator::setPiece));
-        operatorCommandXboxController.b().onTrue(new InstantCommand(operator::queuePlacement));
-        // operatorCommandXboxController.x().onTrue(new
-        // InstantCommand(operator::setNone));
-        // operatorCommandXboxController.a().onTrue(new
-        // InstantCommand(arm::resetEncodersNew));
-        // operatorCommandXboxController.start().toggleOnFalse(new
-        // ToggleOpen()).toggleOnTrue(new ToggleClose());
-
-        // just testing manual angles
-        // try reaching this configuration
-        // operatorCommandXboxController.a().onTrue(new ReachAngles(20, 45, 0));
-        operatorCommandXboxController.b().whileTrue(new ClawClose());
-        // operatorCommandXboxController.leftTrigger().whileTrue(new
-        // DefaultIKControlCommand(false))
-        // .whileFalse(new DefaultMove());
-
-        if (controllerChooser.getSelected().equals("Controller")) {
-            // Reset Drive
-            driverCommandXboxController.y()
-                    .onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
-
-            // Auto Level
-            driverCommandXboxController.a().whileTrue(new AutolevelFeedforward())
-                    .whileFalse(new DefaultDrive(true));
-
-            // Turn to angles
-            driverCommandXboxController.pov(0).onTrue(Commands.runOnce(() -> {
-                arm.reach(Arrays.asList(0.0, 0.0, 0.0));
-            }));
-            driverCommandXboxController.pov(90).onTrue(Commands.runOnce(() -> {
-                arm.reach(Arrays.asList(0.0, 0.0, 0.0));
-            }));
-            driverCommandXboxController.pov(180).onTrue(Commands.runOnce(() -> {
-                arm.reach(Arrays.asList(-9.0, 122.67, 0.0));
-            }));
-            driverCommandXboxController.pov(270).onTrue(Commands.runOnce(() -> {
-                arm.reach(Arrays.asList(0.0, 0.0, 0.0));
-            }));
-
-            driverCommandXboxController.x().whileTrue(Commands.runOnce(swerve::lockWheels))
-                    .whileFalse(new DefaultDrive(true));
-
-            driverCommandXboxController.x().onFalse(new DefaultDrive(true));
-        } else {
-            // new JoystickButton(leftJoystick, 3).onTrue(new InstantCommand(navX::reset));
-            // new JoystickButton(leftJoystick, 3).onTrue(new
-            // InstantCommand(swerve::resetOdometry));
-            // new JoystickButton(leftJoystick, 4).onTrue(new AutolevelFeedforward());
-            // new JoystickButton(leftJoystick, 4).onFalse(new DefaultDrive(true));
-            // new JoystickButton(leftJoystick, 5).onTrue(new InstantCommand(swerve::stop));
-            // new JoystickButton(leftJoystick, 5).onFalse(new DefaultDrive(true));
-        }
-
-    }
-
-    /*
-     * This Robot is configured to run with the WPILib CommandScheduler.
-     * ⛔ Nothing should be handled in the below methods ⛔
-     */
-
-    @Override
-    public void robotPeriodic() {
-        /*
-         * Runs the Scheduler. This is responsible for polling buttons, adding
-         * newly-scheduled
-         * commands, running already-scheduled commands, removing finished or
-         * interrupted commands,
-         * and running subsystem periodic() methods. This must be called from the
-         * robot's periodicd
-         * block in order for anything in the Command-based framework to work.
-         */
-
-        // operatorCommandXboxController.a().toggleOnTrue(swerve.driveToNode());
-        // NAVX_ANGLE.setDouble(Robot.getNavX().getAngle() % 360, 0);
-        try {
-            CommandScheduler.getInstance().run();
-        } catch (Exception e) {
-            System.out.println("It's shrey's fault");
-            e.printStackTrace();
-        }
-
-    }
+	}
 }

@@ -1,114 +1,152 @@
 package com.team303.robot.subsystems;
 
-import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.team303.robot.util.GroundedDigitalInput;
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import com.revrobotics.SparkMaxLimitSwitch;
+
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.team303.robot.RobotMap.Claw;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.networktables.GenericEntry;
 
 public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
-	public static final ShuffleboardTab CLAW_TAB = Shuffleboard.getTab("Claw");
-	public static final double GEAR_RATIO_WRIST = 27;
-	public static final GenericEntry clawEncodersTab = CLAW_TAB.add("Encoders", 0).getEntry();
+	private static final ShuffleboardTab CLAW_TAB = Shuffleboard.getTab("Claw");
+	private static final GenericEntry clawPositionEntry = CLAW_TAB.add("Claw Position", 0).getEntry();
+	private static final GenericEntry wristRollPositionEntry = CLAW_TAB.add("Wrist Roll Position", 0).getEntry();
+	private static final GenericEntry stateEntry = CLAW_TAB.add("State", ClawState.OPEN.getName()).getEntry();
+	private static final GenericEntry modeEntry = CLAW_TAB.add("Mode", GamePieceType.CONE.getName()).getEntry();
 
+	/* Gear Ratios */
+	public static final double GEAR_RATIO_CLAW = 50;
+	public static final double GEAR_RATIO_WRIST_ROLL = 27;
+
+	/* Speed Constants */
+	public static final double MAX_CLAW_SPEED = 0.25;
+	public static final double MAX_WRIST_ROLL_SPEED = 0.125;
+
+	/* Motors */
 	private final CANSparkMax clawMotor = new CANSparkMax(19, MotorType.kBrushless);
-	private final CANSparkMax clawRollMotor = new CANSparkMax(18, MotorType.kBrushless);
+	private final CANSparkMax wristRollMotor = new CANSparkMax(18, MotorType.kBrushless);
+
 	private final RelativeEncoder clawEncoder;
-	private final RelativeEncoder clawRollEncoder;
-	public final SparkMaxLimitSwitch  clawOuterLimit;
-	// private final DigitalInput ultrasonicSensor = new DigitalInput(Claw.ULTRASONIC_ID);
+	private final RelativeEncoder wristRollEncoder;
+
+	private final SparkMaxLimitSwitch clawOuterLimit;
+
+	/* State */
+
+	public static enum ClawState {
+		OPEN,
+		ClOSED;
+
+		private String getName() {
+			return this == ClawState.OPEN ? "Open" : "Closed";
+		}
+	}
+
+	private ClawState state = ClawState.OPEN;
+
+	/* Mode */
+
+	public static enum GamePieceType {
+		CONE,
+		CUBE;
+
+		private String getName() {
+			return this == GamePieceType.CONE ? "Cone" : "Cube";
+		}
+	}
+
+	private GamePieceType mode = GamePieceType.CONE;
 
 	public ClawSubsystem() {
+		/* Claw Actuation Motor */
+
 		clawMotor.setInverted(false);
 		clawMotor.setIdleMode(IdleMode.kBrake);
 
 		clawMotor.setSmartCurrentLimit(15);
 
-		clawRollMotor.setInverted(false);
-		clawRollMotor.setIdleMode(IdleMode.kBrake);
-
 		clawEncoder = clawMotor.getEncoder();
-		clawEncoder.setPositionConversionFactor(360 * 1/GEAR_RATIO_WRIST);
-		clawRollEncoder = clawRollMotor.getEncoder();
+		clawEncoder.setPositionConversionFactor(360 * 1 / GEAR_RATIO_CLAW);
 
 		clawOuterLimit = clawMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    }
 
-	public CANSparkMax getClawMotor() {
-		return clawMotor;
+		/* Roll Motor */
+
+		wristRollMotor.setInverted(false);
+		wristRollMotor.setIdleMode(IdleMode.kBrake);
+
+		wristRollEncoder = wristRollMotor.getEncoder();
+		wristRollEncoder.setPositionConversionFactor(360 * 1 / GEAR_RATIO_WRIST_ROLL);
 	}
 
-	//limits
+	/* Claw Open and Close State */
+
+	public void toggleState() {
+		this.state = this.state == ClawState.OPEN ? ClawState.ClOSED : ClawState.OPEN;
+	}
+
+	public void setState(ClawState state) {
+		this.state = state;
+	}
+
+	public ClawState getState() {
+		return this.state;
+	}
+
+	/* Claw Game Piece Mode */
+
+	public void toggleMode() {
+		this.mode = this.mode == GamePieceType.CONE ? GamePieceType.CUBE : GamePieceType.CONE;
+	}
+
+	public void setMode(GamePieceType mode) {
+		this.mode = mode;
+	}
+
+	public GamePieceType getMode() {
+		return this.mode;
+	}
+
+	/* Motors */
+
 	public boolean outerLimitReached() {
 		return clawOuterLimit.isPressed();
 	}
 
-    public double getClawPosition() {
-        return clawEncoder.getPosition();
-    }
-
-    public double getRotatePosition() {
-        return clawRollEncoder.getPosition();
-    }
-
-	// public boolean getUltrasonicDistance() {
-	// 	return ultrasonicSensor.get();
-	// }
-
-	public void setRotateSpeed(double wrist) {
-		clawRollMotor.set(wrist);
+	public double getClawPosition() {
+		return clawEncoder.getPosition();
 	}
 
-	public void setClawSpeed(double claw) {
-		clawMotor.set(claw);
+	public double getWristRollPosition() {
+		return wristRollEncoder.getPosition();
+	}
+
+	public void setClawSpeed(double speed) {
+		clawMotor.set(speed * MAX_CLAW_SPEED);
+	}
+
+	public void setWristRollSpeed(double speed) {
+		wristRollMotor.set(speed * MAX_WRIST_ROLL_SPEED);
 	}
 
 	public void setClawPosition(double position) {
 		clawEncoder.setPosition(position);
 	}
 
-	@Override
-	public void periodic() {
-		clawEncodersTab.setDouble(clawEncoder.getPosition());
-
+	public void setWristRollPosition(double position) {
+		wristRollEncoder.setPosition(position);
 	}
 
-	// public void rotate(double angle, double speed) {
-
-    //     angle %= 360;
-        
-    //     if (angle < 0) {
-    //         angle += 360;
-    //     }
-
-	// 	double startPos = clawRollEncoder.getPosition() / GEAR_RATIO_WRIST;
-
-	// 	while (clawRollEncoder.getPosition() / GEAR_RATIO_WRIST < angle + startPos) {
-	// 		clawRollMotor.set(speed);
-	// 	}
-	// }
-        
-	// public boolean getEncoderPos(double encoderLimit) {
-	// 	return clawEncoder.getPosition() == encoderLimit;
-	// }
-
-	// public boolean getRotate(double rotateLimit) {
-	// 	return clawRollEncoder.getPosition() == rotateLimit;
-	// }
-
-	// public void resetEncoders() {
-	// 	clawEncoder.setPosition(0.0);
-	// }
+	@Override
+	public void periodic() {
+		clawPositionEntry.setDouble(clawEncoder.getPosition());
+		wristRollPositionEntry.setDouble(wristRollEncoder.getPosition());
+		stateEntry.setString(state.getName());
+		modeEntry.setString(mode.getName());
+	}
 }

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Timer;
 
-public class ArmTest extends SubsystemBase {
+public class ArmTestSubsystem extends SubsystemBase {
 
     CANSparkMax motor1;
     CANSparkMax motor2;
@@ -44,7 +44,7 @@ public class ArmTest extends SubsystemBase {
     Timer timer;
     double start;
 
-    public ArmTest() {
+    public ArmTestSubsystem() {
 
         timer = new Timer();
         timer.start();
