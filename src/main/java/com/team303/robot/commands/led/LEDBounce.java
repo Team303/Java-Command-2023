@@ -20,7 +20,7 @@ public class LEDBounce extends CommandBase {
 	private Color color;
 
 	public LEDBounce(Color color) {
-		addRequirements(ledStrip);
+		addRequirements(Robot.ledStrip);
 
 		this.color = color;
 	}

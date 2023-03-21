@@ -1,11 +1,13 @@
 package com.team303.robot.commands.led;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import static com.team303.robot.Robot.ledStrip;
+
+import com.team303.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
-import com.team303.robot.Robot;
-import com.team303.robot.RobotMap;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+
 
 public class LEDFlash extends CommandBase {
 

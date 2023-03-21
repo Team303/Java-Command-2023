@@ -100,7 +100,7 @@ public class AutonomousProgram {
 		AUTO_TAB.add("Autonomous Selector", autoChooser);
 	}
 
-	public static Command construcSelectedRoutine() {
+	public static Command constructSelectedRoutine() {
 		return autoChooser.getSelected().construct();
 	}
 

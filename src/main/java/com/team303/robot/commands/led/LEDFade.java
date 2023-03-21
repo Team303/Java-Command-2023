@@ -1,9 +1,8 @@
 package com.team303.robot.commands.led;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.team303.robot.Robot;
-
 import static com.team303.robot.Robot.ledStrip;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class LEDFade extends CommandBase {
 

@@ -26,6 +26,7 @@ import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.ArmTestSubsystem;
 import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
+import com.team303.robot.subsystems.LEDSubsystem;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -50,7 +51,7 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
-	public static final OperatorGridModule operatorGrid = null; // new Operator();
+	public static final OperatorGridModule operatorGrid =  new OperatorGridModule();
 
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
@@ -155,7 +156,7 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void autonomousInit() {
 		// Chooses which auto we do from Shuffleboard
-		Command autonomousRoutine = AutonomousProgram.construcSelectedRoutine();
+		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Schedule the selected autonomous command group
 		if (autonomousRoutine != null) {
@@ -207,6 +208,7 @@ public class Robot extends LoggedRobot {
 		// Claw Control
 		operatorController.b().onTrue(new InstantCommand(claw::toggleState));
 		operatorController.a().onTrue(new InstantCommand(claw::toggleMode));
+		operatorController.rightBumper().onTrue(Commands.runOnce(() -> {arm.setClawAngleConstraint((float)Math.toRadians(0));})).onFalse(Commands.runOnce(() -> {arm.setClawAngleConstraint((float)Math.toRadians(-90));}));
 
 		/* Driver Controls */
 

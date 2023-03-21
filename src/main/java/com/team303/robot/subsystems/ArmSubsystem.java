@@ -262,7 +262,9 @@ public class ArmSubsystem extends SubsystemBase {
 		armKinematics.setSegmentInitialDirection(0, (float) Math.toRadians(90));
 		armKinematics.setSegmentInitialDirection(1, (float) Math.toRadians(0));
 		// armKinematics.setSegmentInitialDirection(2, (float) Math.toRadians(-45));
+		
 		armKinematics.initializeArm();
+		armKinematics.addGloballyConstrainedGripper((float)Math.toRadians(0), 12f);
 		armKinematics.setSolveDistanceThreshold(1f);
 		armKinematics.setMaxIterationAttempts(5000);
 		// clawJoint.clawEncoder.setPositionConversionFactor(Arm.GEAR_RATIO_CLAW);
@@ -274,10 +276,10 @@ public class ArmSubsystem extends SubsystemBase {
 				(double) armKinematics.getSegmentLength(0) / Arm.SIMULATION_SCALE, 0, 5.0, new Color8Bit(255, 0, 0)));
 		elbowJoint.simulator = shoulderJoint.simulator.append(new MechanismLigament2d("elbow",
 				(double) armKinematics.getSegmentLength(1) / Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(0, 255, 0)));
-		// clawJoint.clawSimulator = elbowJoint.elbowSimulator.append(new
-		// MechanismLigament2d("claw",
-		// (double) armKinematics.getSegmentLength(2)/Arm.SIMULATION_SCALE, 0, 5.0, new
-		// Color8Bit(0, 0, 255)));
+		wristJoint.simulator = elbowJoint.simulator.append(new
+		MechanismLigament2d("claw",
+		(double) 12/Arm.SIMULATION_SCALE, 0, 5.0, new
+		Color8Bit(0, 0, 255)));
 		effectorRoot = armSimulation.getRoot("End Effector",
 				(Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianStorage.getX(),
 				(Arm.SIMULATION_OFFSET) / Arm.SIMULATION_SCALE + cartesianStorage.getZ());
@@ -398,6 +400,10 @@ public class ArmSubsystem extends SubsystemBase {
 		wristJoint.encoder.setPosition(wrist);
 	}
 
+	public void setClawAngleConstraint(float angleRadians) {
+		armKinematics.setGripperGlobalConstraint(angleRadians);
+	}
+
 	public double[] getEncoderPosition() {
 		return new double[] {
 				(shoulderJoint.leftEncoder.getPosition() + shoulderJoint.rightEncoder.getPosition()) / 2,
@@ -461,12 +467,9 @@ public class ArmSubsystem extends SubsystemBase {
 		JOINT_RPM_PUB.set(JOINT_RPM_SUB.get(new double[] { 0.0, 0.0 }));
 		double shoulderSimAngle = 90 - armKinematics.getIKAnglesDegrees().get(0);
 		double elbowSimAngle = -armKinematics.getIKAnglesDegrees().get(1);
-		// double clawSimAngle = -armKinematics.getIKAnglesDegrees().get(2);
+		 double clawSimAngle = -armKinematics.getIKAnglesDegrees().get(2);
 
-		if (shoulderSimAngle != storedShoulderAngle || elbowSimAngle != storedElbowAngle /*
-																							 * || clawSimAngle !=
-																							 * storedClawAngle
-																							 */) {
+		if (shoulderSimAngle != storedShoulderAngle || elbowSimAngle != storedElbowAngle || clawSimAngle != storedClawAngle) {
 			storedShoulderAngle = shoulderSimAngle;
 			storedElbowAngle = elbowSimAngle;
 			// storedClawAngle = clawSimAngle;

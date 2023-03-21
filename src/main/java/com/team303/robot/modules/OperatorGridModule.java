@@ -3,34 +3,44 @@ package com.team303.robot.modules;
 import static com.team303.robot.Robot.heldObject;
 
 import java.awt.Point;
-import edu.wpilibj.util.Color;
 
 import com.team303.robot.Robot.HeldObject;
+import com.team303.robot.commands.led.LEDBounce;
 import com.team303.robot.util.Alert;
 import com.team303.robot.util.Alert.AlertType;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class OperatorGridModule extends SubsystemBase {
     public static final ShuffleboardTab OPERATOR_TAB = Shuffleboard.getTab("Operator");
     public static final NetworkTable operator = NetworkTableInstance.getDefault().getTable("Operator");
     public static final SendableChooser<HeldObject> heldObjectChooser = new SendableChooser<HeldObject>();
+
     public static final GenericEntry[][] nodes = new GenericEntry[3][9];
     public static GenericEntry hpSuggestion;
+
     public static final int[][] nodeStateValues = new int[3][9];
     public static final int[][] nodeSuperStateValues = new int[3][9];
     public static boolean[] linkComplete = new boolean[21];
+
     public static boolean coopertitionBonusAchieved;
+
     public boolean queueManualOverride = false;
     public boolean suggestManualOverride = false;
+
     public Point hoverValue = new Point(0, 0);
     public Point queuedValue;
+
+    public Timer timer = new Timer();
+
     private final Alert logQueueOnFilledNode = new Alert("Operator Terminal",
             "Attempted to queue on already-filled node, queue not performed", AlertType.WARNING);
     private final Alert logNoMorePieceSpaceCones = new Alert("Operator Terminal",
@@ -38,7 +48,7 @@ public class OperatorGridModule extends SubsystemBase {
     private final Alert logNoMorePieceSpaceCubes = new Alert("Operator Terminal",
             "No more space to place cubes, queue canceled", AlertType.WARNING);
     private final Alert logCommandLoopOverrun = new Alert("Operator Terminal",
-            "Attempted to queu on already-filled node, queue not performed", AlertType.ERROR);
+            "Command loop overrun", AlertType.ERROR);
 
     public static enum NodeState {
         NONE(0),
@@ -79,6 +89,7 @@ public class OperatorGridModule extends SubsystemBase {
         OPERATOR_TAB.add("Held Object Chooser", heldObjectChooser).withPosition(2, 0);
         hpSuggestion = OPERATOR_TAB.add("HP Suggestion", 0).withPosition(8, 0).withWidget("State of Node").getEntry();
         nodeSuperStateValues[0][0] = NodeSuperState.HOVER.value;
+        timer.start();
     }
 
     public void moveDown() {
@@ -243,12 +254,12 @@ public class OperatorGridModule extends SubsystemBase {
                         || (nodeStateValues[i][4] != NodeState.NONE.value
                                 && nodeStateValues[i][5] != NodeState.NONE.value)) {
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    Commands.runOnce(new LEDBounce(Color.YELLOW));
+                    new LEDBounce(Color.kYellow);
                     return;
                 } else if ((nodeStateValues[i][3] != NodeState.NONE.value
                         && nodeStateValues[i][5] != NodeState.NONE.value)) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
+                    new LEDBounce(Color.kViolet);
                     return;
 
                 }
@@ -260,36 +271,33 @@ public class OperatorGridModule extends SubsystemBase {
                     && nodeStateValues[i][1] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 0) && !partOfCompleteLink(i, 1)) {
                 if (i == 2) {
-                        hpSuggestion.setInteger(NodeState.CUBE.value);
-                        Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+                    new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                Commands.runOnce(new LEDBounce(Color.YELLOW));
+                new LEDBounce(Color.kYellow);
                 return;
             } else if ((nodeStateValues[i][1] != NodeState.NONE.value
                     && nodeStateValues[i][2] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 1) && !partOfCompleteLink(i, 2)) {
                 if (i == 2) {
-                        hpSuggestion.setInteger(NodeState.CUBE.value);
-                        Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+                    new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                Commands.runOnce(new LEDBounce(Color.YELLOW));
+                new LEDBounce(Color.kYellow);
 
                 return;
             } else if ((nodeStateValues[i][0] != NodeState.NONE.value
                     && nodeStateValues[i][2] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 0) && !partOfCompleteLink(i, 2)) {
                 if (i == 2) {
-                        hpSuggestion.setInteger(NodeState.CUBE.value);
-                        Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+                    new LEDBounce(Color.kViolet);
 
                     return;
                 }
@@ -302,63 +310,57 @@ public class OperatorGridModule extends SubsystemBase {
                         && nodeStateValues[i][j + 1] != NodeState.NONE.value) && !partOfCompleteLink(i, j)
                         && !partOfCompleteLink(i, j + 1)) {
                     if (i == 2) {
-                            hpSuggestion.setInteger(NodeState.CUBE.value);
-                            Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                        hpSuggestion.setInteger(NodeState.CUBE.value);
+                        new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     if ((j + 2) % 3 == 1) {
-                            hpSuggestion.setInteger(NodeState.CUBE.value);
-                            Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                        hpSuggestion.setInteger(NodeState.CUBE.value);
+                        new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    Commands.runOnce(new LEDBounce(Color.YELLOW));
+                    new LEDBounce(Color.kYellow);
 
                     return;
                 } else if ((nodeStateValues[i][j + 1] != NodeState.NONE.value
                         && nodeStateValues[i][j + 2] != NodeState.NONE.value)
                         && !partOfCompleteLink(i, j + 1) && !partOfCompleteLink(i, j + 2)) {
                     if (i == 2) {
-                            hpSuggestion.setInteger(NodeState.CUBE.value);
-                            Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                        hpSuggestion.setInteger(NodeState.CUBE.value);
+                        new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     if (j % 3 == 1) {
-                            hpSuggestion.setInteger(NodeState.CUBE.value);
-                            Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                        hpSuggestion.setInteger(NodeState.CUBE.value);
+                        new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    Commands.runOnce(new LEDBounce(Color.YELLOW));
+                    new LEDBounce(Color.kYellow);
 
                     return;
                 } else if ((nodeStateValues[i][j] != NodeState.NONE.value
                         && nodeStateValues[i][j + 2] != NodeState.NONE.value)
                         && !partOfCompleteLink(i, j) && !partOfCompleteLink(i, j + 2)) {
                     if (i == 2) {
-                            hpSuggestion.setInteger(NodeState.CUBE.value);
-                            Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                        hpSuggestion.setInteger(NodeState.CUBE.value);
+                        new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     if ((j + 1) % 3 == 1) {
-                            hpSuggestion.setInteger(NodeState.CUBE.value);
-                            Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                        hpSuggestion.setInteger(NodeState.CUBE.value);
+                        new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    Commands.runOnce(new LEDBounce(Color.YELLOW));
+                    new LEDBounce(Color.kYellow);
 
                     return;
                 }
@@ -368,35 +370,32 @@ public class OperatorGridModule extends SubsystemBase {
                     && nodeStateValues[i][7] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 6) && !partOfCompleteLink(i, 7)) {
                 if (i == 2) {
-                        hpSuggestion.setInteger(NodeState.CUBE.value);
-                        Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+                    new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                Commands.runOnce(new LEDBounce(Color.YELLOW));
+                new LEDBounce(Color.kYellow);
                 return;
             } else if ((nodeStateValues[i][7] != NodeState.NONE.value
                     && nodeStateValues[i][8] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 7) && !partOfCompleteLink(i, 8)) {
                 if (i == 2) {
-                        hpSuggestion.setInteger(NodeState.CUBE.value);
-                        Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+                    new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                Commands.runOnce(new LEDBounce(Color.YELLOW));
+                new LEDBounce(Color.kYellow);
                 return;
             } else if ((nodeStateValues[i][6] != NodeState.NONE.value
                     && nodeStateValues[i][8] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 6) && !partOfCompleteLink(i, 7)) {
                 if (i == 2) {
-                        hpSuggestion.setInteger(NodeState.CUBE.value);
-                        Commands.runOnce(new LEDBounce(new Color(102f,0f,153f)));
-
+                    hpSuggestion.setInteger(NodeState.CUBE.value);
+                    new LEDBounce(Color.kViolet);
 
                     return;
                 }
@@ -693,6 +692,11 @@ public class OperatorGridModule extends SubsystemBase {
                     nodes[i][j].setInteger(nodeSuperStateValues[i][j]);
                 }
             }
+        }
+        if (timer.hasElapsed(0.02)) {
+            logCommandLoopOverrun.set(true);
+        } else {
+            logCommandLoopOverrun.set(false);
         }
     }
 }

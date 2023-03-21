@@ -4,8 +4,9 @@
 
 package com.team303.robot.commands.led;
 
+import static com.team303.robot.Robot.ledStrip;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.team303.robot.Robot;
 
 public class LEDRainbowRotate extends CommandBase {
 	private int hue = 0;

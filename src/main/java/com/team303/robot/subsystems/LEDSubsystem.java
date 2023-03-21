@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.SerialPort.WriteBufferMode;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static com.team303.robot.RobotMap.LED;
 import static com.team303.robot.Robot.ledStrip;
 
 public class LEDSubsystem extends SubsystemBase {
