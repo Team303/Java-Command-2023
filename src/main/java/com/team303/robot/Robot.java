@@ -248,6 +248,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
+		swerve.resetToAbsoluteAngle();
 	}
 
 	@Override
@@ -279,6 +280,7 @@ public class Robot extends LoggedRobot {
 		// try reaching this configuration
 		// operatorCommandXboxController.a().onTrue(new ReachAngles(20, 45, 0));
 		operatorCommandXboxController.b().whileTrue(new ClawClose());
+		// operatorCommandXboxController.a().toggleOnTrue(new InstantCommand(arm::toggleClaw));
 		// operatorCommandXboxController.leftTrigger().whileTrue(new DefaultIKControlCommand(false))
 		// 		.whileFalse(new DefaultMove());
 

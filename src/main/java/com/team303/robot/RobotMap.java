@@ -105,8 +105,8 @@ public final class RobotMap {
 
 	public static final class Arm {
 
-		public static final int SHOULDER_JOINT_ID1 = 14;
-		public static final int SHOULDER_JOINT_ID2 = 15;
+		public static final int SHOULDER_JOINT_LEFT_ID = 14;
+		public static final int SHOULDER_JOINT_RIGHT_ID = 15;
 		public static final int ELBOW_JOINT_ID = 16;
 		public static final int CLAW_JOINT_ID = 17;
 		public static final double SIMULATION_OFFSET = 0;

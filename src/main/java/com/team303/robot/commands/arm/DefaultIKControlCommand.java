@@ -58,8 +58,15 @@ public class DefaultIKControlCommand extends CommandBase {
 
         cartesianStorage = new Translation3d(x, 0.0, z);
 
-        arm.reachEmbedded(cartesianStorage);
-        arm.armKinematics.updateEmbedded((float) cartesianStorage.getX(), (float) cartesianStorage.getZ());
+        if (Robot.getOperatorCommandXbox().getRightTriggerAxis() == 1) {
+            arm.reachEmbeddedDown(cartesianStorage);
+            System.out.println("Reaching Down!!!\n\n\n");
+        } 
+        
+        else {
+            arm.reachEmbedded(cartesianStorage);
+        }
+        
         effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianStorage.getX() / Arm.SIMULATION_SCALE,
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_SCALE + cartesianStorage.getZ() / Arm.SIMULATION_SCALE);

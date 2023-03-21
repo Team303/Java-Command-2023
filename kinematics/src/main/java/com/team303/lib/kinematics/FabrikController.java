@@ -6,6 +6,7 @@ import java.util.List;
 import au.edu.federation.caliko.FabrikBone2D;
 import au.edu.federation.caliko.FabrikChain2D;
 import au.edu.federation.caliko.FabrikChain2D.BaseboneConstraintType2D;
+import au.edu.federation.caliko.FabrikJoint2D.ConstraintCoordinateSystem;
 import au.edu.federation.caliko.FabrikStructure2D;
 import au.edu.federation.utils.Vec2f;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -14,6 +15,7 @@ public class FabrikController {
 
     FabrikStructure2D structure = new FabrikStructure2D();
     FabrikChain2D chain = new FabrikChain2D();
+    FabrikBone2D gripper;
 
     List<Float> segmentRatio = new ArrayList<Float>();
     List<Float> segmentLength = new ArrayList<Float>();
@@ -88,6 +90,49 @@ public class FabrikController {
      */
     public double getSegmentInitialDirectionRadians(int segmentIndex) {
         return Math.atan2(segmentInitialDirection.get(segmentIndex).y, segmentInitialDirection.get(segmentIndex).x);
+    }
+    
+    /**
+     * Adds a bone that is globally constrained.
+     * IMPORTANT: Must be called after initializeArm()
+     * @param constraintAngleRadians The angle that the bone is globally constrained to
+     * @param lengthInches Length of bone
+     * @param clockwiseConstraintDegrees Clockwise tolerance
+     * @param counterclockwiseConstraintDegrees Counterclockwise tolerance
+     **/
+    public void addGloballyConstrainedGripper (float constraintAngleRadians, float lengthInches, float clockwiseConstraintDegrees, float counterclockwiseConstraintDegrees ) {
+        Vec2f output = new Vec2f();
+        output.x = (float) Math.cos(constraintAngleRadians);
+        output.y = (float) Math.sin(constraintAngleRadians);
+        FabrikBone2D gripper = new FabrikBone2D(new Vec2f(1.0f, 1.0f), output, lengthInches, clockwiseConstraintDegrees, counterclockwiseConstraintDegrees);
+        gripper.setJointConstraintCoordinateSystem(ConstraintCoordinateSystem.GLOBAL);
+        gripper.setGlobalConstraintUV(output);
+        chain.addConsecutiveBone(gripper);
+    }
+
+    public void addGloballyConstrainedGripper (float constraintAngleRadians, float lengthInches) {
+        FabrikBone2D gripper = new FabrikBone2D(new Vec2f(50.0f, 50.0f), new Vec2f(1.0f,0.0f), lengthInches, 0.0f, 0.0f);
+        gripper.setJointConstraintCoordinateSystem(ConstraintCoordinateSystem.GLOBAL);
+        gripper.setGlobalConstraintUV(new Vec2f(1.0f,0.0f));
+        chain.addConsecutiveBone(gripper);
+    }
+    
+    /**
+     * Sets a new global angle constraint
+     * @param angleRadians The new angle in radians for the angle to be constrained to
+     */
+    public void setGripperGlobalConstraint(float angleRadians) {
+        Vec2f output = new Vec2f();
+        output.x = (float) Math.cos(angleRadians);
+        output.y = (float) Math.sin(angleRadians);
+        gripper.setGlobalConstraintUV(output);
+    }
+
+    public double getGripperGlobalConstraint() {
+        double x = gripper.getGlobalConstraintUV().x;
+        double y = gripper.getGlobalConstraintUV().y;
+
+        return Math.atan2(y,x);
     }
 
     public void initializeArm() {

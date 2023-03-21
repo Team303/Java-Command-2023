@@ -21,18 +21,18 @@ public class Homing extends CommandBase {
 
     @Override
     public void execute() {
-        if (!arm.shoulderJoint.shoulderSwitchReverse1.isPressed()) {
+        if (!arm.shoulderJoint.leftSwitchReverse.isPressed()) {
             arm.shoulderJoint.setMotors(-0.1);
         }
 
-        if (!arm.elbowJoint.elbowSwitchReverse.isPressed()) {
-            arm.elbowJoint.elbowMotor.set(0.1);
+        if (!arm.elbowJoint.switchReverse.isPressed()) {
+            arm.elbowJoint.motor.set(0.1);
         }
     }
 
     @Override
     public boolean isFinished() {
-        return arm.shoulderJoint.shoulderSwitchReverse1.isPressed() && arm.elbowJoint.elbowSwitchReverse.isPressed();
+        return arm.shoulderJoint.leftSwitchReverse.isPressed() && arm.elbowJoint.switchReverse.isPressed();
     }
 
     @Override
