@@ -56,6 +56,8 @@ public class Robot extends LoggedRobot {
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final ClawSubsystem claw = new ClawSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
+	public static final LEDSubsystem ledStrip = new LEDSubsystem();
+
 
 	/* Robot IO Controls */
 	public static final CommandXboxController operatorController = new CommandXboxController(
