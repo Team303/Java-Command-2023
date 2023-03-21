@@ -1,5 +1,7 @@
 package com.team303.robot.commands.drive;
 
+import static com.team303.robot.Robot.driverController;
+import static com.team303.robot.Robot.swerve;
 import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
 import static com.team303.robot.subsystems.SwerveSubsystem.MAX_DRIVE_SPEED;
 
@@ -14,20 +16,21 @@ public class DefaultDrive extends CommandBase {
         boolean fieldOriented;
 
         public DefaultDrive(boolean fieldOriented) {
-                addRequirements(Robot.swerve);
+                addRequirements(swerve);
                 this.fieldOriented = fieldOriented;
         }
 
         @Override
         public void execute() {
+                // Deadband and square inputs
                 Translation2d translation = new Translation2d(
-                                DEADBAND_FILTER.applyDeadband(
-                                                -Robot.driverController.getLeftY(),
-                                                DEADBAND_FILTER.getLowerBound())
+                                -Math.signum(driverController.getLeftY()) * Math.pow(DEADBAND_FILTER.applyDeadband(
+                                                driverController.getLeftY(),
+                                                DEADBAND_FILTER.getLowerBound()), 2)
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
-                                DEADBAND_FILTER.applyDeadband(
-                                                -Robot.driverController.getLeftX(),
-                                                DEADBAND_FILTER.getLowerBound())
+                                -Math.signum(driverController.getLeftX()) * Math.pow(DEADBAND_FILTER.applyDeadband(
+                                                driverController.getLeftX(),
+                                                DEADBAND_FILTER.getLowerBound()), 2)
                                                 * Swerve.MAX_VELOCITY
                                                 * MAX_DRIVE_SPEED);
 
@@ -35,7 +38,7 @@ public class DefaultDrive extends CommandBase {
                                 (Robot.isReal() ? -1 : 1) * Robot.driverController.getRightX(),
                                 DEADBAND_FILTER.getLowerBound());
 
-                Robot.swerve.drive(
+                swerve.drive(
                                 translation,
                                 rotation * 4 * MAX_DRIVE_SPEED,
                                 fieldOriented);
