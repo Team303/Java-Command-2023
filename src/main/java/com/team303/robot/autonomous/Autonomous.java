@@ -2,28 +2,24 @@ package com.team303.robot.autonomous;
 
 // import com.team303.robot.commands.arm.ReachPoint;
 import static com.team303.robot.Robot.CONTROLLER_TAB;
+import static com.team303.robot.Robot.swerve;
 import static com.team303.robot.autonomous.AutonomousProgram.create;
 
+import java.util.HashMap;
 import java.util.List;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import com.team303.robot.commands.arm.Homing;
-import com.team303.robot.commands.drive.AutoLevelBasic;
-import com.team303.robot.commands.arm.ReachPoint;
-
-import java.util.HashMap;
-import com.pathplanner.lib.PathPlanner;
-import edu.wpi.first.wpilibj2.command.Command;
 import com.pathplanner.lib.PathConstraints;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import com.team303.robot.RobotMap.Swerve;
-import com.team303.robot.Robot;
-import static com.team303.robot.Robot.swerve;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
-import edu.wpi.first.networktables.GenericEntry;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.team303.robot.RobotMap.Swerve;
 import com.team303.robot.commands.arm.ReachPoint;
+import com.team303.robot.commands.drive.AutoLevelBasic;
+
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 /**
  * Quick guide to Comand Groups:
@@ -68,6 +64,8 @@ public class Autonomous {
         public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
 
         public static void init() {
+
+                AutonomousProgram.addAutosToShuffleboard();
 
                 HashMap<String, Command> eventMap = new HashMap<>();
                 // //In Inches
@@ -124,8 +122,10 @@ public class Autonomous {
                 // Swerve.MAX_VELOCITY));
                 // create("Middle Cube", () -> autoBuilder.fullAuto(pathGroup));
                 pathGroupLevel = PathPlanner.loadPathGroup("Level", new PathConstraints(3, Swerve.MAX_VELOCITY));
-                create("Auto Level", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevel), new AutoLevelBasic()));
-                pathGroupSubstation = PathPlanner.loadPathGroup("Towards Substation", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Auto Level", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevel),
+                                new AutoLevelBasic()));
+                pathGroupSubstation = PathPlanner.loadPathGroup("Towards Substation",
+                                new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Taxi Substation", () -> autoBuilder.fullAuto(pathGroupSubstation));
                 pathGroupGate = PathPlanner.loadPathGroup("Towards Gate", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Taxi Gate", () -> autoBuilder.fullAuto(pathGroupGate));
@@ -136,7 +136,7 @@ public class Autonomous {
                 // create("New", () -> {
                 // try {
                 // return new SequentialCommandGroup(
-                // new InstantCommand(Robot.getNavX()::reset),
+                // new InstantCommand(Robot.navX::reset),
                 // new FollowTrajectory("output/New.wpilib.json")
                 // );
                 // } catch (FileNotFoundException e) {
@@ -147,7 +147,7 @@ public class Autonomous {
                 // create("StraighForward1", () -> {
                 // try {
                 // return new SequentialCommandGroup(
-                // new InstantCommand(Robot.getNavX()::reset),
+                // new InstantCommand(Robot.navX::reset),
                 // new FollowTrajectory("output/StraightForward1.wpilib.json")
                 // );
                 // } catch (FileNotFoundException e) {
@@ -158,7 +158,7 @@ public class Autonomous {
                 // create("NavX Test", () -> {
                 // try {
                 // return new SequentialCommandGroup(
-                // new InstantCommand(Robot.getNavX()::reset),
+                // new InstantCommand(Robot.navX::reset),
                 // new TurnToAngle(180),
                 // new FollowTrajectory("output/New.wpilib.json")
                 // );
@@ -180,18 +180,12 @@ public class Autonomous {
                 // new AutolevelFeedforward()
                 // );
 
-                create("Reach Point", () ->
-                new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0))
-                );
+                create("Reach Point", () -> new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0)));
 
                 // create("reach selected", () ->
                 // Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new
                 // Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
 
                 // create("drive to node", () -> swerve.driveToNode());
-
-                create("Homing", () -> new Homing());
-
-
         }
 }

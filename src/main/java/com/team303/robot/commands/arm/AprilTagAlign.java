@@ -6,8 +6,8 @@ import static com.team303.robot.subsystems.SwerveSubsystem.DIFFERENCE;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import com.team303.robot.modules.Photonvision.CameraName;
-import com.team303.robot.modules.Photonvision.PhotonPipeline;
+import com.team303.robot.modules.PhotonvisionModule.CameraName;
+import com.team303.robot.modules.PhotonvisionModule.PhotonPipeline;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;

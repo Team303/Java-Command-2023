@@ -17,7 +17,9 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.team303.lib.kinematics.FabrikController;
+import com.team303.lib.kinematics.ArmChain;
 import com.team303.robot.RobotMap.Arm;
+import com.team303.robot.Robot;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -223,6 +225,9 @@ public class ArmSubsystem extends SubsystemBase {
 		return encoders / ENCODERS_PER_REV * (Math.PI * 2);
 	}
 
+
+	public static ArmChain armChainHorizontal = new ArmChain();
+	public static ArmChain armChainVertical = new ArmChain();
 	public static FabrikController armKinematics = new FabrikController();
 
 	public ShoulderJoint shoulderJoint = new ShoulderJoint();
@@ -251,31 +256,44 @@ public class ArmSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("Neo counts per revolution", ENCODERS_PER_REV);
 
 		// Initialize Inverse Kinematics with constant values
-		armKinematics.setArmLength(62f);
-		armKinematics.setSegmentLengthRatio(0, 31 / 62f);
-		armKinematics.setSegmentLengthRatio(1, 31 / 62f);
-		// armKinematics.setSegmentLengthRatio(2, 12 / 74f);
-		armKinematics.setSegmentLengths();
-		armKinematics.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1]);
-		armKinematics.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1]);
-		// armKinematics.setAngleConstraint(2, -wristLimits[0], wristLimits[0]);
-		armKinematics.setSegmentInitialDirection(0, (float) Math.toRadians(90));
-		armKinematics.setSegmentInitialDirection(1, (float) Math.toRadians(0));
-		// armKinematics.setSegmentInitialDirection(2, (float) Math.toRadians(-45));
-		
-		armKinematics.initializeArm();
-		armKinematics.addGloballyConstrainedGripper((float)Math.toRadians(0), 12f);
-		armKinematics.setSolveDistanceThreshold(1f);
-		armKinematics.setMaxIterationAttempts(5000);
+		armChainHorizontal.setArmLength(62f)
+			.setSegmentLengthRatio(0, 31 / 62f)
+			.setSegmentLengthRatio(1, 31 / 62f)
+			.setSegmentLengths()
+			.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1])
+			.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1])
+			.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+			.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+			.initializeChain()
+			.addGloballyConstrainedGripper((float) Math.toRadians(0), 12f)
+			.setSolveDistanceThreshold(1f)
+			.setMaxIterationAttempts(5000);
+
+		armChainVertical.setArmLength(62f)
+			.setSegmentLengthRatio(0, 31 / 62f)
+			.setSegmentLengthRatio(1, 31 / 62f)
+			.setSegmentLengths()
+			.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1])
+			.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1])
+			.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+			.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+			.initializeChain()
+			.addGloballyConstrainedGripper((float) Math.toRadians(-90), 12f)
+			.setSolveDistanceThreshold(1f)
+			.setMaxIterationAttempts(5000);
+
+
+		// armKinematics = new FabrikController(armChainHorizontal, armChainVertical);
+
 		// clawJoint.clawEncoder.setPositionConversionFactor(Arm.GEAR_RATIO_CLAW);
 
 		armSimulation = new Mechanism2d(300 / Arm.SIMULATION_SCALE, 300 / Arm.SIMULATION_SCALE);
 		MechanismRoot2d armRoot = armSimulation.getRoot("Arm", (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE,
 				(Arm.SIMULATION_OFFSET) / Arm.SIMULATION_SCALE);
 		shoulderJoint.simulator = armRoot.append(new MechanismLigament2d("shoulder",
-				(double) armKinematics.getSegmentLength(0) / Arm.SIMULATION_SCALE, 0, 5.0, new Color8Bit(255, 0, 0)));
+				(double) armChainHorizontal.getSegmentLength(0) / Arm.SIMULATION_SCALE, 0, 5.0, new Color8Bit(255, 0, 0)));
 		elbowJoint.simulator = shoulderJoint.simulator.append(new MechanismLigament2d("elbow",
-				(double) (armKinematics.getSegmentLength(1)) / Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(0, 255, 0)));
+				(double) (armChainHorizontal.getSegmentLength(1)) / Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(0, 255, 0)));
 		wristJoint.simulator = elbowJoint.simulator.append(new
 		MechanismLigament2d("claw",
 		(double) 12/Arm.SIMULATION_SCALE, 0, 5.0, new
@@ -286,8 +304,8 @@ public class ArmSubsystem extends SubsystemBase {
 
 		effectorPoint = effectorRoot.append(
 				new MechanismLigament2d("effector", 1.0 / Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(255, 0, 0)));
-		storedShoulderAngle = armKinematics.getIKAnglesDegrees().get(0);
-		storedElbowAngle = storedShoulderAngle - armKinematics.getIKAnglesDegrees().get(1);
+		storedShoulderAngle = armChainHorizontal.getIKAnglesDegrees().get(0);
+		storedElbowAngle = storedShoulderAngle - armChainHorizontal.getIKAnglesDegrees().get(1);
 		// reach(armKinematics.getIKAnglesRadians());
 
 		// storedClawAngle = storedElbowAngle+armKinematics.getIKAnglesDegrees().get(2);
@@ -302,23 +320,29 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void reach(Translation3d translation) {
-		armKinematics.solveTargetIK(translation);
+		armKinematics.solveNewTarget(translation);
 		// Units of error are inches
-		reach(armKinematics.getIKAnglesRadians());
+
+		if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
+			reach(armKinematics.getAnglesRadians(0));
+		} else {
+			reach(armKinematics.getAnglesRadians(1));
+		}
 	}
 
 	public void reachEmbedded(Translation3d translation) {
-		// this.setClawAngleConstraint(0);
-		armKinematics.updateEmbedded((float) translation.getX(), (float) translation.getZ());
-		armKinematics.solveForEmbedded();	
-		reach(armKinematics.getIKAnglesRadians());
-	}
 
-	public void reachEmbeddedDown(Translation3d translation) {
-		this.setClawAngleConstraint((float) -Math.PI/2);
-		armKinematics.updateEmbedded((float) translation.getX(), (float) translation.getZ());
-		armKinematics.solveForEmbedded();	
-		reach(armKinematics.getIKAnglesRadians());
+		if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
+			armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
+			armChainHorizontal.solveForEmbedded();	
+			reach(armChainHorizontal.getIKAnglesRadians());
+		} 
+		else {
+			armChainVertical.updateEmbedded((float) translation.getX(), (float) translation.getZ());
+			armChainVertical.solveForEmbedded();	
+			reach(armChainVertical.getIKAnglesRadians());
+		}
+
 	}
 	
 	public void reach(List<Double> desiredRadianAngles) {
@@ -413,9 +437,9 @@ public class ArmSubsystem extends SubsystemBase {
 		wristJoint.encoder.setPosition(wrist);
 	}
 
-	public void setClawAngleConstraint(float angleRadians) {
-		armKinematics.setGripperGlobalConstraint(angleRadians);
-	}
+	// public void setClawAngleConstraint(float angleRadians) {
+	// 	armChainHorizontal.setGripperGlobalConstraint(angleRadians);
+	// }
 
 	// public void toggleClaw() {
 	// 	if (armKinematics.getGripperGlobalConstraint() == 0) {
@@ -448,7 +472,7 @@ public class ArmSubsystem extends SubsystemBase {
 	// }
 
 	public float getPositionError() {
-		return armKinematics.getIKPositionError();
+		return armChainHorizontal.getIKPositionError();
 	}
 
 	public void move(double shoulderSpeed, double elbowSpeed, double wristSpeed) {
@@ -486,9 +510,20 @@ public class ArmSubsystem extends SubsystemBase {
 	public void periodic() {
 		JOINT_ANGLES_PUB.set(JOINT_ANGLES_SUB.get(new double[] { 0.0, 0.0 }));
 		JOINT_RPM_PUB.set(JOINT_RPM_SUB.get(new double[] { 0.0, 0.0 }));
-		double shoulderSimAngle = 90 - armKinematics.getIKAnglesDegrees().get(0);
-		double elbowSimAngle = -armKinematics.getIKAnglesDegrees().get(1);
-		double wristSimAngle = -armKinematics.getIKAnglesDegrees().get(2);
+		double shoulderSimAngle;
+		double elbowSimAngle;
+		double wristSimAngle;
+
+		if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
+			shoulderSimAngle = 90 - armChainHorizontal.getIKAnglesDegrees().get(0);
+			elbowSimAngle = -armChainHorizontal.getIKAnglesDegrees().get(1);
+			wristSimAngle = -armChainHorizontal.getIKAnglesDegrees().get(2);
+		} else {
+			shoulderSimAngle = 90 - armChainVertical.getIKAnglesDegrees().get(0);
+			elbowSimAngle = -armChainVertical.getIKAnglesDegrees().get(1);
+			wristSimAngle = -armChainVertical.getIKAnglesDegrees().get(2);
+		}
+
 
 		if (shoulderSimAngle != storedShoulderAngle || elbowSimAngle != storedElbowAngle || wristSimAngle != storedWristAngle) {
 			storedShoulderAngle = shoulderSimAngle;

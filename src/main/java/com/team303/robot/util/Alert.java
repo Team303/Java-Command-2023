@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.team303.robot.modules.Operator.OPERATOR_TAB;
+import static com.team303.robot.modules.OperatorGridModule.OPERATOR_TAB;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;

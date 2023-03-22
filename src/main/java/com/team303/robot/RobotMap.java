@@ -152,11 +152,8 @@ public final class RobotMap {
 	}
 
 	public static final class IOConstants {
-
-		public static final int LEFT_JOYSTICK_ID = 3;
-		public static final int RIGHT_JOYSTICK_ID = 1;
-		public static final int DRIVER_CONTROLLER = 1;
-		public static final int OPERATOR_CONTROLLER = 2;
+		public static final int DRIVER_CONTROLLER = 0;
+		public static final int OPERATOR_CONTROLLER = 1;
 
 		public static final double DEADBAND_UPPERBOUND = 1;
 		public static final double DEADBAND_LOWERBOUND = 0.15;
