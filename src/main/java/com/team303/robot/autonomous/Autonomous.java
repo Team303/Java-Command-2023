@@ -16,10 +16,13 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.RobotMap.Swerve;
 import com.team303.robot.commands.arm.ReachPoint;
 import com.team303.robot.commands.drive.AutoLevelBasic;
+import com.team303.robot.commands.arm.HomeArm;
+import com.team303.robot.Robot;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 /**
  * Quick guide to Comand Groups:
@@ -64,17 +67,14 @@ public class Autonomous {
         public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
 
         public static void init() {
-
-                AutonomousProgram.addAutosToShuffleboard();
-
                 HashMap<String, Command> eventMap = new HashMap<>();
                 // //In Inches
-                eventMap.put("Top Cone", new ReachPoint(42, 48));
-                // // eventMap.put("Middle Cone", new ReachPoint(24, 35)); //TEST THESE
-                // // eventMap.put("Top Cube", new ReachPoint(42, 36)); //TEST THESE
-                // // eventMap.put("Middle Cone", new ReachPoint(24, 25)); //TEST THESE
-                // // eventMap.put("Bottom Hybrid", new ReachPoint(16, 5)); //TEST THESE
-                // // eventMap.put("Reach Cone", new ReachPoint(36, 0));
+                eventMap.put("Top Cone", new SequentialCommandGroup(new ReachPoint(42, 48), new InstantCommand(Robot.claw::toggleState)));
+                eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 35), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16, 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                eventMap.put("Reach Cone", new SequentialCommandGroup(new ReachPoint(36, 0), new InstantCommand(Robot.claw::toggleState)));
 
                 autoBuilder = new SwerveAutoBuilder(
                                 swerve::getPose, // Pose2d supplier
@@ -181,6 +181,7 @@ public class Autonomous {
                 // );
 
                 create("Reach Point", () -> new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0)));
+                create("Homing", () -> new HomeArm());
 
                 // create("reach selected", () ->
                 // Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new

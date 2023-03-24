@@ -15,7 +15,9 @@ import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
 import com.team303.robot.commands.arm.DefaultArm;
 import com.team303.robot.commands.arm.HomeArm;
+import com.team303.robot.commands.arm.HomeArmContinuous;
 import com.team303.robot.commands.claw.DefaultClaw;
+import com.team303.robot.commands.drive.AutoLevelBasic;
 import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
@@ -28,6 +30,7 @@ import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.commands.arm.DefaultIKControlCommand;
+import com.team303.robot.commands.arm.ReachPoint;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -52,14 +55,13 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
-	public static final OperatorGridModule operatorGrid =  new OperatorGridModule();
+	public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final ClawSubsystem claw = new ClawSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
 	public static final LEDSubsystem ledStrip = new LEDSubsystem();
-
 
 	/* Robot IO Controls */
 	public static final CommandXboxController operatorController = new CommandXboxController(
@@ -144,11 +146,10 @@ public class Robot extends LoggedRobot {
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		Robot.claw.setDefaultCommand(new DefaultClaw());
-		// Robot.arm.setDefaultCommand(new DefaultArm());
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 
 		// add Autos to Shuffleboard
 		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -156,24 +157,29 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
+		// Dont do IK during auto
+		Robot.arm.setDefaultCommand(null);
+
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
+		// Home the arm while waiting for the drivebase delay
+		Command delay = new SequentialCommandGroup(
+				new HomeArm(),
+				new DriveWait(AutonomousProgram.getAutonomousDelay()));
+
 		// Schedule the selected autonomous command group
 		if (autonomousRoutine != null) {
-			// Home the arm while waiting for the drivebase delay
-			Command delay = new ParallelCommandGroup(
-					new DriveWait(AutonomousProgram.getAutonomousDelay()),
-					new HomeArm());
-
 			// Run the delay/home and the selected routine sequentially
 			this.autonomousCommand = new SequentialCommandGroup(
 					delay,
 					autonomousRoutine);
-
-			// Schedule the combined command group
-			CommandScheduler.getInstance().schedule(this.autonomousCommand);
+		} else {
+			this.autonomousCommand = delay;
 		}
+
+		// Schedule the combined command group
+		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
 	@Override
@@ -181,6 +187,13 @@ public class Robot extends LoggedRobot {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
+		}
+
+		// Robot.arm.setDefaultCommand(new DefaultArm());
+		if (operatorController.getLeftTriggerAxis() < 0.9) {
+			Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		} else {
+			Robot.arm.setDefaultCommand(new DefaultArm());
 		}
 	}
 
@@ -199,44 +212,48 @@ public class Robot extends LoggedRobot {
 		/* Operator Controls */
 
 		// Custom grid widget button bindings
-		operatorController.pov(0).onTrue(new InstantCommand(operatorGrid::moveUp));
-		operatorController.pov(90).onTrue(new InstantCommand(operatorGrid::moveRight));
-		operatorController.pov(180).onTrue(new InstantCommand(operatorGrid::moveDown));
-		operatorController.pov(270).onTrue(new InstantCommand(operatorGrid::moveLeft));
+		// operatorController.pov(0).onTrue(new InstantCommand(operatorGrid::moveUp));
+		// operatorController.pov(90).onTrue(new InstantCommand(operatorGrid::moveRight));
+		// operatorController.pov(180).onTrue(new InstantCommand(operatorGrid::moveDown));
+		// operatorController.pov(270).onTrue(new InstantCommand(operatorGrid::moveLeft));
 
-		operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
-		operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
+		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
+		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
 		operatorController.b().onTrue(new InstantCommand(claw::toggleState));
 		operatorController.a().onTrue(new InstantCommand(claw::toggleMode));
-		// operatorController.rightBumper().onTrue(Commands.runOnce(() -> arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(() -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
+		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
+		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
+		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
 
+		// Top Cone
+		operatorController.pov(0).whileTrue(new ReachPoint(55, 42));
+		// Substation
+		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5));
+		// Mid Cone
+		operatorController.pov(180).whileTrue(new ReachPoint(40, 39));
+		// Bottom
+
+		operatorController.pov(270).whileTrue(new ReachPoint(16, 7));
+
+		operatorController.x().whileTrue(new HomeArmContinuous());
+
+		// driverController.pov(0).onTrue(new ReachPoint(36, 0));
+
+		// Lock swerve wheels while x is held
 		/* Driver Controls */
 
-		// Reset field oriented drive when y is pressed
+		driverController.x().whileTrue(Commands.runOnce(swerve::lockWheels));
+
+				// Reset field oriented drive when y is pressed
 		driverController.y()
 				.onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
 
 		// Auto level while a is held
-		driverController.a().whileTrue(new AutolevelFeedforward());
+		driverController.x().whileTrue(new AutoLevelBasic());
 
-		// Turn to angles on POV buttons
-		driverController.pov(0).onTrue(Commands.runOnce(() -> {
-			arm.reach(Arrays.asList(0.0, 0.0, 0.0));
-		}));
-		driverController.pov(90).onTrue(Commands.runOnce(() -> {
-			arm.reach(Arrays.asList(0.0, 0.0, 0.0));
-		}));
-		driverController.pov(180).onTrue(Commands.runOnce(() -> {
-			arm.reach(Arrays.asList(-9.0, 122.67, 0.0));
-		}));
-		driverController.pov(270).onTrue(Commands.runOnce(() -> {
-			arm.reach(Arrays.asList(0.0, 0.0, 0.0));
-		}));
-
-		// Lock swerve wheels while x is held
-		driverController.x().whileTrue(Commands.runOnce(swerve::lockWheels));
+		
 	}
 
 	/*

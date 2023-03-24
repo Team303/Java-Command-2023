@@ -92,8 +92,6 @@ public class AutonomousProgram {
 		for (var auto : autoRegistry.values())
 			autoChooser.addOption(auto.getName(), auto);
 
-		System.out.println(autoRegistry);
-
 		autoChooser.setDefaultOption(DO_NOTHING.getName(), DO_NOTHING);
 
 		// Put the chooser on the dashboard

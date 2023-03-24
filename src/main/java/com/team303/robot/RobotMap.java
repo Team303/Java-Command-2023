@@ -105,15 +105,15 @@ public final class RobotMap {
 
 	public static final class Arm {
 
-		public static final int SHOULDER_JOINT_LEFT_ID = 14;
-		public static final int SHOULDER_JOINT_RIGHT_ID = 15;
+		public static final int SHOULDER_JOINT_LEFT_ID = 15;
+		public static final int SHOULDER_JOINT_RIGHT_ID = 14;
 		public static final int ELBOW_JOINT_ID = 16;
 		public static final int CLAW_JOINT_ID = 17;
 		public static final double SIMULATION_OFFSET = 0;
 		public static final double SIMULATION_SCALE = 84/2.54;
 		public static final double GEAR_RATIO_SHOULDER = 266.66;
 		public static final double GEAR_RATIO_ELBOW = 125;
-		public static final double GEAR_RATIO_CLAW = 45;
+		public static final double GEAR_RATIO_WRIST = 45;
 		// public static final double INCHES_TO_
 		/*public static final int BOTTOM_LEFT_LIMIT_SWITCH = 0;
 		public static final int BOTTOM_RIGHT_LIMIT_SWITCH = 1;

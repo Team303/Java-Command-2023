@@ -46,13 +46,13 @@ public class DefaultIKControlCommand extends CommandBase {
         if (fieldOriented) {
             x += (MathUtil.applyDeadband(-Robot.operatorController.getLeftY(), 0.03) * Math.cos(robotAngle)
                     - MathUtil.applyDeadband(Robot.operatorController.getLeftX(), 0.03) * Math.sin(robotAngle));
+            z -= DEADBAND_FILTER.applyDeadband(Robot.operatorController.getRightY(), DEADBAND_FILTER.getLowerBound());
         } else {
             x += DEADBAND_FILTER.applyDeadband(Robot.operatorController.getLeftX(), DEADBAND_FILTER.getLowerBound());
+            z -= DEADBAND_FILTER.applyDeadband(Robot.operatorController.getLeftY(), DEADBAND_FILTER.getLowerBound());
         }
-        z -= DEADBAND_FILTER.applyDeadband(Robot.operatorController.getRightY(), DEADBAND_FILTER.getLowerBound());
-
-        x = Math.min(x, 48);
-        x = Math.max(x, -48);
+        x = Math.min(x, 48 + 36);
+        x = Math.max(x, -48 - 36);
         z = Math.min(z, 72);
         z = Math.max(z, 0);
 

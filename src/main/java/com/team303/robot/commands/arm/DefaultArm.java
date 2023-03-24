@@ -6,7 +6,7 @@ import com.team303.robot.Robot;
 public class DefaultArm extends CommandBase {
 
     public static final double MAX_SPEED = 0.5;
-    public static final double CONSTANT_VOLTAGE = -0.07;
+    public static final double CONSTANT_VOLTAGE = -0.04;
 
     public DefaultArm() {
         addRequirements(Robot.arm);
@@ -15,9 +15,8 @@ public class DefaultArm extends CommandBase {
     @Override
     public void execute() {
         Robot.arm.move(
-                // (-Robot.operatorController.getRightTriggerAxis()
-                // + Robot.operatorController.getLeftTriggerAxis()) * MAX_SPEED,
-                0,
+                (-Robot.operatorController.getRightTriggerAxis()
+                + Robot.operatorController.getLeftTriggerAxis()) * MAX_SPEED,
                 Robot.operatorController.getLeftY() * MAX_SPEED + CONSTANT_VOLTAGE,
                 Robot.operatorController.getRightY() * MAX_SPEED);
     }

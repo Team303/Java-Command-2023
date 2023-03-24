@@ -72,7 +72,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public final AprilTagFieldLayout aprilTagField;
 	private final Field2d field2d = new Field2d();
 	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
-	private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5));
+	private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, 0);
 
 	public PhotonPoseEstimator visionPoseEstimator;
 	public SwerveDrivePoseEstimator poseEstimator;

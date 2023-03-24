@@ -46,9 +46,10 @@ public class ArmSubsystem extends SubsystemBase {
 
 	/* Row 1 */
 
-	public static final GenericEntry shoulderAngle = ARM_TAB.add("Shoulder Angle", 0).withPosition(0, 0).getEntry();
-	public static final GenericEntry elbowAngle = ARM_TAB.add("Elbow Angle", 0).withPosition(1, 0).getEntry();
-	public static final GenericEntry wristAngle = ARM_TAB.add("Wrist Angle", 0).withPosition(2, 0).getEntry();
+	public static final GenericEntry shoulderAngleEntry = ARM_TAB.add("Shoulder Angle", 0).withPosition(0, 0)
+			.getEntry();
+	public static final GenericEntry elbowAngleEntry = ARM_TAB.add("Elbow Angle", 0).withPosition(1, 0).getEntry();
+	public static final GenericEntry wristAngleEntry = ARM_TAB.add("Wrist Angle", 0).withPosition(2, 0).getEntry();
 
 	public static final GenericEntry effectorX = ARM_TAB.add("effectorX", 0).withPosition(3, 0).getEntry();
 	public static final GenericEntry effectorY = ARM_TAB.add("effectorY", 0).withPosition(4, 0).getEntry();
@@ -79,18 +80,12 @@ public class ArmSubsystem extends SubsystemBase {
 	// ARM_TAB.add("clawAngleAbsolute", 0).getEntry();
 	// public static final GenericEntry effectorAngle = ARM_TAB.add("effector
 	// angle", 0).getEntry();
-	public static final GenericEntry shoulder1SwitchReverseTab = ARM_TAB.add("shoulder1 switch", false)
+	public static final GenericEntry shoulderSwitchReverseEntry = ARM_TAB.add("shoulder switch reverse", false)
 			.withPosition(2, 1).getEntry();
-	public static final GenericEntry shoulder2SwitchReverseTab = ARM_TAB.add("shoulder2 switch", false)
-			.withPosition(3, 1).getEntry();
-	public static final GenericEntry elbowSwitchReverseTab = ARM_TAB.add("elbow switch", false).withPosition(2, 2)
-			.getEntry();
-	public static final GenericEntry shoulder1SwitchForwardTab = ARM_TAB.add("shoulder1 switch forward ", false)
-			.withPosition(3, 2).getEntry();
-	public static final GenericEntry shoulder2SwitchForwardTab = ARM_TAB.add("shoulder2 switch forward", false)
-			.withPosition(2, 3).getEntry();
 	public static final GenericEntry elbowSwitchForwardTab = ARM_TAB.add("elbow switch forward", false)
 			.withPosition(3, 3).getEntry();
+	public static final GenericEntry wristSwitchReverseTab = ARM_TAB.add("wrist switch reverse", false).withPosition(5,5).getEntry();
+
 	public static final GenericEntry shoulderSpeed = ARM_TAB.add("shoulder speed", 0).withPosition(3, 4).getEntry();
 	public static final GenericEntry elbowSpeed = ARM_TAB.add("elbow speed", 0).withPosition(2, 4).getEntry();
 	public static final GenericEntry elbowGoalPos = ARM_TAB.add("elbow goal pos", 0).withPosition(0, 3).getEntry();
@@ -102,13 +97,13 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public static final double INCHES_TO_METERS = 0.0254;
 	public static final double ARMLEN_METERS = INCHES_TO_METERS * 74;
-	public static final double CIRCUMFERENCE = 2 * Math.PI * ARMLEN_METERS;
+	//public static final double CIRCUMFERENCE = 2 * Math.PI * ARMLEN_METERS;
 
 	// rotations/sec
-	public static final double VELOCITY = 0.1;
+	public static final double VELOCITY = 2;
 
 	// rotations/sec^2
-	public static final double ACCELERATION = 0.05;
+	public static final double ACCELERATION = 2;
 
 	public static final DoubleArraySubscriber JOINT_ANGLES_SUB = armNetwork.getDoubleArrayTopic("ja")
 			.subscribe(new double[] { 0.0, 0.0, 0.0 });
@@ -138,21 +133,13 @@ public class ArmSubsystem extends SubsystemBase {
 		public final RelativeEncoder leftEncoder = leftMotor.getEncoder();
 		public final RelativeEncoder rightEncoder = rightMotor.getEncoder();
 
-		public final SparkMaxLimitSwitch leftSwitchReverse;
-		public final SparkMaxLimitSwitch rightSwitchReverse;
-
-		public final SparkMaxLimitSwitch leftSwitchForward;
-		public final SparkMaxLimitSwitch rightSwitchForward;
+		public final SparkMaxLimitSwitch switchReverse;
 
 		public ShoulderJoint() {
 			leftMotor.setIdleMode(IdleMode.kBrake);
 			rightMotor.setIdleMode(IdleMode.kBrake);
 
-			leftSwitchReverse = leftMotor.getReverseLimitSwitch(Type.kNormallyOpen);
-			rightSwitchReverse = rightMotor.getReverseLimitSwitch(Type.kNormallyOpen);
-
-			leftSwitchForward = leftMotor.getForwardLimitSwitch(Type.kNormallyOpen);
-			rightSwitchForward = rightMotor.getForwardLimitSwitch(Type.kNormallyOpen);
+			switchReverse = rightMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
 			leftMotor.setInverted(true);
 			rightMotor.setInverted(false);
@@ -166,8 +153,9 @@ public class ArmSubsystem extends SubsystemBase {
 			rightMotor.set(speed);
 		}
 
-		public final ProfiledPIDController controller = new ProfiledPIDController(0.01, 0, 0,
-				new TrapezoidProfile.Constraints(CIRCUMFERENCE * VELOCITY, CIRCUMFERENCE * ACCELERATION));
+		public final ProfiledPIDController controller = new ProfiledPIDController(0.7, 0, 0,
+				new TrapezoidProfile.Constraints(VELOCITY, ACCELERATION));
+
 		private final ArmFeedforward feedForward = new ArmFeedforward(0.01, 0, 0, 0);
 		private MechanismLigament2d simulator;
 
@@ -190,29 +178,32 @@ public class ArmSubsystem extends SubsystemBase {
 			encoder.setPositionConversionFactor(360 * (1 / Arm.GEAR_RATIO_ELBOW));
 		}
 
-		public ProfiledPIDController controller = new ProfiledPIDController(0.01, 0, 0,
-				new TrapezoidProfile.Constraints(CIRCUMFERENCE * VELOCITY, CIRCUMFERENCE * ACCELERATION));
-		private final ArmFeedforward feedForward = new ArmFeedforward(0.01, 0, 0, 0);
+		public ProfiledPIDController controller = new ProfiledPIDController(0.7, 0.05, 0,
+				new TrapezoidProfile.Constraints(VELOCITY, ACCELERATION));
+		private final ArmFeedforward feedForward = new ArmFeedforward(0, -0.4, 0, 0);
 		private MechanismLigament2d simulator;
 	}
 
 	public class WristJoint {
-		private final CANSparkMax motor = new CANSparkMax(Arm.CLAW_JOINT_ID, MotorType.kBrushless);
+		public final CANSparkMax motor = new CANSparkMax(Arm.CLAW_JOINT_ID, MotorType.kBrushless);
 		private final RelativeEncoder encoder = motor.getEncoder();
 
 		public final SparkMaxLimitSwitch switchReverse;
-		public final SparkMaxLimitSwitch switchForward;
+		//public final SparkMaxLimitSwitch switchForward;
 
 		public WristJoint() {
 			switchReverse = motor.getReverseLimitSwitch(Type.kNormallyOpen);
-			switchForward = motor.getForwardLimitSwitch(Type.kNormallyOpen);
+			//switchForward = motor.getForwardLimitSwitch(Type.kNormallyOpen);
 
 			motor.setIdleMode(IdleMode.kBrake);
 			motor.setInverted(true);
+
+			encoder.setPositionConversionFactor(360 * (1 / Arm.GEAR_RATIO_WRIST));
+
 		}
 
-		public ProfiledPIDController controller = new ProfiledPIDController(0.01, 0, 0,
-				new TrapezoidProfile.Constraints(CIRCUMFERENCE * VELOCITY, CIRCUMFERENCE * ACCELERATION));
+		public ProfiledPIDController controller = new ProfiledPIDController(0.7, 0.05, 0,
+				new TrapezoidProfile.Constraints(VELOCITY, ACCELERATION));
 		private final ArmFeedforward feedForward = new ArmFeedforward(0.01, 0, 0, 0);
 		private MechanismLigament2d simulator;
 	}
@@ -224,7 +215,6 @@ public class ArmSubsystem extends SubsystemBase {
 	public double encodersToRadians(double encoders) {
 		return encoders / ENCODERS_PER_REV * (Math.PI * 2);
 	}
-
 
 	public static ArmChain armChainHorizontal = new ArmChain();
 	public static ArmChain armChainVertical = new ArmChain();
@@ -240,13 +230,13 @@ public class ArmSubsystem extends SubsystemBase {
 	public MechanismRoot2d effectorRoot;
 	private MechanismLigament2d effectorPoint;
 
-	private double storedShoulderAngle;
-	private double storedElbowAngle;
+	private double shoulderAngle;
+	private double elbowAngle;
 	private double storedWristAngle;
 
 	// left limit, right limit
-	public float[] shoulderLimits = { -20, 20 };
-	public float[] elbowLimits = { -170, -45 };
+	public float[] shoulderLimits = { -50, (float) 19.5 };
+	public float[] elbowLimits = { -170, -30 };
 	public float[] wristLimits = { -135, 135 };
 
 	// private final double clawStartAngle;
@@ -257,31 +247,30 @@ public class ArmSubsystem extends SubsystemBase {
 
 		// Initialize Inverse Kinematics with constant values
 		armChainHorizontal.setArmLength(62f)
-			.setSegmentLengthRatio(0, 31 / 62f)
-			.setSegmentLengthRatio(1, 31 / 62f)
-			.setSegmentLengths()
-			.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1])
-			.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1])
-			.setSegmentInitialDirection(0, (float) Math.toRadians(90))
-			.setSegmentInitialDirection(1, (float) Math.toRadians(0))
-			.initializeChain()
-			.addGloballyConstrainedGripper((float) Math.toRadians(0), 12f)
-			.setSolveDistanceThreshold(1f)
-			.setMaxIterationAttempts(5000);
+				.setSegmentLengthRatio(0, 31 / 62f)
+				.setSegmentLengthRatio(1, 31 / 62f)
+				.setSegmentLengths()
+				.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1])
+				.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1])
+				.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+				.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+				.initializeChain()
+				.addGloballyConstrainedGripper((float) Math.toRadians(0), 8f)
+				.setSolveDistanceThreshold(1f)
+				.setMaxIterationAttempts(5000);
 
 		armChainVertical.setArmLength(62f)
-			.setSegmentLengthRatio(0, 31 / 62f)
-			.setSegmentLengthRatio(1, 31 / 62f)
-			.setSegmentLengths()
-			.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1])
-			.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1])
-			.setSegmentInitialDirection(0, (float) Math.toRadians(90))
-			.setSegmentInitialDirection(1, (float) Math.toRadians(0))
-			.initializeChain()
-			.addGloballyConstrainedGripper((float) Math.toRadians(-90), 12f)
-			.setSolveDistanceThreshold(1f)
-			.setMaxIterationAttempts(5000);
-
+				.setSegmentLengthRatio(0, 31 / 62f)
+				.setSegmentLengthRatio(1, 31 / 62f)
+				.setSegmentLengths()
+				.setAngleConstraint(0, -shoulderLimits[0], shoulderLimits[1])
+				.setAngleConstraint(1, -elbowLimits[0], elbowLimits[1])
+				.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+				.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+				.initializeChain()
+				.addGloballyConstrainedGripper((float) Math.toRadians(-90), 8f)
+				.setSolveDistanceThreshold(1f)
+				.setMaxIterationAttempts(5000);
 
 		// armKinematics = new FabrikController(armChainHorizontal, armChainVertical);
 
@@ -291,21 +280,21 @@ public class ArmSubsystem extends SubsystemBase {
 		MechanismRoot2d armRoot = armSimulation.getRoot("Arm", (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE,
 				(Arm.SIMULATION_OFFSET) / Arm.SIMULATION_SCALE);
 		shoulderJoint.simulator = armRoot.append(new MechanismLigament2d("shoulder",
-				(double) armChainHorizontal.getSegmentLength(0) / Arm.SIMULATION_SCALE, 0, 5.0, new Color8Bit(255, 0, 0)));
+				(double) armChainHorizontal.getSegmentLength(0) / Arm.SIMULATION_SCALE, 0, 5.0,
+				new Color8Bit(255, 0, 0)));
 		elbowJoint.simulator = shoulderJoint.simulator.append(new MechanismLigament2d("elbow",
-				(double) (armChainHorizontal.getSegmentLength(1)) / Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(0, 255, 0)));
-		wristJoint.simulator = elbowJoint.simulator.append(new
-		MechanismLigament2d("claw",
-		(double) 12/Arm.SIMULATION_SCALE, 0, 5.0, new
-		Color8Bit(0, 0, 255)));
+				(double) (armChainHorizontal.getSegmentLength(1)) / Arm.SIMULATION_SCALE, 0.0, 5.0,
+				new Color8Bit(0, 255, 0)));
+		wristJoint.simulator = elbowJoint.simulator.append(new MechanismLigament2d("claw",
+				(double) 12 / Arm.SIMULATION_SCALE, 0, 5.0, new Color8Bit(0, 0, 255)));
 		effectorRoot = armSimulation.getRoot("End Effector",
 				(Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianStorage.getX(),
 				(Arm.SIMULATION_OFFSET) / Arm.SIMULATION_SCALE + cartesianStorage.getZ());
 
 		effectorPoint = effectorRoot.append(
 				new MechanismLigament2d("effector", 1.0 / Arm.SIMULATION_SCALE, 0.0, 5.0, new Color8Bit(255, 0, 0)));
-		storedShoulderAngle = armChainHorizontal.getIKAnglesDegrees().get(0);
-		storedElbowAngle = storedShoulderAngle - armChainHorizontal.getIKAnglesDegrees().get(1);
+		shoulderAngle = armChainHorizontal.getIKAnglesDegrees().get(0);
+		elbowAngle = shoulderAngle - armChainHorizontal.getIKAnglesDegrees().get(1);
 		// reach(armKinematics.getIKAnglesRadians());
 
 		// storedClawAngle = storedElbowAngle+armKinematics.getIKAnglesDegrees().get(2);
@@ -334,29 +323,34 @@ public class ArmSubsystem extends SubsystemBase {
 
 		if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
 			armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
-			armChainHorizontal.solveForEmbedded();	
-			reach(armChainHorizontal.getIKAnglesRadians());
-		} 
-		else {
+			armChainHorizontal.solveForEmbedded();
+
+			List<Double> desiredAngles = armChainHorizontal.getIKAnglesRadians();
+
+			reach(desiredAngles);
+		} else {
 			armChainVertical.updateEmbedded((float) translation.getX(), (float) translation.getZ());
-			armChainVertical.solveForEmbedded();	
+			armChainVertical.solveForEmbedded();
 			reach(armChainVertical.getIKAnglesRadians());
 		}
 
 	}
-	
+
 	public void reach(List<Double> desiredRadianAngles) {
 
-		storedShoulderAngle = desiredRadianAngles.get(0);
-		storedElbowAngle = desiredRadianAngles.get(1);
+		shoulderAngle = desiredRadianAngles.get(0);
+		elbowAngle = desiredRadianAngles.get(1);
 
-		shoulderAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(0)));
-		elbowAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(1)));
-		wristAngle.setDouble(Math.toDegrees(desiredRadianAngles.get(2)));
+		System.out.println("Elbow Desired Angle: " + Math.toDegrees(desiredRadianAngles.get(1)));
 
-		double shoulderEncoders = Math.round((desiredRadianAngles.get(0)) / (Math.PI * 2) * 360);
-		double elbowEncoders = Math.round((desiredRadianAngles.get(1)) / (Math.PI * 2) * 360);
-		double wristEncoders = Math.round((desiredRadianAngles.get(2)) / (Math.PI * 2) * 360);
+		shoulderAngleEntry.setDouble(Math.toDegrees(desiredRadianAngles.get(0)));
+		elbowAngleEntry.setDouble(Math.toDegrees(desiredRadianAngles.get(1)));
+		wristAngleEntry.setDouble(Math.toDegrees(desiredRadianAngles.get(2)));
+
+		// round to nearest degree
+		double shoulderEncoders = Math.round(Math.toDegrees(desiredRadianAngles.get(0)));
+		double elbowEncoders = Math.round(Math.toDegrees(desiredRadianAngles.get(1)));
+		double wristEncoders =  Math.round(Math.toDegrees(desiredRadianAngles.get(2)));
 		// * shoulderJoint.shoulderEncoder1.getCountsPerRevolution()) *
 		// Arm.GEAR_RATIO_CLAW;
 
@@ -365,9 +359,9 @@ public class ArmSubsystem extends SubsystemBase {
 		// clawEncoderTab.setDouble(clawEncoders);
 		// Gear ratio is 40 / 12 * 160 * ShoulderJoint.shoulderEncoder.getEncodersPer
 
-		shoulderJoint.controller.setGoal(Math.toRadians(shoulderEncoders) * CIRCUMFERENCE);
-		elbowJoint.controller.setGoal(Math.toRadians(elbowEncoders) * CIRCUMFERENCE);
-		wristJoint.controller.setGoal(Math.toRadians(wristEncoders) * CIRCUMFERENCE);
+		shoulderJoint.controller.setGoal(Math.toRadians(shoulderEncoders));
+		elbowJoint.controller.setGoal(Math.toRadians(elbowEncoders));
+		wristJoint.controller.setGoal(Math.toRadians(wristEncoders));
 
 		double shoulderFeedForward = shoulderJoint.feedForward.calculate(
 				shoulderJoint.controller.getGoal().position, shoulderJoint.controller.getGoal().velocity);
@@ -377,13 +371,13 @@ public class ArmSubsystem extends SubsystemBase {
 				wristJoint.controller.getGoal().velocity);
 
 		double shoulderFeedback = shoulderJoint.controller.calculate(
-				Math.toRadians(shoulderJoint.leftEncoder.getPosition()) * CIRCUMFERENCE,
+				Math.toRadians(shoulderJoint.leftEncoder.getPosition()),
 				shoulderJoint.controller.getGoal());
 		double elbowFeedback = elbowJoint.controller.calculate(
-				Math.toRadians(elbowJoint.encoder.getPosition()) * CIRCUMFERENCE,
+				Math.toRadians(elbowJoint.encoder.getPosition()),
 				elbowJoint.controller.getGoal());
 		double wristFeedback = wristJoint.controller.calculate(
-				Math.toRadians(wristJoint.encoder.getPosition()) * CIRCUMFERENCE,
+				Math.toRadians(wristJoint.encoder.getPosition()),
 				wristJoint.controller.getGoal());
 
 		// shoulderGoalPos.setDouble(shoulderJoint.shoulderControl.getGoal().position);
@@ -399,7 +393,9 @@ public class ArmSubsystem extends SubsystemBase {
 		// shoulderJoint.setMotors(-(shoulderFeedForward + shoulderFeedback) * 0.05);
 		// System.out.println("Shoulder hit soft limit!!!");
 		// } else {
-		shoulderJoint.setMotors((shoulderFeedForward + shoulderFeedback));
+		shoulderJoint.setMotors(
+				shoulderFeedForward +
+						shoulderFeedback);
 		// }
 
 		// if (elbowJoint.elbowEncoder.getPosition() < elbowLimits[0] ||
@@ -407,7 +403,16 @@ public class ArmSubsystem extends SubsystemBase {
 		// elbowJoint.elbowMotor.set(-(elbowFeedForward + elbowFeedback) * 0.05);
 		// System.out.println("Elbow hit soft limit!!!");
 		// } else {
-		elbowJoint.motor.set((elbowFeedForward + elbowFeedback));
+
+		// if (elbowJoint.encoder.getPosition() <= elbowLimits[0]) {
+		// 	elbowJoint.motor.set(
+		// 		(-elbowFeedForward -
+		// 				elbowFeedback) * 0.6);
+		// } else {
+			elbowJoint.motor.set(
+					elbowFeedForward +
+							elbowFeedback);
+		// }
 		// }
 
 		wristJoint.motor.set((wristFeedForward + wristFeedback));
@@ -420,8 +425,12 @@ public class ArmSubsystem extends SubsystemBase {
 		// } else {
 		// clawJoint.clawMotor.set((clawFeedForward + clawFeedback) * 0.02);
 		// }
-		shoulderSpeed.setDouble(shoulderFeedForward + shoulderFeedback);
-		elbowSpeed.setDouble(elbowFeedForward + elbowFeedback);
+		shoulderSpeed.setDouble(
+				shoulderFeedForward +
+						shoulderFeedback);
+		elbowSpeed.setDouble(
+				elbowFeedForward +
+						elbowFeedback);
 	}
 
 	public void resetEncoders() {
@@ -433,20 +442,25 @@ public class ArmSubsystem extends SubsystemBase {
 	public void setEncoders(double shoulder, double elbow, double wrist) {
 		shoulderJoint.leftEncoder.setPosition(shoulder);
 		shoulderJoint.rightEncoder.setPosition(shoulder);
+		shoulderJoint.controller.reset(Math.toRadians(shoulder));
+
 		elbowJoint.encoder.setPosition(elbow);
+		elbowJoint.controller.reset(Math.toRadians(elbow));
+
 		wristJoint.encoder.setPosition(wrist);
+		wristJoint.controller.reset(Math.toRadians(wrist));
 	}
 
 	// public void setClawAngleConstraint(float angleRadians) {
-	// 	armChainHorizontal.setGripperGlobalConstraint(angleRadians);
+	// armChainHorizontal.setGripperGlobalConstraint(angleRadians);
 	// }
 
 	// public void toggleClaw() {
-	// 	if (armKinematics.getGripperGlobalConstraint() == 0) {
-	// 		setClawAngleConstraint((float) Math.PI/2);
-	// 	} else {
-	// 		setClawAngleConstraint(0);
-	// 	}
+	// if (armKinematics.getGripperGlobalConstraint() == 0) {
+	// setClawAngleConstraint((float) Math.PI/2);
+	// } else {
+	// setClawAngleConstraint(0);
+	// }
 	// }
 
 	public double[] getEncoderPosition() {
@@ -479,11 +493,9 @@ public class ArmSubsystem extends SubsystemBase {
 		/* Shoulder */
 
 		boolean forwardShoulderLimit = Math.signum(shoulderSpeed) > 0
-				&& (shoulderJoint.leftSwitchForward.isPressed()
-						|| shoulderJoint.rightSwitchForward.isPressed());
+				&& false; // TODO: Limit based on encoders
 		boolean reverseShoulderLimit = Math.signum(shoulderSpeed) < 0
-				&& (shoulderJoint.leftSwitchReverse.isPressed()
-						|| shoulderJoint.rightSwitchReverse.isPressed());
+				&& (shoulderJoint.switchReverse.isPressed());
 
 		if (!forwardShoulderLimit && !reverseShoulderLimit) {
 			shoulderJoint.leftMotor.set(shoulderSpeed);
@@ -497,8 +509,21 @@ public class ArmSubsystem extends SubsystemBase {
 		boolean reverseElbowLimit = Math.signum(elbowSpeed) < 0
 				&& (elbowJoint.switchReverse.isPressed());
 
-		if (!forwardElbowLimit && !reverseElbowLimit) {
-			elbowJoint.motor.set(elbowSpeed);
+		
+		if (!reverseElbowLimit && !forwardElbowLimit) {
+				elbowJoint.motor.set(elbowSpeed);
+		}
+		
+		/* Wrist */
+
+		//boolean forwardWristLimit = Math.signum(wristSpeed) > 0
+				//&& (wristJoint.switchForward.isPressed());
+		boolean reverseWristLimit = Math.signum(wristSpeed) < 0
+				&& (wristJoint.switchReverse.isPressed());
+
+
+		if (!reverseWristLimit) {
+		 	wristJoint.motor.set(wristSpeed);
 		}
 
 		/* Wrist */
@@ -524,10 +549,10 @@ public class ArmSubsystem extends SubsystemBase {
 			wristSimAngle = -armChainVertical.getIKAnglesDegrees().get(2);
 		}
 
-
-		if (shoulderSimAngle != storedShoulderAngle || elbowSimAngle != storedElbowAngle || wristSimAngle != storedWristAngle) {
-			storedShoulderAngle = shoulderSimAngle;
-			storedElbowAngle = elbowSimAngle;
+		if (shoulderSimAngle != shoulderAngle || elbowSimAngle != elbowAngle
+				|| wristSimAngle != storedWristAngle) {
+			shoulderAngle = shoulderSimAngle;
+			elbowAngle = elbowSimAngle;
 			storedWristAngle = wristSimAngle;
 			// storedClawAngle = clawSimAngle;
 			// double absoluteElbow = storedShoulderAngle + storedElbowAngle;
@@ -555,8 +580,8 @@ public class ArmSubsystem extends SubsystemBase {
 		// clawJoint.clawMotor.set(0);
 		// }
 
-		shoulderJoint.simulator.setAngle(storedShoulderAngle);
-		elbowJoint.simulator.setAngle(storedElbowAngle);
+		shoulderJoint.simulator.setAngle(shoulderAngle);
+		elbowJoint.simulator.setAngle(elbowAngle);
 		wristJoint.simulator.setAngle(storedWristAngle);
 		// effectorAngle.setDouble(Math.toDegrees(Math.atan2(cartesianStorage.getZ(),
 		// cartesianStorage.getX())));
@@ -564,13 +589,11 @@ public class ArmSubsystem extends SubsystemBase {
 		effectorY.setDouble(cartesianStorage.getZ());
 		shoulderEncoderEntry.setDouble(shoulderJoint.leftEncoder.getPosition());
 		elbowEncoderEntry.setDouble(elbowJoint.encoder.getPosition());
+		wristEncoderEntry.setDouble(wristJoint.encoder.getPosition());
 
-		shoulder1SwitchReverseTab.setBoolean(shoulderJoint.leftSwitchReverse.isPressed());
-		shoulder2SwitchReverseTab.setBoolean(shoulderJoint.rightSwitchReverse.isPressed());
-		shoulder1SwitchForwardTab.setBoolean(shoulderJoint.leftSwitchForward.isPressed());
-		shoulder2SwitchForwardTab.setBoolean(shoulderJoint.rightSwitchForward.isPressed());
+		shoulderSwitchReverseEntry.setBoolean(shoulderJoint.switchReverse.isPressed());
 		elbowSwitchForwardTab.setBoolean(elbowJoint.switchForward.isPressed());
-		elbowSwitchReverseTab.setBoolean(elbowJoint.switchReverse.isPressed());
+		wristSwitchReverseTab.setBoolean(wristJoint.switchReverse.isPressed());
 
 		Logger.getInstance().recordOutput("MyMechanism", this.armSimulation);
 	}

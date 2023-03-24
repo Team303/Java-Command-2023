@@ -26,7 +26,7 @@ public class ReachPoint extends CommandBase {
     @Override
     public void execute() {
         arm.reachEmbedded(cartesianCoords);
-        armChainHorizontal.updateEmbedded((float) cartesianCoords.getX(), (float) cartesianCoords.getZ());
+        System.out.println("running reachpoint");
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());

@@ -15,26 +15,20 @@ public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	private static final ShuffleboardTab CLAW_TAB = Shuffleboard.getTab("Claw");
 	private static final GenericEntry clawPositionEntry = CLAW_TAB.add("Claw Position", 0).getEntry();
-	private static final GenericEntry wristRollPositionEntry = CLAW_TAB.add("Wrist Roll Position", 0).getEntry();
+	private static final GenericEntry clawSwitchReverseEntry = CLAW_TAB.add("Claw Switch Reverse", false).getEntry();
 	private static final GenericEntry stateEntry = CLAW_TAB.add("State", ClawState.OPEN.getName()).getEntry();
 	private static final GenericEntry modeEntry = CLAW_TAB.add("Mode", GamePieceType.CONE.getName()).getEntry();
 
 	/* Gear Ratios */
 	public static final double GEAR_RATIO_CLAW = 50;
-	public static final double GEAR_RATIO_WRIST_ROLL = 27;
 
 	/* Speed Constants */
 	public static final double MAX_CLAW_SPEED = 0.25;
-	public static final double MAX_WRIST_ROLL_SPEED = 0.125;
 
 	/* Motors */
 	private final CANSparkMax clawMotor = new CANSparkMax(19, MotorType.kBrushless);
-	private final CANSparkMax wristRollMotor = new CANSparkMax(18, MotorType.kBrushless);
-
 	private final RelativeEncoder clawEncoder;
-	private final RelativeEncoder wristRollEncoder;
-
-	private final SparkMaxLimitSwitch clawOuterLimit;
+	private final SparkMaxLimitSwitch clawSwitchReverseLimit;
 
 	/* State */
 
@@ -65,23 +59,15 @@ public class ClawSubsystem extends SubsystemBase {
 	public ClawSubsystem() {
 		/* Claw Actuation Motor */
 
-		clawMotor.setInverted(false);
+		clawMotor.setInverted(true);
 		clawMotor.setIdleMode(IdleMode.kBrake);
 
-		clawMotor.setSmartCurrentLimit(15);
+		clawMotor.setSmartCurrentLimit(30);
 
 		clawEncoder = clawMotor.getEncoder();
-		clawEncoder.setPositionConversionFactor(360 * 1 / GEAR_RATIO_CLAW);
+		clawEncoder.setPositionConversionFactor(1 / GEAR_RATIO_CLAW);
 
-		clawOuterLimit = clawMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-
-		/* Roll Motor */
-
-		wristRollMotor.setInverted(false);
-		wristRollMotor.setIdleMode(IdleMode.kBrake);
-
-		wristRollEncoder = wristRollMotor.getEncoder();
-		wristRollEncoder.setPositionConversionFactor(360 * 1 / GEAR_RATIO_WRIST_ROLL);
+		clawSwitchReverseLimit = clawMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 	}
 
 	/* Claw Open and Close State */
@@ -115,37 +101,25 @@ public class ClawSubsystem extends SubsystemBase {
 	/* Motors */
 
 	public boolean outerLimitReached() {
-		return clawOuterLimit.isPressed();
+		return clawSwitchReverseLimit.isPressed();
 	}
 
 	public double getClawPosition() {
 		return clawEncoder.getPosition();
 	}
 
-	public double getWristRollPosition() {
-		return wristRollEncoder.getPosition();
-	}
-
 	public void setClawSpeed(double speed) {
 		clawMotor.set(speed * MAX_CLAW_SPEED);
-	}
-
-	public void setWristRollSpeed(double speed) {
-		wristRollMotor.set(speed * MAX_WRIST_ROLL_SPEED);
 	}
 
 	public void setClawPosition(double position) {
 		clawEncoder.setPosition(position);
 	}
 
-	public void setWristRollPosition(double position) {
-		wristRollEncoder.setPosition(position);
-	}
-
 	@Override
 	public void periodic() {
 		clawPositionEntry.setDouble(clawEncoder.getPosition());
-		wristRollPositionEntry.setDouble(wristRollEncoder.getPosition());
+		clawSwitchReverseEntry.setBoolean(clawSwitchReverseLimit.isPressed());
 		stateEntry.setString(state.getName());
 		modeEntry.setString(mode.getName());
 	}

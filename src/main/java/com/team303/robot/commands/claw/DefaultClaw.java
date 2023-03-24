@@ -21,15 +21,13 @@ public class DefaultClaw extends CommandBase {
             // Only try to move the motor when the switch is not depressed
             if (!claw.outerLimitReached()) {
                 claw.setClawSpeed(-1);
+            } else {
+                claw.setClawPosition(0);
             }
         } else {
             // Apply more force in cone mdoe and less in cube mode
             double pressure = claw.getMode() == GamePieceType.CONE ? 1 : 0.35;
             claw.setClawSpeed(pressure);
         }
-
-        // Wrist roll is controlled by right joystick x
-        Robot.claw.setWristRollSpeed(MathUtil.applyDeadband(Robot.operatorController.getRightX(),
-                0.05));
     }
 }
