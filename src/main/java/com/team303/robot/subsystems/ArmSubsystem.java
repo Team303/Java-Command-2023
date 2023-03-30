@@ -36,63 +36,63 @@ public class ArmSubsystem extends SubsystemBase {
 
     /* Row 1 */
 
-    public static final GenericEntry shoulderAngleEntry = ARM_TAB.add("Desired Shoulder Angle", 0).withPosition(0, 0).getEntry();
-    public static final GenericEntry elbowAngleEntry = ARM_TAB.add("Desired Elbow Angle", 0).withPosition(1, 0).getEntry();
-    public static final GenericEntry wristAngleEntry = ARM_TAB.add("Desired Wrist Angle", 0).withPosition(2, 0).getEntry();
+    public static final GenericEntry shoulderAngleEntry = ARM_TAB.add("Desired Shoulder Angle", 0).withSize(1,1).withPosition(0, 0).getEntry();
+    public static final GenericEntry elbowAngleEntry = ARM_TAB.add("Desired Elbow Angle", 0).withSize(1,1).withPosition(1, 0).getEntry();
+    public static final GenericEntry wristAngleEntry = ARM_TAB.add("Desired Wrist Angle", 0).withSize(1,1).withPosition(2, 0).getEntry();
 
-    public static final GenericEntry effectorXEntry = ARM_TAB.add("effectorX", 0).withPosition(3, 0).getEntry();
-    public static final GenericEntry effectorYEntry = ARM_TAB.add("effectorY", 0).withPosition(4, 0).getEntry();
+    public static final GenericEntry effectorXEntry = ARM_TAB.add("effectorX", 0).withSize(1,1).withPosition(3, 0).getEntry();
+    public static final GenericEntry effectorYEntry = ARM_TAB.add("effectorY", 0).withSize(1,1).withPosition(4, 0).getEntry();
 
     /* Row 2 */
 
-    public static final GenericEntry shoulderEncoderEntry = ARM_TAB.add("Should Encoder", 0).withPosition(0, 1)
+    public static final GenericEntry shoulderEncoderEntry = ARM_TAB.add("Shoulder Encoder", 0).withSize(1,1).withPosition(0, 1)
         .getEntry();
-    public static final GenericEntry elbowEncoderEntry = ARM_TAB.add("Elbow Encoder", 0).withPosition(1, 1).getEntry();
-    public static final GenericEntry wristEncoderEntry = ARM_TAB.add("Wrist Encoder", 0).withPosition(2, 1).getEntry();
+    public static final GenericEntry elbowEncoderEntry = ARM_TAB.add("Elbow Encoder", 0).withSize(1,1).withPosition(1, 1).getEntry();
+    public static final GenericEntry wristEncoderEntry = ARM_TAB.add("Wrist Encoder", 0).withSize(1,1).withPosition(2, 1).getEntry();
 
     /* Row 3 */
 
     public static final GenericEntry shoulderAbsoluteAngleEntry =
-        ARM_TAB.add("Shoulder Absolute Angle", 0).withPosition(0, 2).getEntry();
+        ARM_TAB.add("Shoulder Absolute Angle", 0).withSize(1,1).withPosition(0, 2).getEntry();
     public static final GenericEntry elbowAbsoluteAngleEntry =
-        ARM_TAB.add("Elbow Absolute Angle", 0).withPosition(1, 2).getEntry();
+        ARM_TAB.add("Elbow Absolute Angle", 0).withSize(1,1).withPosition(1, 2).getEntry();
     public static final GenericEntry wristAbsoluteAngleEntry =
-        ARM_TAB.add("Wrist Absolute Angle", 0).withPosition(2, 2).getEntry();
+        ARM_TAB.add("Wrist Absolute Angle", 0).withSize(1,1).withPosition(2, 2).getEntry();
 
     /* Row 4 */
 
-    public static final GenericEntry shoulderSwitchEntry = ARM_TAB.add("Shoulder Switch", false).withPosition(0, 3).getEntry();
-    public static final GenericEntry elbowSwitchEntry = ARM_TAB.add("Elbow Switch", false).withPosition(1, 3).getEntry();
-    public static final GenericEntry wristSwitchEntry = ARM_TAB.add("Wrist Switch", false).withPosition(2, 3).getEntry();
+    public static final GenericEntry shoulderSwitchEntry = ARM_TAB.add("Shoulder Switch", false).withSize(1,1).withPosition(0, 3).getEntry();
+    public static final GenericEntry elbowSwitchEntry = ARM_TAB.add("Elbow Switch", false).withSize(1,1).withPosition(1, 3).getEntry();
+    public static final GenericEntry wristSwitchEntry = ARM_TAB.add("Wrist Switch", false).withSize(1,1).withPosition(2, 3).getEntry();
 
     /* Row 5 */
-    public static final GenericEntry shoulderSpeedEntry = ARM_TAB.add("Shoulder Speed", 0).withPosition(0, 4).getEntry();
-    public static final GenericEntry elbowSpeedEntry = ARM_TAB.add("Elbow Speed", 0).withPosition(1, 4).getEntry();
-    public static final GenericEntry wristSpeedEntry = ARM_TAB.add("Wrist Speed", 0).withPosition(2, 4).getEntry();
+    public static final GenericEntry shoulderSpeedEntry = ARM_TAB.add("Shoulder Speed", 0).withSize(1,1).withPosition(0, 4).getEntry();
+    public static final GenericEntry elbowSpeedEntry = ARM_TAB.add("Elbow Speed", 0).withSize(1,1).withPosition(1, 4).getEntry();
+    public static final GenericEntry wristSpeedEntry = ARM_TAB.add("Wrist Speed", 0).withSize(1,1).withPosition(2, 4).getEntry();
 
     /* Row 1 Part 2 */
 
-    public static final GenericEntry shoulderSoftLimitEntry = ARM_TAB.add("Shoulder Soft Limit", false).withPosition(3, 0).getEntry();
-    public static final GenericEntry elbowSoftLimitEntry = ARM_TAB.add("Elbow Soft Limit", false).withPosition(4, 0).getEntry();
-    public static final GenericEntry wristSoftLimitEntry = ARM_TAB.add("Wrist Soft Limit", false).withPosition(5, 0).getEntry();
+    public static final GenericEntry shoulderSoftLimitEntry = ARM_TAB.add("Shoulder Soft Limit", false).withSize(1,1).withPosition(3, 0).getEntry();
+    public static final GenericEntry elbowSoftLimitEntry = ARM_TAB.add("Elbow Soft Limit", false).withSize(1,1).withPosition(4, 0).getEntry();
+    public static final GenericEntry wristSoftLimitEntry = ARM_TAB.add("Wrist Soft Limit", false).withSize(1,1).withPosition(5, 0).getEntry();
 
     /* Row 2 Part 2 */
 
-    public static final GenericEntry shoulderSoftForwardLimitEntry = ARM_TAB.add("Shoulder Soft Forward Limit", false).withPosition(3, 1).getEntry();
-    public static final GenericEntry elbowSoftForwardLimitEntry = ARM_TAB.add("Elbow Soft Forward Limit", false).withPosition(4, 1).getEntry();
-    public static final GenericEntry wristSoftForwardLimitEntry = ARM_TAB.add("Wrist Soft Forward Limit", false).withPosition(5, 1).getEntry();
+    public static final GenericEntry shoulderSoftForwardLimitEntry = ARM_TAB.add("Shoulder Soft Forward Limit", false).withSize(1,1).withPosition(3, 1).getEntry();
+    public static final GenericEntry elbowSoftForwardLimitEntry = ARM_TAB.add("Elbow Soft Forward Limit", false).withSize(1,1).withPosition(4, 1).getEntry();
+    public static final GenericEntry wristSoftForwardLimitEntry = ARM_TAB.add("Wrist Soft Forward Limit", false).withSize(1,1).withPosition(5, 1).getEntry();
 
     /* Row 3 Part 2 */
 
-    public static final GenericEntry shoulderSoftReverseLimitEntry = ARM_TAB.add("Shoulder Soft Reverse Limit", false).withPosition(3, 2).getEntry();
-    public static final GenericEntry elbowSoftReverseLimitEntry = ARM_TAB.add("Elbow Soft Reverse Limit", false).withPosition(4, 2).getEntry();
-    public static final GenericEntry wristSoftReverseLimitEntry = ARM_TAB.add("Wrist Soft Reverse Limit", false).withPosition(5, 2).getEntry();
+    public static final GenericEntry shoulderSoftReverseLimitEntry = ARM_TAB.add("Shoulder Soft Reverse Limit", false).withSize(1,1).withPosition(3, 2).getEntry();
+    public static final GenericEntry elbowSoftReverseLimitEntry = ARM_TAB.add("Elbow Soft Reverse Limit", false).withSize(1,1).withPosition(4, 2).getEntry();
+    public static final GenericEntry wristSoftReverseLimitEntry = ARM_TAB.add("Wrist Soft Reverse Limit", false).withSize(1,1).withPosition(5, 2).getEntry();
 
     /* Row 4 Part 2 */
 
-    public static final GenericEntry shoulderEncoderErrorEntry = ARM_TAB.add("Shoulder Encoder Error", false).withPosition(3, 3).getEntry();
-    public static final GenericEntry elbowEncoderErrorEntry = ARM_TAB.add("Elbow Encoder Error", false).withPosition(4, 3).getEntry();
-    public static final GenericEntry wristEncoderErrorEntry = ARM_TAB.add("Wrist Encoder Error", false).withPosition(5, 3).getEntry();
+    public static final GenericEntry shoulderEncoderErrorEntry = ARM_TAB.add("Shoulder Encoder Error", false).withSize(1,1).withPosition(3, 3).getEntry();
+    public static final GenericEntry elbowEncoderErrorEntry = ARM_TAB.add("Elbow Encoder Error", false).withSize(1,1).withPosition(4, 3).getEntry();
+    public static final GenericEntry wristEncoderErrorEntry = ARM_TAB.add("Wrist Encoder Error", false).withSize(1,1).withPosition(5, 3).getEntry();
 
     // radians/sec
     public static final double MAX_VELOCITY = 2;
