@@ -11,18 +11,16 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.List;
 
-public class ReachPoint extends CommandBase {
+public class ReachPointContinuous extends CommandBase {
     public Translation3d cartesianCoords;
-    private final double TOLERANCE = 2;
-
     List<Double> angles;
 
-    public ReachPoint(double x, double z) {
+    public ReachPointContinuous(double x, double z) {
         this.cartesianCoords = new Translation3d(x, 0.0, z);
         addRequirements(arm);
     }
 
-    public ReachPoint(Translation3d cartesianCoords) {
+    public ReachPointContinuous(Translation3d cartesianCoords) {
         this.cartesianCoords = cartesianCoords;
         addRequirements(arm);
     }
@@ -36,12 +34,12 @@ public class ReachPoint extends CommandBase {
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
     }
 
-    @Override
-    public boolean isFinished() {
-        return Math.abs(Math.toDegrees(arm.shoulderJoint.leftEncoder.getPosition() - angles.get(0))) < TOLERANCE &&
-            Math.abs(Math.toDegrees(arm.elbowJoint.encoder.getPosition() - angles.get(1))) < TOLERANCE &&
-            Math.abs(Math.toDegrees(arm.wristJoint.encoder.getPosition() - angles.get(2))) < TOLERANCE;
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return Math.abs(Math.toDegrees(arm.shoulderJoint.leftEncoder.getPosition() - angles.get(0))) < 2 &&
+    //         Math.abs(Math.toDegrees(arm.elbowJoint.encoder.getPosition() - angles.get(1))) < 2 &&
+    //         Math.abs(Math.toDegrees(arm.wristJoint.encoder.getPosition() - angles.get(2))) < 2;
+    // }
 
     @Override
     public void end(boolean interrupted) {

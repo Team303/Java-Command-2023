@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DefaultIKControlCommand extends CommandBase {
-    public static Translation3d cartesianStorage = new Translation3d(30, 0, 20);
+    public static Translation3d cartesianStorage = new Translation3d(30, 0, 30);
     double x = cartesianStorage.getX();
     double z = cartesianStorage.getZ();
     double angle = Math.atan2(x, z);
@@ -48,8 +48,8 @@ public class DefaultIKControlCommand extends CommandBase {
                     - MathUtil.applyDeadband(Robot.operatorController.getLeftX(), 0.03) * Math.sin(robotAngle));
             z -= DEADBAND_FILTER.applyDeadband(Robot.operatorController.getRightY(), DEADBAND_FILTER.getLowerBound());
         } else {
-            x += DEADBAND_FILTER.applyDeadband(Robot.operatorController.getLeftX(), DEADBAND_FILTER.getLowerBound());
-            z -= DEADBAND_FILTER.applyDeadband(Robot.operatorController.getLeftY(), DEADBAND_FILTER.getLowerBound());
+            x += DEADBAND_FILTER.applyDeadband(Robot.operatorController.getLeftX(), 0.20);
+            z -= DEADBAND_FILTER.applyDeadband(Robot.operatorController.getLeftY(), 0.20);
         }
         x = Math.min(x, 48 + 36);
         x = Math.max(x, -48 - 36);

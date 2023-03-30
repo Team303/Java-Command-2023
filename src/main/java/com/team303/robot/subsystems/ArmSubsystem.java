@@ -100,10 +100,10 @@ public class ArmSubsystem extends SubsystemBase {
 	//public static final double CIRCUMFERENCE = 2 * Math.PI * ARMLEN_METERS;
 
 	// rotations/sec
-	public static final double VELOCITY = 2;
+	public static final double VELOCITY = 32;
 
 	// rotations/sec^2
-	public static final double ACCELERATION = 2;
+	public static final double ACCELERATION = 32;
 
 	public static final DoubleArraySubscriber JOINT_ANGLES_SUB = armNetwork.getDoubleArrayTopic("ja")
 			.subscribe(new double[] { 0.0, 0.0, 0.0 });
@@ -178,15 +178,15 @@ public class ArmSubsystem extends SubsystemBase {
 			encoder.setPositionConversionFactor(360 * (1 / Arm.GEAR_RATIO_ELBOW));
 		}
 
-		public ProfiledPIDController controller = new ProfiledPIDController(0.7, 0.05, 0,
+		public ProfiledPIDController controller = new ProfiledPIDController(0.75, 0.05, 0,
 				new TrapezoidProfile.Constraints(VELOCITY, ACCELERATION));
-		private final ArmFeedforward feedForward = new ArmFeedforward(0, -0.4, 0, 0);
+		private final ArmFeedforward feedForward = new ArmFeedforward(0, -0.55, 0, 0);
 		private MechanismLigament2d simulator;
 	}
 
 	public class WristJoint {
 		public final CANSparkMax motor = new CANSparkMax(Arm.CLAW_JOINT_ID, MotorType.kBrushless);
-		private final RelativeEncoder encoder = motor.getEncoder();
+		public final RelativeEncoder encoder = motor.getEncoder();
 
 		public final SparkMaxLimitSwitch switchReverse;
 		//public final SparkMaxLimitSwitch switchForward;
@@ -202,7 +202,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 		}
 
-		public ProfiledPIDController controller = new ProfiledPIDController(0.7, 0.05, 0,
+		public ProfiledPIDController controller = new ProfiledPIDController(0.75, 0.05, 0,
 				new TrapezoidProfile.Constraints(VELOCITY, ACCELERATION));
 		private final ArmFeedforward feedForward = new ArmFeedforward(0.01, 0, 0, 0);
 		private MechanismLigament2d simulator;
@@ -236,7 +236,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	// left limit, right limit
 	public float[] shoulderLimits = { -50, (float) 19.5 };
-	public float[] elbowLimits = { -170, -30 };
+	public float[] elbowLimits = { -170, -60 };
 	public float[] wristLimits = { -135, 135 };
 
 	// private final double clawStartAngle;
@@ -255,7 +255,7 @@ public class ArmSubsystem extends SubsystemBase {
 				.setSegmentInitialDirection(0, (float) Math.toRadians(90))
 				.setSegmentInitialDirection(1, (float) Math.toRadians(0))
 				.initializeChain()
-				.addGloballyConstrainedGripper((float) Math.toRadians(0), 8f)
+				.addGloballyConstrainedGripper((float) Math.toRadians(0), 4f)
 				.setSolveDistanceThreshold(1f)
 				.setMaxIterationAttempts(5000);
 
@@ -268,7 +268,7 @@ public class ArmSubsystem extends SubsystemBase {
 				.setSegmentInitialDirection(0, (float) Math.toRadians(90))
 				.setSegmentInitialDirection(1, (float) Math.toRadians(0))
 				.initializeChain()
-				.addGloballyConstrainedGripper((float) Math.toRadians(-90), 8f)
+				.addGloballyConstrainedGripper((float) Math.toRadians(-90), 6f)
 				.setSolveDistanceThreshold(1f)
 				.setMaxIterationAttempts(5000);
 
@@ -286,7 +286,7 @@ public class ArmSubsystem extends SubsystemBase {
 				(double) (armChainHorizontal.getSegmentLength(1)) / Arm.SIMULATION_SCALE, 0.0, 5.0,
 				new Color8Bit(0, 255, 0)));
 		wristJoint.simulator = elbowJoint.simulator.append(new MechanismLigament2d("claw",
-				(double) 12 / Arm.SIMULATION_SCALE, 0, 5.0, new Color8Bit(0, 0, 255)));
+				(double) 4 / Arm.SIMULATION_SCALE, 0, 5.0, new Color8Bit(0, 0, 255)));
 		effectorRoot = armSimulation.getRoot("End Effector",
 				(Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianStorage.getX(),
 				(Arm.SIMULATION_OFFSET) / Arm.SIMULATION_SCALE + cartesianStorage.getZ());
@@ -319,7 +319,7 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 	}
 
-	public void reachEmbedded(Translation3d translation) {
+	public List<Double> reachEmbedded(Translation3d translation) {
 
 		if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
 			armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
@@ -327,21 +327,21 @@ public class ArmSubsystem extends SubsystemBase {
 
 			List<Double> desiredAngles = armChainHorizontal.getIKAnglesRadians();
 
-			reach(desiredAngles);
+			return reach(desiredAngles);
 		} else {
 			armChainVertical.updateEmbedded((float) translation.getX(), (float) translation.getZ());
 			armChainVertical.solveForEmbedded();
-			reach(armChainVertical.getIKAnglesRadians());
+			return reach(armChainVertical.getIKAnglesRadians());
 		}
 
 	}
 
-	public void reach(List<Double> desiredRadianAngles) {
+	public List<Double> reach(List<Double> desiredRadianAngles) {
 
 		shoulderAngle = desiredRadianAngles.get(0);
 		elbowAngle = desiredRadianAngles.get(1);
 
-		System.out.println("Elbow Desired Angle: " + Math.toDegrees(desiredRadianAngles.get(1)));
+		// System.out.println("Elbow Desired Angle: " + Math.toDegrees(desiredRadianAngles.get(1)));
 
 		shoulderAngleEntry.setDouble(Math.toDegrees(desiredRadianAngles.get(0)));
 		elbowAngleEntry.setDouble(Math.toDegrees(desiredRadianAngles.get(1)));
@@ -431,6 +431,8 @@ public class ArmSubsystem extends SubsystemBase {
 		elbowSpeed.setDouble(
 				elbowFeedForward +
 						elbowFeedback);
+
+		return desiredRadianAngles;
 	}
 
 	public void resetEncoders() {

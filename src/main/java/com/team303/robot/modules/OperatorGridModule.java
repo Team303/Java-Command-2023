@@ -5,7 +5,7 @@ import static com.team303.robot.Robot.heldObject;
 import java.awt.Point;
 
 import com.team303.robot.Robot.HeldObject;
-import com.team303.robot.commands.led.LEDBounce;
+// import com.team303.robot.commands.led.LEDBounce;
 import com.team303.robot.util.Alert;
 import com.team303.robot.util.Alert.AlertType;
 
@@ -254,12 +254,12 @@ public class OperatorGridModule extends SubsystemBase {
                         || (nodeStateValues[i][4] != NodeState.NONE.value
                                 && nodeStateValues[i][5] != NodeState.NONE.value)) {
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    new LEDBounce(Color.kYellow);
+                    // // // // // new LEDBounce(Color.kYellow);
                     return;
                 } else if ((nodeStateValues[i][3] != NodeState.NONE.value
                         && nodeStateValues[i][5] != NodeState.NONE.value)) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    new LEDBounce(Color.kViolet);
+                    // // // // // // new LEDBounce(Color.kViolet);
                     return;
 
                 }
@@ -272,24 +272,24 @@ public class OperatorGridModule extends SubsystemBase {
                     && !partOfCompleteLink(i, 0) && !partOfCompleteLink(i, 1)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    new LEDBounce(Color.kViolet);
+                    // // // // // new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                new LEDBounce(Color.kYellow);
+                // // // // // new LEDBounce(Color.kYellow);
                 return;
             } else if ((nodeStateValues[i][1] != NodeState.NONE.value
                     && nodeStateValues[i][2] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 1) && !partOfCompleteLink(i, 2)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    new LEDBounce(Color.kViolet);
+                    // // // // // new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                new LEDBounce(Color.kYellow);
+                // // // // // new LEDBounce(Color.kYellow);
 
                 return;
             } else if ((nodeStateValues[i][0] != NodeState.NONE.value
@@ -297,7 +297,7 @@ public class OperatorGridModule extends SubsystemBase {
                     && !partOfCompleteLink(i, 0) && !partOfCompleteLink(i, 2)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    new LEDBounce(Color.kViolet);
+                    // // // // // new LEDBounce(Color.kViolet);
 
                     return;
                 }
@@ -311,18 +311,18 @@ public class OperatorGridModule extends SubsystemBase {
                         && !partOfCompleteLink(i, j + 1)) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        new LEDBounce(Color.kViolet);
+                        // // // // // new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     if ((j + 2) % 3 == 1) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        new LEDBounce(Color.kViolet);
+                        // // // // new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    new LEDBounce(Color.kYellow);
+                    // // // // new LEDBounce(Color.kYellow);
 
                     return;
                 } else if ((nodeStateValues[i][j + 1] != NodeState.NONE.value
@@ -330,18 +330,18 @@ public class OperatorGridModule extends SubsystemBase {
                         && !partOfCompleteLink(i, j + 1) && !partOfCompleteLink(i, j + 2)) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        new LEDBounce(Color.kViolet);
+                        // // // // new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     if (j % 3 == 1) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        new LEDBounce(Color.kViolet);
+                        // // // // new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    new LEDBounce(Color.kYellow);
+                    // // // // new LEDBounce(Color.kYellow);
 
                     return;
                 } else if ((nodeStateValues[i][j] != NodeState.NONE.value
@@ -349,18 +349,18 @@ public class OperatorGridModule extends SubsystemBase {
                         && !partOfCompleteLink(i, j) && !partOfCompleteLink(i, j + 2)) {
                     if (i == 2) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        new LEDBounce(Color.kViolet);
+                        // // // // new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     if ((j + 1) % 3 == 1) {
                         hpSuggestion.setInteger(NodeState.CUBE.value);
-                        new LEDBounce(Color.kViolet);
+                        // // // // new LEDBounce(Color.kViolet);
 
                         return;
                     }
                     hpSuggestion.setInteger(NodeState.CONE.value);
-                    new LEDBounce(Color.kYellow);
+                    // // // // new LEDBounce(Color.kYellow);
 
                     return;
                 }
@@ -371,31 +371,31 @@ public class OperatorGridModule extends SubsystemBase {
                     && !partOfCompleteLink(i, 6) && !partOfCompleteLink(i, 7)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    new LEDBounce(Color.kViolet);
+                    // // // // new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                new LEDBounce(Color.kYellow);
+                // // // // new LEDBounce(Color.kYellow);
                 return;
             } else if ((nodeStateValues[i][7] != NodeState.NONE.value
                     && nodeStateValues[i][8] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 7) && !partOfCompleteLink(i, 8)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    new LEDBounce(Color.kViolet);
+                    // // // // new LEDBounce(Color.kViolet);
 
                     return;
                 }
                 hpSuggestion.setInteger(NodeState.CONE.value);
-                new LEDBounce(Color.kYellow);
+                // // // // new LEDBounce(Color.kYellow);
                 return;
             } else if ((nodeStateValues[i][6] != NodeState.NONE.value
                     && nodeStateValues[i][8] != NodeState.NONE.value)
                     && !partOfCompleteLink(i, 6) && !partOfCompleteLink(i, 7)) {
                 if (i == 2) {
                     hpSuggestion.setInteger(NodeState.CUBE.value);
-                    new LEDBounce(Color.kViolet);
+                    // // // // new LEDBounce(Color.kViolet);
 
                     return;
                 }

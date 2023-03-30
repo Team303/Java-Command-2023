@@ -31,6 +31,13 @@ import com.team303.robot.subsystems.SwerveSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.arm.ReachPoint;
+import com.team303.robot.commands.arm.ReachPointContinuous;
+import com.team303.robot.subsystems.ClawSubsystem.ClawState;
+import com.team303.robot.subsystems.ClawSubsystem.GamePieceType;
+import frc.robot.BuildConstants;
+import com.team303.robot.commands.arm.ReachAngles;
+import static com.team303.robot.subsystems.ClawSubsystem.clawStateChooser;
+import static com.team303.robot.subsystems.ClawSubsystem.clawModeChooser;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,7 +52,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.BuildConstants;
+import edu.wpi.first.cameraserver.CameraServer;	
 
 public class Robot extends LoggedRobot {
 
@@ -55,13 +62,13 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
-	public static final OperatorGridModule operatorGrid = new OperatorGridModule();
+	// public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final ClawSubsystem claw = new ClawSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
-	public static final LEDSubsystem ledStrip = new LEDSubsystem();
+	public static final LEDSubsystem ledStrip = null; //new LEDSubsystem();
 
 	/* Robot IO Controls */
 	public static final CommandXboxController operatorController = new CommandXboxController(
@@ -111,6 +118,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		Logger logger = Logger.getInstance();
 		navX.reset();
+		// CameraServer.startAutomaticCapture();
 
 		// Record metadata
 		logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -157,14 +165,20 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
-		// Dont do IK during auto
-		Robot.arm.setDefaultCommand(null);
+		navX.reset();
+		swerve.resetOdometry();
 
+		// Dont do IK during auto
+		Robot.arm.removeDefaultCommand();
+
+		Robot.claw.state = clawStateChooser.getSelected();
+		Robot.claw.mode = clawModeChooser.getSelected();
+		
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
-		Command delay = new SequentialCommandGroup(
+		Command delay = new ParallelCommandGroup(
 				new HomeArm(),
 				new DriveWait(AutonomousProgram.getAutonomousDelay()));
 
@@ -190,11 +204,11 @@ public class Robot extends LoggedRobot {
 		}
 
 		// Robot.arm.setDefaultCommand(new DefaultArm());
-		if (operatorController.getLeftTriggerAxis() < 0.9) {
+		// if (operatorController.getLeftTriggerAxis() < 0.9) {
 			Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
-		} else {
-			Robot.arm.setDefaultCommand(new DefaultArm());
-		}
+		// } else {
+		// 	Robot.arm.setDefaultCommand(new DefaultArm());
+		// }
 	}
 
 	@Override
@@ -228,16 +242,17 @@ public class Robot extends LoggedRobot {
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
 
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ReachPoint(55, 42));
+		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
 		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5));
+		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
 		// Mid Cone
-		operatorController.pov(180).whileTrue(new ReachPoint(40, 39));
+		operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
 		// Bottom
+		operatorController.pov(270).whileTrue(new ReachPoint(28, 10).repeatedly());
 
-		operatorController.pov(270).whileTrue(new ReachPoint(16, 7));
-
-		operatorController.x().whileTrue(new HomeArmContinuous());
+		// operatorController.x().whileTrue(new HomeArmContinuous());
+		operatorController.x().toggleOnTrue(new HomeArmContinuous());
+		operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));
 

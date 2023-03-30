@@ -99,6 +99,8 @@
       "/LiveWindow/Ungrouped/Talon FX [4]": "Motor Controller",
       "/Shuffleboard/Autonomous/Auto Start Delay": "String Chooser",
       "/Shuffleboard/Autonomous/Autonomous Selector": "String Chooser",
+      "/Shuffleboard/Autonomous/Cone Cube": "String Chooser",
+      "/Shuffleboard/Autonomous/Open Close": "String Chooser",
       "/Shuffleboard/Controller/Control Type": "String Chooser",
       "/Shuffleboard/Controller/Controller": "String Chooser",
       "/Shuffleboard/Data/Field": "Field2d",
