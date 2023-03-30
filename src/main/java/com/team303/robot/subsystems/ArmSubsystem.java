@@ -88,6 +88,12 @@ public class ArmSubsystem extends SubsystemBase {
     public static final GenericEntry elbowSoftReverseLimitEntry = ARM_TAB.add("Elbow Soft Reverse Limit", false).withPosition(4, 2).getEntry();
     public static final GenericEntry wristSoftReverseLimitEntry = ARM_TAB.add("Wrist Soft Reverse Limit", false).withPosition(5, 2).getEntry();
 
+    /* Row 4 Part 2 */
+
+    public static final GenericEntry shoulderEncoderErrorEntry = ARM_TAB.add("Shoulder Encoder Error", false).withPosition(3, 3).getEntry();
+    public static final GenericEntry elbowEncoderErrorEntry = ARM_TAB.add("Elbow Encoder Error", false).withPosition(4, 3).getEntry();
+    public static final GenericEntry wristEncoderErrorEntry = ARM_TAB.add("Wrist Encoder Error", false).withPosition(5, 3).getEntry();
+
     // radians/sec
     public static final double MAX_VELOCITY = 2;
 
@@ -171,6 +177,7 @@ public class ArmSubsystem extends SubsystemBase {
             rightEncoder.setPositionConversionFactor(2 * Math.PI * (1 / Arm.GEAR_RATIO_SHOULDER));
 
             absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+            absoluteEncoder.setZeroOffset(Math.toRadians(SHOULDER_START_ANGLE));
         }
 
         @Override
@@ -222,7 +229,10 @@ public class ArmSubsystem extends SubsystemBase {
             motor.setInverted(false);
 
             encoder.setPositionConversionFactor(2 * Math.PI * (1 / Arm.GEAR_RATIO_ELBOW));
+
             absoluteEncoder.setPositionConversionFactor(2 * Math.PI);
+            absoluteEncoder.setZeroOffset(Math.toRadians(ELBOW_START_ANGLE));
+
         }
 
         @Override
@@ -330,6 +340,11 @@ public class ArmSubsystem extends SubsystemBase {
     public static float[] shoulderLimits = {-50, 19.5f};
     public static float[] elbowLimits = {-170, -30};
     public static float[] wristLimits = {-135, 135};
+
+    // Home position angles for each joint
+    private static final double SHOULDER_START_ANGLE = -19.5;
+    private static final double ELBOW_START_ANGLE = 160.0;
+    private static final double WRIST_START_ANGLE = -100.0;
 
     public ArmSubsystem() {
         // Initialize Inverse Kinematics with constant values
@@ -583,6 +598,9 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
 
+    /**
+     * Sets the relative encoders to use the desired angles
+     */
     public void setEncodersDegrees(double shoulderAngleDegrees, double elbowAngleDegrees, double wristAngleDegrees) {
         // Convert to radians
         double shoulderAngleRadians = Math.toRadians(shoulderAngleDegrees);
@@ -592,8 +610,10 @@ public class ArmSubsystem extends SubsystemBase {
         // Set encoder positions
         shoulderJoint.leftEncoder.setPosition(shoulderAngleRadians);
         shoulderJoint.rightEncoder.setPosition(shoulderAngleRadians);
-        wristJoint.encoder.setPosition(wristAngleRadians);
+
         elbowJoint.encoder.setPosition(elbowAngleRadians);
+
+        wristJoint.encoder.setPosition(wristAngleRadians);
 
         // Reset PID controllers
         shoulderJoint.controller.reset(shoulderAngleRadians);
@@ -602,12 +622,8 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void resetEncodersToHomePosition() {
-        final double shoulderStartAngle = -19.5;
-        final double elbowStartAngle = 160.0;
-        final double wristStartAngle = -100.0;
-
         // Reset the arm relative encoders to known angles
-        this.setEncodersDegrees(shoulderStartAngle, elbowStartAngle, wristStartAngle);
+        this.setEncodersDegrees(SHOULDER_START_ANGLE, ELBOW_START_ANGLE, WRIST_START_ANGLE);
     }
 
     /**
@@ -696,6 +712,10 @@ public class ArmSubsystem extends SubsystemBase {
         shoulderSoftReverseLimitEntry.setBoolean(shoulderJoint.atSoftReverseLimit());
         elbowSoftReverseLimitEntry.setBoolean(elbowJoint.atSoftReverseLimit());
         wristSoftReverseLimitEntry.setBoolean(wristJoint.atSoftReverseLimit());
+
+        shoulderEncoderErrorEntry.setDouble(shoulderJoint.getJointAngle() - shoulderJoint.getEncoderPosition());
+        elbowEncoderErrorEntry.setDouble(elbowJoint.getJointAngle() - elbowJoint.getEncoderPosition());
+        wristEncoderErrorEntry.setDouble(wristJoint.getJointAngle() - wristJoint.getEncoderPosition());
 
         Logger.getInstance().recordOutput("MyMechanism", this.armSimulation);
     }
