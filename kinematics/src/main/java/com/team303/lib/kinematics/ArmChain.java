@@ -7,7 +7,6 @@ import au.edu.federation.caliko.FabrikBone2D;
 import au.edu.federation.caliko.FabrikChain2D;
 import au.edu.federation.caliko.FabrikChain2D.BaseboneConstraintType2D;
 import au.edu.federation.caliko.FabrikJoint2D.ConstraintCoordinateSystem;
-import au.edu.federation.caliko.FabrikStructure2D;
 import au.edu.federation.utils.Vec2f;
 import edu.wpi.first.math.geometry.Translation3d;
 
@@ -16,8 +15,8 @@ public class ArmChain {
     FabrikChain2D chain = new FabrikChain2D();
     FabrikBone2D gripper;
 
-    List<Float> segmentRatio = new ArrayList<Float>();
-    List<Float> segmentLength = new ArrayList<Float>();
+    List<Float> segmentRatio = new ArrayList<>();
+    List<Float> segmentLength = new ArrayList<>();
     List<Float[]> segmentAngleConstraint = new ArrayList<>();
     List<Vec2f> segmentInitialDirection = new ArrayList<>();
 
@@ -69,7 +68,7 @@ public class ArmChain {
     }
 
     public ArmChain setAngleConstraint(int segmentIndex, float clockwiseConstraint, float counterclockwiseConstraint) {
-        Float[] angleConstraints = new Float[] { clockwiseConstraint, counterclockwiseConstraint };
+        Float[] angleConstraints = new Float[]{clockwiseConstraint, counterclockwiseConstraint};
         segmentAngleConstraint.add(segmentIndex, angleConstraints);
         return this;
     }
@@ -88,23 +87,24 @@ public class ArmChain {
 
     /**
      * Probably inaccurate, will fix eventually
-     * 
+     *
      * @param segmentIndex
      * @return Returns the starting direction of the segment in radians
      */
     public double getSegmentInitialDirectionRadians(int segmentIndex) {
         return Math.atan2(segmentInitialDirection.get(segmentIndex).y, segmentInitialDirection.get(segmentIndex).x);
     }
-    
+
     /**
      * Adds a bone that is globally constrained.
      * IMPORTANT: Must be called after initializeArm()
-     * @param constraintAngleRadians The angle that the bone is globally constrained to
-     * @param lengthInches Length of bone
-     * @param clockwiseConstraintDegrees Clockwise tolerance
+     *
+     * @param constraintAngleRadians            The angle that the bone is globally constrained to
+     * @param lengthInches                      Length of bone
+     * @param clockwiseConstraintDegrees        Clockwise tolerance
      * @param counterclockwiseConstraintDegrees Counterclockwise tolerance
      **/
-    public ArmChain addGloballyConstrainedGripper (float constraintAngleRadians, float lengthInches, float clockwiseConstraintDegrees, float counterclockwiseConstraintDegrees ) {
+    public ArmChain addGloballyConstrainedGripper(float constraintAngleRadians, float lengthInches, float clockwiseConstraintDegrees, float counterclockwiseConstraintDegrees) {
         Vec2f output = new Vec2f();
         output.x = (float) Math.cos(constraintAngleRadians);
         output.y = (float) Math.sin(constraintAngleRadians);
@@ -115,7 +115,7 @@ public class ArmChain {
         return this;
     }
 
-    public ArmChain addGloballyConstrainedGripper (float constraintAngleRadians, float lengthInches) {
+    public ArmChain addGloballyConstrainedGripper(float constraintAngleRadians, float lengthInches) {
         Vec2f output = new Vec2f();
         output.x = (float) Math.cos(constraintAngleRadians);
         output.y = (float) Math.sin(constraintAngleRadians);
@@ -125,9 +125,10 @@ public class ArmChain {
         chain.addConsecutiveBone(this.gripper);
         return this;
     }
-    
+
     /**
      * Sets a new global angle constraint
+     *
      * @param angleRadians The new angle in radians for the angle to be constrained to
      */
     public ArmChain setGripperGlobalConstraint(float angleRadians) {
@@ -142,7 +143,7 @@ public class ArmChain {
         double x = this.gripper.getGlobalConstraintUV().x;
         double y = this.gripper.getGlobalConstraintUV().y;
 
-        return Math.atan2(y,x);
+        return Math.atan2(y, x);
     }
 
     public ArmChain initializeChain() {
@@ -156,7 +157,7 @@ public class ArmChain {
         chain.setEmbeddedTargetMode(true);
         for (int i = 1; i < segmentLength.size(); i++) {
             chain.addConsecutiveConstrainedBone(segmentInitialDirection.get(i), segmentLength.get(i),
-                    segmentAngleConstraint.get(i)[0], segmentAngleConstraint.get(i)[1]);
+                segmentAngleConstraint.get(i)[0], segmentAngleConstraint.get(i)[1]);
         }
 
         return this;
@@ -215,7 +216,6 @@ public class ArmChain {
     }
 
     /**
-     * 
      * @return joint angles in radians
      */
     public List<Double> getIKAnglesRadians() {
@@ -223,9 +223,9 @@ public class ArmChain {
         double baseRadianDirection;
         List<Double> outputRadianAngles = new ArrayList<Double>();
         baseVectorDirection = chain.getBone(0).getDirectionUV().minus(new
-        Vec2f((float)Math.cos(Math.PI/2),(float)Math.sin(Math.PI/2)));
+            Vec2f((float) Math.cos(Math.PI / 2), (float) Math.sin(Math.PI / 2)));
         baseRadianDirection = Math.atan2(baseVectorDirection.y,
-        baseVectorDirection.x);
+            baseVectorDirection.x);
         if (baseRadianDirection < -Math.PI / 2) {
             baseRadianDirection += Math.PI;
         }
@@ -234,19 +234,19 @@ public class ArmChain {
 
         outputRadianAngles.add(-baseRadianDirection);
         for (int i = 1; i < chain.getNumBones(); i++) {
-        Vec2f rotatedAngle =
-        chain.getBone(i).getDirectionUV().rotateRads((float)-Math.atan2(chain.getBone(i-1).getDirectionUV().y,chain.getBone(i-1).getDirectionUV().x));
-        outputRadianAngles
-        .add(-Math.atan2(rotatedAngle.y,rotatedAngle.x));
+            Vec2f rotatedAngle =
+                chain.getBone(i).getDirectionUV().rotateRads((float) -Math.atan2(chain.getBone(i - 1).getDirectionUV().y, chain.getBone(i - 1).getDirectionUV().x));
+            outputRadianAngles
+                .add(-Math.atan2(rotatedAngle.y, rotatedAngle.x));
         }
-        if (outputRadianAngles.get(0)==-Math.PI) {
-            outputRadianAngles.set(0,0.0);
+        if (outputRadianAngles.get(0) == -Math.PI) {
+            outputRadianAngles.set(0, 0.0);
         }
         return outputRadianAngles;
     }
 
     public List<Double> getIKAnglesDegrees() {
-        List<Double> outputDegreeAngles = new ArrayList<Double>();
+        List<Double> outputDegreeAngles = new ArrayList<>();
         List<Double> outputRadianAngles = getIKAnglesRadians();
         for (Double angle : outputRadianAngles) {
             outputDegreeAngles.add(Math.toDegrees(angle));
