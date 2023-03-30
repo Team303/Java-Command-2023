@@ -1,0 +1,12 @@
+{
+    "excluded": [
+        "**/bin",
+        "**/build"
+    ],
+    "files.exclude": [
+        "**/bin",
+        "**/build",
+        "bin",
+        "build"
+    ],
+}   

@@ -59,11 +59,12 @@ public class Robot extends LoggedRobot {
 	/* roboRIO Sensors */
 	public static final AHRS navX = new AHRS();
 
-	/* Robot Subsystems */
+	/* Robot Modules */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
 	// public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
+	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final ClawSubsystem claw = new ClawSubsystem();
