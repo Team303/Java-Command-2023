@@ -30,15 +30,19 @@ import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.subsystems.IntakeSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
+import com.team303.robot.subsystems.ManipulatorSubsystem;
 import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.arm.ReachPoint;
 import com.team303.robot.commands.arm.ReachPointContinuous;
+import com.team303.robot.commands.intake.DefaultIntake;
 import com.team303.robot.subsystems.ClawSubsystem.ClawState;
 import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
 import frc.robot.BuildConstants;
 import com.team303.robot.commands.arm.ReachAngles;
 import static com.team303.robot.subsystems.ClawSubsystem.clawStateChooser;
 import static com.team303.robot.subsystems.ClawSubsystem.clawModeChooser;
+import static com.team303.robot.subsystems.IntakeSubsystem.intakeStateChooser;
+import static com.team303.robot.subsystems.IntakeSubsystem.intakeModeChooser;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -68,8 +72,9 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
-	public static final ClawSubsystem claw =  null; //new ClawSubsystem();
-	public static final IntakeSubsystem intake = new IntakeSubsystem();
+	//public static final ClawSubsystem claw =  null; //new ClawSubsystem();
+	//public static final IntakeSubsystem intake = new IntakeSubsystem();
+	public static final ManipulatorSubsystem manipulator = new IntakeSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
 	public static final LEDSubsystem ledStrip = null; //new LEDSubsystem();
 
@@ -156,7 +161,8 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.claw.setDefaultCommand(new DefaultClaw());
+		Robot.manipulator.setDefaultCommand(new DefaultClaw());
+		//Robot.intake.setDefaultCommand(new DefaultIntake());
 
 		// add Autos to Shuffleboard
 		Autonomous.init();
@@ -173,9 +179,17 @@ public class Robot extends LoggedRobot {
 
 		// Dont do IK during auto
 		Robot.arm.removeDefaultCommand();
+		if (manipulator instanceof ClawSubsystem) {
+			ClawSubsystem stateClaw=(ClawSubsystem)manipulator;
+			stateClaw.state = clawStateChooser.getSelected();
+			stateClaw.mode = clawModeChooser.getSelected();
+		} else {
+			IntakeSubsystem stateIntake=(IntakeSubsystem)manipulator;
+			stateIntake.state = intakeStateChooser.getSelected();
+			stateIntake.mode = intakeModeChooser.getSelected();
+		}
 
-		Robot.claw.state = clawStateChooser.getSelected();
-		Robot.claw.mode = clawModeChooser.getSelected();
+		
 		
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
@@ -238,8 +252,8 @@ public class Robot extends LoggedRobot {
 		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
-		operatorController.b().onTrue(new InstantCommand(claw::nextState));
-		operatorController.a().onTrue(new InstantCommand(claw::toggleMode));
+		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
+		operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));

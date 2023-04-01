@@ -318,8 +318,8 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
-    public ArmChain armChainHorizontal = new ArmChain();
-    public ArmChain armChainVertical = new ArmChain();
+    public static ArmChain armChainHorizontal = new ArmChain();
+    public static ArmChain armChainVertical = new ArmChain();
     public FabrikController armKinematics = new FabrikController();
 
     public ShoulderJoint shoulderJoint = new ShoulderJoint();

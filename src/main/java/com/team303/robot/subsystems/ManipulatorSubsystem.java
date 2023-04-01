@@ -1,6 +1,8 @@
 package com.team303.robot.subsystems;
 
-public interface ManipulatorSubsystem {
+import edu.wpi.first.wpilibj2.command.Subsystem;
+
+public interface ManipulatorSubsystem extends Subsystem {
 
     enum GamePieceType {
         CONE,
@@ -13,7 +15,7 @@ public interface ManipulatorSubsystem {
 
     interface ManipulatorState {
     }
-
+    
     void setState(ManipulatorState state);
 
     ManipulatorState getState();

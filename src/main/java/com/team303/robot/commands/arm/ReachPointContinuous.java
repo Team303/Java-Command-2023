@@ -27,7 +27,7 @@ public class ReachPointContinuous extends CommandBase {
 
     @Override
     public void execute() {
-        angles = arm.reachEmbedded(cartesianCoords);
+        //angles = arm.reachEmbedded(cartesianCoords);
         // System.out.println("running reachpoint");
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
