@@ -27,13 +27,14 @@ import com.team303.robot.modules.UltrasonicModule;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.ArmTestSubsystem;
 import com.team303.robot.subsystems.ClawSubsystem;
+import com.team303.robot.subsystems.IntakeSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.arm.ReachPoint;
 import com.team303.robot.commands.arm.ReachPointContinuous;
 import com.team303.robot.subsystems.ClawSubsystem.ClawState;
-import com.team303.robot.subsystems.ClawSubsystem.GamePieceType;
+import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
 import frc.robot.BuildConstants;
 import com.team303.robot.commands.arm.ReachAngles;
 import static com.team303.robot.subsystems.ClawSubsystem.clawStateChooser;
@@ -67,7 +68,8 @@ public class Robot extends LoggedRobot {
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
-	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final ClawSubsystem claw =  null; //new ClawSubsystem();
+	public static final IntakeSubsystem intake = new IntakeSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
 	public static final LEDSubsystem ledStrip = null; //new LEDSubsystem();
 
@@ -236,7 +238,7 @@ public class Robot extends LoggedRobot {
 		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
-		operatorController.b().onTrue(new InstantCommand(claw::toggleState));
+		operatorController.b().onTrue(new InstantCommand(claw::nextState));
 		operatorController.a().onTrue(new InstantCommand(claw::toggleMode));
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()

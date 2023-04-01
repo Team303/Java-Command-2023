@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static com.team303.robot.autonomous.AutonomousProgram.AUTO_TAB;
 
 
-public class ClawSubsystem extends SubsystemBase {
+public class ClawSubsystem extends SubsystemBase implements ManipulatorSubsystem {
 	/* ShuffleBoard */
 	private static final ShuffleboardTab CLAW_TAB = Shuffleboard.getTab("Claw");
 	private static final GenericEntry clawPositionEntry = CLAW_TAB.add("Claw Position", 0).getEntry();
@@ -47,28 +47,29 @@ public class ClawSubsystem extends SubsystemBase {
 	private final SparkMaxLimitSwitch clawSwitchReverseLimit;
 
 	/* State */
+	public ClawState state = ClawState.OPEN;
 
-	public static enum ClawState {
+	public static enum ClawState implements ManipulatorState {
 		OPEN,
 		ClOSED;
 
+		// state
 		private String getName() {
 			return this == ClawState.OPEN ? "Open" : "Closed";
 		}
 	}
 
-	public ClawState state = ClawState.OPEN;
 
 	/* Mode */
 
-	public static enum GamePieceType {
-		CONE,
-		CUBE;
+	// public static enum GamePieceType {
+	// 	CONE,
+	// 	CUBE;
 
-		private String getName() {
-			return this == GamePieceType.CONE ? "Cone" : "Cube";
-		}
-	}
+	// 	private String getName() {
+	// 		return this == GamePieceType.CONE ? "Cone" : "Cube";
+	// 	}
+	// }
 
 	public GamePieceType mode = GamePieceType.CONE;
 
@@ -88,12 +89,12 @@ public class ClawSubsystem extends SubsystemBase {
 
 	/* Claw Open and Close State */
 
-	public void toggleState() {
+	public void nextState() {
 		this.state = this.state == ClawState.OPEN ? ClawState.ClOSED : ClawState.OPEN;
 	}
 
-	public void setState(ClawState state) {
-		this.state = state;
+	public void setState(ManipulatorState state) {
+		this.state = (ClawState)state;
 	}
 
 	public ClawState getState() {
@@ -124,11 +125,11 @@ public class ClawSubsystem extends SubsystemBase {
 		return clawEncoder.getPosition();
 	}
 
-	public void setClawSpeed(double speed) {
+	public void setManipulatorSpeed(double speed) {
 		clawMotor.set(speed * MAX_CLAW_SPEED);
 	}
 
-	public void setClawPosition(double position) {
+	public void setManipulatorPosition(double position) {
 		clawEncoder.setPosition(position);
 	}
 

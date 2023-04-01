@@ -76,7 +76,7 @@ public class Autonomous {
                 // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16, 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 eventMap.put("Top Cube",new ReachPoint(55, 42));
-                eventMap.put("Toggle State", new InstantCommand(Robot.claw::toggleState));
+                eventMap.put("Toggle State", new InstantCommand(Robot.claw::nextState));
 
                 autoBuilder = new SwerveAutoBuilder(
                                 swerve::getPose, // Pose2d supplier
