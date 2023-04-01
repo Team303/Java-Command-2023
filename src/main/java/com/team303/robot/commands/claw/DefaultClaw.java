@@ -20,7 +20,7 @@ public class DefaultClaw extends CommandBase {
         if (claw.getState() == ClawState.OPEN) {
             // Only try to move the motor when the switch is not depressed
             if (!claw.outerLimitReached()) {
-                claw.setClawSpeed(-1);
+                claw.setClawSpeed(-0.5);
             } else {
                 claw.setClawPosition(0);
             }

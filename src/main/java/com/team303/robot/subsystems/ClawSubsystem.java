@@ -9,21 +9,37 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static com.team303.robot.autonomous.AutonomousProgram.AUTO_TAB;
+
 
 public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	private static final ShuffleboardTab CLAW_TAB = Shuffleboard.getTab("Claw");
 	private static final GenericEntry clawPositionEntry = CLAW_TAB.add("Claw Position", 0).getEntry();
 	private static final GenericEntry clawSwitchReverseEntry = CLAW_TAB.add("Claw Switch Reverse", false).getEntry();
-	private static final GenericEntry stateEntry = CLAW_TAB.add("State", ClawState.OPEN.getName()).getEntry();
-	private static final GenericEntry modeEntry = CLAW_TAB.add("Mode", GamePieceType.CONE.getName()).getEntry();
+	private static final GenericEntry stateEntry = AUTO_TAB.add("State", ClawState.OPEN.getName()).withPosition(0,2).getEntry();
+	private static final GenericEntry modeEntry = AUTO_TAB.add("Mode", GamePieceType.CONE.getName()).withPosition(1,2).getEntry();
+	public static final SendableChooser<ClawState> clawStateChooser = new SendableChooser<>();
+	public static final SendableChooser<GamePieceType> clawModeChooser = new SendableChooser<>();
+	
+	static {
+		clawStateChooser.setDefaultOption("Open", ClawState.OPEN);
+		clawStateChooser.addOption("Closed", ClawState.ClOSED);
+		clawModeChooser.addOption("Cube", GamePieceType.CUBE);
+		clawModeChooser.setDefaultOption("Cone", GamePieceType.CONE);
+		AUTO_TAB.add("Open Close", clawStateChooser).withPosition(0,1);
+		AUTO_TAB.add("Cone Cube", clawModeChooser).withPosition(1,1);
+	}
+
 
 	/* Gear Ratios */
 	public static final double GEAR_RATIO_CLAW = 50;
 
 	/* Speed Constants */
-	public static final double MAX_CLAW_SPEED = 0.25;
+	public static final double MAX_CLAW_SPEED = 0.5;
 
 	/* Motors */
 	private final CANSparkMax clawMotor = new CANSparkMax(19, MotorType.kBrushless);
@@ -41,7 +57,7 @@ public class ClawSubsystem extends SubsystemBase {
 		}
 	}
 
-	private ClawState state = ClawState.OPEN;
+	public ClawState state = ClawState.OPEN;
 
 	/* Mode */
 
@@ -54,7 +70,7 @@ public class ClawSubsystem extends SubsystemBase {
 		}
 	}
 
-	private GamePieceType mode = GamePieceType.CONE;
+	public GamePieceType mode = GamePieceType.CONE;
 
 	public ClawSubsystem() {
 		/* Claw Actuation Motor */
@@ -62,7 +78,7 @@ public class ClawSubsystem extends SubsystemBase {
 		clawMotor.setInverted(true);
 		clawMotor.setIdleMode(IdleMode.kBrake);
 
-		clawMotor.setSmartCurrentLimit(30);
+		clawMotor.setSmartCurrentLimit(20);
 
 		clawEncoder = clawMotor.getEncoder();
 		clawEncoder.setPositionConversionFactor(1 / GEAR_RATIO_CLAW);

@@ -24,13 +24,13 @@ public class DefaultDrive extends CommandBase {
         public void execute() {
                 // Deadband and square inputs
                 Translation2d translation = new Translation2d(
-                                -Math.signum(driverController.getLeftY()) * Math.pow(DEADBAND_FILTER.applyDeadband(
-                                                driverController.getLeftY(),
-                                                DEADBAND_FILTER.getLowerBound()), 2)
+                                DEADBAND_FILTER.applyDeadband(
+                                                -Robot.driverController.getLeftY(),
+                                                DEADBAND_FILTER.getLowerBound())
                                                 * Swerve.MAX_VELOCITY * MAX_DRIVE_SPEED,
-                                -Math.signum(driverController.getLeftX()) * Math.pow(DEADBAND_FILTER.applyDeadband(
-                                                driverController.getLeftX(),
-                                                DEADBAND_FILTER.getLowerBound()), 2)
+                                DEADBAND_FILTER.applyDeadband(
+                                                -Robot.driverController.getLeftX(),
+                                                DEADBAND_FILTER.getLowerBound())
                                                 * Swerve.MAX_VELOCITY
                                                 * MAX_DRIVE_SPEED);
 
@@ -38,7 +38,7 @@ public class DefaultDrive extends CommandBase {
                                 (Robot.isReal() ? -1 : 1) * Robot.driverController.getRightX(),
                                 DEADBAND_FILTER.getLowerBound());
 
-                swerve.drive(
+                Robot.swerve.drive(
                                 translation,
                                 rotation * 4 * MAX_DRIVE_SPEED,
                                 fieldOriented);
