@@ -6,12 +6,12 @@ import java.util.List;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class MoveToPositionCommand extends CommandBase {
-    
+
     private List<Double> desiredAngles;
 
     public MoveToPositionCommand(double shoulderAngle, double elbowAngle, double clawAngle) {
         addRequirements(arm);
-        desiredAngles = Arrays.asList(shoulderAngle,elbowAngle,clawAngle);
+        desiredAngles = Arrays.asList(shoulderAngle, elbowAngle, clawAngle);
     }
 
     @Override

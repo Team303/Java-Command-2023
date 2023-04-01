@@ -68,7 +68,7 @@ public class ArmChain {
     }
 
     public ArmChain setAngleConstraint(int segmentIndex, float clockwiseConstraint, float counterclockwiseConstraint) {
-        Float[] angleConstraints = new Float[]{clockwiseConstraint, counterclockwiseConstraint};
+        Float[] angleConstraints = new Float[] { clockwiseConstraint, counterclockwiseConstraint };
         segmentAngleConstraint.add(segmentIndex, angleConstraints);
         return this;
     }
@@ -99,16 +99,19 @@ public class ArmChain {
      * Adds a bone that is globally constrained.
      * IMPORTANT: Must be called after initializeArm()
      *
-     * @param constraintAngleRadians            The angle that the bone is globally constrained to
+     * @param constraintAngleRadians            The angle that the bone is globally
+     *                                          constrained to
      * @param lengthInches                      Length of bone
      * @param clockwiseConstraintDegrees        Clockwise tolerance
      * @param counterclockwiseConstraintDegrees Counterclockwise tolerance
      **/
-    public ArmChain addGloballyConstrainedGripper(float constraintAngleRadians, float lengthInches, float clockwiseConstraintDegrees, float counterclockwiseConstraintDegrees) {
+    public ArmChain addGloballyConstrainedGripper(float constraintAngleRadians, float lengthInches,
+            float clockwiseConstraintDegrees, float counterclockwiseConstraintDegrees) {
         Vec2f output = new Vec2f();
         output.x = (float) Math.cos(constraintAngleRadians);
         output.y = (float) Math.sin(constraintAngleRadians);
-        this.gripper = new FabrikBone2D(new Vec2f(1.0f, 1.0f), output, lengthInches, clockwiseConstraintDegrees, counterclockwiseConstraintDegrees);
+        this.gripper = new FabrikBone2D(new Vec2f(1.0f, 1.0f), output, lengthInches, clockwiseConstraintDegrees,
+                counterclockwiseConstraintDegrees);
         this.gripper.setJointConstraintCoordinateSystem(ConstraintCoordinateSystem.GLOBAL);
         this.gripper.setGlobalConstraintUV(output);
         chain.addConsecutiveBone(this.gripper);
@@ -129,7 +132,8 @@ public class ArmChain {
     /**
      * Sets a new global angle constraint
      *
-     * @param angleRadians The new angle in radians for the angle to be constrained to
+     * @param angleRadians The new angle in radians for the angle to be constrained
+     *                     to
      */
     public ArmChain setGripperGlobalConstraint(float angleRadians) {
         Vec2f output = new Vec2f();
@@ -157,7 +161,7 @@ public class ArmChain {
         chain.setEmbeddedTargetMode(true);
         for (int i = 1; i < segmentLength.size(); i++) {
             chain.addConsecutiveConstrainedBone(segmentInitialDirection.get(i), segmentLength.get(i),
-                segmentAngleConstraint.get(i)[0], segmentAngleConstraint.get(i)[1]);
+                    segmentAngleConstraint.get(i)[0], segmentAngleConstraint.get(i)[1]);
         }
 
         return this;
@@ -222,10 +226,10 @@ public class ArmChain {
         Vec2f baseVectorDirection;
         double baseRadianDirection;
         List<Double> outputRadianAngles = new ArrayList<Double>();
-        baseVectorDirection = chain.getBone(0).getDirectionUV().minus(new
-            Vec2f((float) Math.cos(Math.PI / 2), (float) Math.sin(Math.PI / 2)));
+        baseVectorDirection = chain.getBone(0).getDirectionUV()
+                .minus(new Vec2f((float) Math.cos(Math.PI / 2), (float) Math.sin(Math.PI / 2)));
         baseRadianDirection = Math.atan2(baseVectorDirection.y,
-            baseVectorDirection.x);
+                baseVectorDirection.x);
         if (baseRadianDirection < -Math.PI / 2) {
             baseRadianDirection += Math.PI;
         }
@@ -234,10 +238,10 @@ public class ArmChain {
 
         outputRadianAngles.add(-baseRadianDirection);
         for (int i = 1; i < chain.getNumBones(); i++) {
-            Vec2f rotatedAngle =
-                chain.getBone(i).getDirectionUV().rotateRads((float) -Math.atan2(chain.getBone(i - 1).getDirectionUV().y, chain.getBone(i - 1).getDirectionUV().x));
+            Vec2f rotatedAngle = chain.getBone(i).getDirectionUV().rotateRads((float) -Math
+                    .atan2(chain.getBone(i - 1).getDirectionUV().y, chain.getBone(i - 1).getDirectionUV().x));
             outputRadianAngles
-                .add(-Math.atan2(rotatedAngle.y, rotatedAngle.x));
+                    .add(-Math.atan2(rotatedAngle.y, rotatedAngle.x));
         }
         if (outputRadianAngles.get(0) == -Math.PI) {
             outputRadianAngles.set(0, 0.0);

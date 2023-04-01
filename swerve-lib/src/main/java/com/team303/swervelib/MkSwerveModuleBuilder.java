@@ -14,7 +14,8 @@ public class MkSwerveModuleBuilder {
                 .build();
     }
 
-    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getFalcon500SteerFactory(MkModuleConfiguration configuration) {
+    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getFalcon500SteerFactory(
+            MkModuleConfiguration configuration) {
         return new Falcon500SteerControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
                 .withPidConstants(configuration.getSteerKP(), configuration.getSteerKI(), configuration.getSteerKD())
@@ -33,7 +34,8 @@ public class MkSwerveModuleBuilder {
                 .build();
     }
 
-    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getNeoSteerFactory(MkModuleConfiguration configuration) {
+    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getNeoSteerFactory(
+            MkModuleConfiguration configuration) {
         return new NeoSteerControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
                 .withPidConstants(configuration.getSteerKP(), configuration.getSteerKI(), configuration.getSteerKD())
@@ -74,7 +76,8 @@ public class MkSwerveModuleBuilder {
      * <p>
      * Recommended values to pass in are
      * {@link MkModuleConfiguration#getDefaultSteerFalcon500()} or
-     * {@link MkModuleConfiguration#getDefaultSteerNEO()}, but you can use any custom module
+     * {@link MkModuleConfiguration#getDefaultSteerNEO()}, but you can use any
+     * custom module
      * values by instantiating a new {@link MkModuleConfiguration}.
      * 
      * @param configuration configured values for the module
@@ -182,51 +185,44 @@ public class MkSwerveModuleBuilder {
         }
 
         SwerveModuleFactory<Integer, SteerConfiguration<CanCoderAbsoluteConfiguration>> factory = new SwerveModuleFactory<>(
-                mechConfig, 
-                driveFactory, 
-                steerFactory
-        );
+                mechConfig,
+                driveFactory,
+                steerFactory);
 
         SteerConfiguration<CanCoderAbsoluteConfiguration> steerConfig;
 
         if (steerMotorType == MotorType.FALCON) {
             steerConfig = new SteerConfiguration<>(
-                    steerMotorPort, 
+                    steerMotorPort,
                     new CanCoderAbsoluteConfiguration(
-                            steerEncoderPort, 
+                            steerEncoderPort,
                             steerOffset,
-                            steerEncoderCanbus
-                    )
-            );
+                            steerEncoderCanbus));
         } else if (steerMotorType == MotorType.NEO) {
 
             steerConfig = new SteerConfiguration<>(
-                    steerMotorPort, 
+                    steerMotorPort,
                     new CanCoderAbsoluteConfiguration(
-                            steerEncoderPort, 
+                            steerEncoderPort,
                             steerOffset,
-                            steerEncoderCanbus
-                    )
-            );
+                            steerEncoderCanbus));
         } else {
             throw new RuntimeException("Steer Motor Type should not be null!");
         }
 
         if (container == null) {
             return factory.create(
-                    driveMotorPort, 
-                    driveCanbus, 
-                    steerConfig, 
-                    steerCanbus
-            );
+                    driveMotorPort,
+                    driveCanbus,
+                    steerConfig,
+                    steerCanbus);
         } else {
             return factory.create(
-                    container, 
-                    driveMotorPort, 
-                    driveCanbus, 
-                    steerConfig, 
-                    steerCanbus
-            );
+                    container,
+                    driveMotorPort,
+                    driveCanbus,
+                    steerConfig,
+                    steerCanbus);
         }
     }
 }

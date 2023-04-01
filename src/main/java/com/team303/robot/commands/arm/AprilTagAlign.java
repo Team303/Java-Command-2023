@@ -10,8 +10,7 @@ import com.team303.robot.modules.PhotonvisionModule.CameraName;
 import com.team303.robot.modules.PhotonvisionModule.PhotonPipeline;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Translation2d
-;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AprilTagAlign extends CommandBase {
@@ -69,7 +68,8 @@ public class AprilTagAlign extends CommandBase {
                         0,
                         true);
 
-                // System.out.println("robot x PID: " + -xControl.calculate(target.getBestCameraToTarget().getY() * 5, 0));
+                // System.out.println("robot x PID: " +
+                // -xControl.calculate(target.getBestCameraToTarget().getY() * 5, 0));
                 // System.out.println("robot y: " + target.getBestCameraToTarget().getX());
             } catch (Exception e) {
                 e.printStackTrace();

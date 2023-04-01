@@ -74,7 +74,7 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
         // TODO: Check motor inversions
         intakeMotor.setInverted(true);
         intakeMotor.setIdleMode(IdleMode.kBrake);
-        //TODO: Set intake current limit
+        // TODO: Set intake current limit
         // intakeMotor.setSmartCurrentLimit(20);
 
         intakeSwitchReverseLimit = intakeMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);

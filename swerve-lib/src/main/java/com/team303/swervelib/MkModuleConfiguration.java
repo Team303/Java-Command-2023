@@ -5,8 +5,10 @@ import java.util.Objects;
 /**
  * Additional swerve module configuration parameters.
  * <p>
- * The configuration parameters here are used to customize the behavior of the swerve module.
- * Each setting is initialized to a default that should be adequate for most use cases.
+ * The configuration parameters here are used to customize the behavior of the
+ * swerve module.
+ * Each setting is initialized to a default that should be adequate for most use
+ * cases.
  */
 public class MkModuleConfiguration {
     private double nominalVoltage = 12.0;
@@ -83,10 +85,12 @@ public class MkModuleConfiguration {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         MkModuleConfiguration that = (MkModuleConfiguration) o;
-        return     Double.compare(that.getNominalVoltage(), getNominalVoltage()) == 0
+        return Double.compare(that.getNominalVoltage(), getNominalVoltage()) == 0
                 && Double.compare(that.getDriveCurrentLimit(), getDriveCurrentLimit()) == 0
                 && Double.compare(that.getSteerCurrentLimit(), getSteerCurrentLimit()) == 0
                 && Double.compare(that.getSteerKP(), getSteerKP()) == 0
@@ -108,8 +112,7 @@ public class MkModuleConfiguration {
                 getSteerKD(),
                 getSteerMMkV(),
                 getSteerMMkA(),
-                getSteerMMkS()
-        );
+                getSteerMMkS());
     }
 
     @Override

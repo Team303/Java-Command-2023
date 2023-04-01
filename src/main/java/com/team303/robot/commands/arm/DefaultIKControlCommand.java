@@ -57,7 +57,7 @@ public class DefaultIKControlCommand extends CommandBase {
         z = Math.max(z, 0);
 
         cartesianStorage = new Translation3d(x, 0.0, z);
-        
+
         arm.reachEmbedded(cartesianStorage);
 
         effectorRoot.setPosition(

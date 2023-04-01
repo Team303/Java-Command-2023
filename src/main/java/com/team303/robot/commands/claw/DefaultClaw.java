@@ -1,13 +1,12 @@
 package com.team303.robot.commands.claw;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.team303.robot.Robot;
+import static com.team303.robot.Robot.manipulator;
+
 import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.subsystems.ClawSubsystem.ClawState;
 import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
 
-import static com.team303.robot.Robot.manipulator;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DefaultClaw extends CommandBase {
     public DefaultClaw() {
@@ -20,20 +19,20 @@ public class DefaultClaw extends CommandBase {
         // in the correct direction
         if (manipulator instanceof ClawSubsystem) {
             ClawSubsystem claw = (ClawSubsystem) manipulator;
-        if (manipulator.getState() == ClawState.OPEN) {
-            // Only try to move the motor when the switch is not depressed
-            if (!claw.outerLimitReached()) {
-                claw.setManipulatorSpeed(-0.5);
+            if (manipulator.getState() == ClawState.OPEN) {
+                // Only try to move the motor when the switch is not depressed
+                if (!claw.outerLimitReached()) {
+                    claw.setManipulatorSpeed(-0.5);
+                } else {
+                    claw.setManipulatorPosition(0);
+                }
             } else {
-                claw.setManipulatorPosition(0);
+                // Apply more force in cone mdoe and less in cube mode
+                double pressure = manipulator.getMode() == GamePieceType.CONE ? 1 : 0.35;
+                manipulator.setManipulatorSpeed(pressure);
             }
         } else {
-            // Apply more force in cone mdoe and less in cube mode
-            double pressure = manipulator.getMode() == GamePieceType.CONE ? 1 : 0.35;
-            manipulator.setManipulatorSpeed(pressure);
-        }
-    } else {
 
-    }
+        }
     }
 }

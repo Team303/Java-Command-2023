@@ -15,7 +15,7 @@ public interface ManipulatorSubsystem extends Subsystem {
 
     interface ManipulatorState {
     }
-    
+
     void setState(ManipulatorState state);
 
     ManipulatorState getState();

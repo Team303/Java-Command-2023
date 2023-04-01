@@ -7,9 +7,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class ReachAngles extends CommandBase {
     List<Double> desiredAngles;
+
     public ReachAngles(double shoulder, double elbow, double wrist) {
         addRequirements(arm);
-        desiredAngles = Arrays.asList(shoulder ,elbow , wrist);
+        desiredAngles = Arrays.asList(shoulder, elbow, wrist);
     }
 
     @Override

@@ -57,7 +57,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.cameraserver.CameraServer;	
+import edu.wpi.first.cameraserver.CameraServer;
 
 public class Robot extends LoggedRobot {
 
@@ -67,16 +67,17 @@ public class Robot extends LoggedRobot {
 	/* Robot Modules */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
-	// public static final OperatorGridModule operatorGrid = new OperatorGridModule();
+	// public static final OperatorGridModule operatorGrid = new
+	// OperatorGridModule();
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
-	//public static final ClawSubsystem claw =  null; //new ClawSubsystem();
-	//public static final IntakeSubsystem intake = new IntakeSubsystem();
+	// public static final ClawSubsystem claw = null; //new ClawSubsystem();
+	// public static final IntakeSubsystem intake = new IntakeSubsystem();
 	public static final ManipulatorSubsystem manipulator = new IntakeSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
-	public static final LEDSubsystem ledStrip = null; //new LEDSubsystem();
+	public static final LEDSubsystem ledStrip = null; // new LEDSubsystem();
 
 	/* Robot IO Controls */
 	public static final CommandXboxController operatorController = new CommandXboxController(
@@ -162,7 +163,7 @@ public class Robot extends LoggedRobot {
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		Robot.manipulator.setDefaultCommand(new DefaultClaw());
-		//Robot.intake.setDefaultCommand(new DefaultIntake());
+		// Robot.intake.setDefaultCommand(new DefaultIntake());
 
 		// add Autos to Shuffleboard
 		Autonomous.init();
@@ -180,17 +181,15 @@ public class Robot extends LoggedRobot {
 		// Dont do IK during auto
 		Robot.arm.removeDefaultCommand();
 		if (manipulator instanceof ClawSubsystem) {
-			ClawSubsystem stateClaw=(ClawSubsystem)manipulator;
+			ClawSubsystem stateClaw = (ClawSubsystem) manipulator;
 			stateClaw.state = clawStateChooser.getSelected();
 			stateClaw.mode = clawModeChooser.getSelected();
 		} else {
-			IntakeSubsystem stateIntake=(IntakeSubsystem)manipulator;
+			IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
 			stateIntake.state = intakeStateChooser.getSelected();
 			stateIntake.mode = intakeModeChooser.getSelected();
 		}
 
-		
-		
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
@@ -222,9 +221,9 @@ public class Robot extends LoggedRobot {
 
 		// Robot.arm.setDefaultCommand(new DefaultArm());
 		// if (operatorController.getLeftTriggerAxis() < 0.9) {
-			Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// } else {
-		// 	Robot.arm.setDefaultCommand(new DefaultArm());
+		// Robot.arm.setDefaultCommand(new DefaultArm());
 		// }
 	}
 
@@ -244,12 +243,16 @@ public class Robot extends LoggedRobot {
 
 		// Custom grid widget button bindings
 		// operatorController.pov(0).onTrue(new InstantCommand(operatorGrid::moveUp));
-		// operatorController.pov(90).onTrue(new InstantCommand(operatorGrid::moveRight));
-		// operatorController.pov(180).onTrue(new InstantCommand(operatorGrid::moveDown));
-		// operatorController.pov(270).onTrue(new InstantCommand(operatorGrid::moveLeft));
+		// operatorController.pov(90).onTrue(new
+		// InstantCommand(operatorGrid::moveRight));
+		// operatorController.pov(180).onTrue(new
+		// InstantCommand(operatorGrid::moveDown));
+		// operatorController.pov(270).onTrue(new
+		// InstantCommand(operatorGrid::moveLeft));
 
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
-		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
+		// operatorController.x().onTrue(new
+		// InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
 		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
@@ -278,14 +281,13 @@ public class Robot extends LoggedRobot {
 
 		driverController.x().whileTrue(Commands.runOnce(swerve::lockWheels));
 
-				// Reset field oriented drive when y is pressed
+		// Reset field oriented drive when y is pressed
 		driverController.y()
 				.onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
 
 		// Auto level while a is held
 		driverController.x().whileTrue(new AutoLevelBasic());
 
-		
 	}
 
 	/*

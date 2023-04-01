@@ -16,7 +16,7 @@ public class DefaultArm extends CommandBase {
     public void execute() {
         Robot.arm.move(
                 (-Robot.operatorController.getRightTriggerAxis()
-                + Robot.operatorController.getLeftTriggerAxis()) * MAX_SPEED,
+                        + Robot.operatorController.getLeftTriggerAxis()) * MAX_SPEED,
                 Robot.operatorController.getLeftY() * MAX_SPEED + CONSTANT_VOLTAGE,
                 Robot.operatorController.getRightY() * MAX_SPEED);
     }

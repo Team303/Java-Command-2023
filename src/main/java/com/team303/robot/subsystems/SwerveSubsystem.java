@@ -432,19 +432,20 @@ public class SwerveSubsystem extends SubsystemBase {
 					});
 		}
 		// if (false) {
-		// 	Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-		// 	if (result.isPresent()) {
-		// 		EstimatedRobotPose visionPoseEstimate = result.get();
-		// 		poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-		// 				visionPoseEstimate.timestampSeconds);
-		// 	}
+		// Optional<EstimatedRobotPose> result =
+		// getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+		// if (result.isPresent()) {
+		// EstimatedRobotPose visionPoseEstimate = result.get();
+		// poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+		// visionPoseEstimate.timestampSeconds);
+		// }
 		// }
 		// poseEstimator.update(
 		// Rotation2d.fromDegrees(-Robot.navX.getAngle()),
 		// Robot.swerve.getModulePositions());
-		 field2d.setRobotPose(getRobotPose());
+		field2d.setRobotPose(getRobotPose());
 
-		 lastPeriodic = timer.get();
+		lastPeriodic = timer.get();
 
 		NAVX_Y_VELOCITY.setDouble(Robot.navX.getRawGyroZ(), 0);
 		NAVX_ACCELERATION.setDouble(Robot.navX.getRawAccelX());
