@@ -60,17 +60,6 @@ public class ClawSubsystem extends SubsystemBase implements ManipulatorSubsystem
 	}
 
 
-	/* Mode */
-
-	// public static enum GamePieceType {
-	// 	CONE,
-	// 	CUBE;
-
-	// 	private String getName() {
-	// 		return this == GamePieceType.CONE ? "Cone" : "Cube";
-	// 	}
-	// }
-
 	public GamePieceType mode = GamePieceType.CONE;
 
 	public ClawSubsystem() {
