@@ -62,7 +62,7 @@ public class Robot extends LoggedRobot {
 	/* Robot Modules */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
-	// public static final OperatorGridModule operatorGrid = new OperatorGridModule();
+	 public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
@@ -234,6 +234,9 @@ public class Robot extends LoggedRobot {
 
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
 		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
+
+		operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
+		operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
 		operatorController.b().onTrue(new InstantCommand(claw::toggleState));

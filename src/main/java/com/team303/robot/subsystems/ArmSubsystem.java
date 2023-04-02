@@ -149,8 +149,8 @@ public class ArmSubsystem extends SubsystemBase {
 
         /* Encoders */
 
-        private final RelativeEncoder leftEncoder = leftMotor.getEncoder();
-        private final RelativeEncoder rightEncoder = rightMotor.getEncoder();
+        public final RelativeEncoder leftEncoder = leftMotor.getEncoder();
+        public final RelativeEncoder rightEncoder = rightMotor.getEncoder();
 
         private final AbsoluteEncoder absoluteEncoder = rightMotor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
@@ -214,7 +214,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public static class ElbowJoint implements ArmJoint {
         private final CANSparkMax motor = new CANSparkMax(Arm.ELBOW_JOINT_ID, MotorType.kBrushless);
-        private final RelativeEncoder encoder = motor.getEncoder();
+        public final RelativeEncoder encoder = motor.getEncoder();
 
         private final SparkMaxLimitSwitch switchForward = motor.getForwardLimitSwitch(Type.kNormallyOpen);
         private final AbsoluteEncoder absoluteEncoder = motor.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
@@ -268,7 +268,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public static class WristJoint implements ArmJoint {
         private final CANSparkMax motor = new CANSparkMax(Arm.CLAW_JOINT_ID, MotorType.kBrushless);
-        private final RelativeEncoder encoder = motor.getEncoder();
+        public final RelativeEncoder encoder = motor.getEncoder();
 
         private final SparkMaxLimitSwitch switchReverse = motor.getReverseLimitSwitch(Type.kNormallyOpen);
 
@@ -318,8 +318,8 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
-    public ArmChain armChainHorizontal = new ArmChain();
-    public ArmChain armChainVertical = new ArmChain();
+    public static ArmChain armChainHorizontal = new ArmChain();
+    public static ArmChain armChainVertical = new ArmChain();
     public FabrikController armKinematics = new FabrikController();
 
     public ShoulderJoint shoulderJoint = new ShoulderJoint();
@@ -455,15 +455,17 @@ public class ArmSubsystem extends SubsystemBase {
     /**
      * Update the embeded anlges from a 3d point and reach for that point
      */
-    public void reachEmbedded(Translation3d translation) {
+    public List<Double> reachEmbedded(Translation3d translation) {
         if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
             armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
             armChainHorizontal.solveForEmbedded();
             reach(armChainHorizontal.getIKAnglesRadians());
+            return(armChainHorizontal.getIKAnglesRadians());
         } else {
             armChainVertical.updateEmbedded((float) translation.getX(), (float) translation.getZ());
             armChainVertical.solveForEmbedded();
             reach(armChainVertical.getIKAnglesRadians());
+            return(armChainHorizontal.getIKAnglesRadians());
         }
     }
 

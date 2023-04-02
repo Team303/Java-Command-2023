@@ -87,16 +87,16 @@ public class OperatorGridModule extends SubsystemBase {
         }
         OPERATOR_TAB
 				.addString("Current Game Piece", () -> (heldObject != null ? heldObject.name() : "NONE"))
+				.withPosition(0, 0);
+		OPERATOR_TAB
+				.add("Holding Cube", new InstantCommand(() -> heldObjectIn = HeldObject.CUBE))
+				.withPosition(1, 0);
+		OPERATOR_TAB
+				.add("Holding None", new InstantCommand(() -> heldObjectIn = HeldObject.NONE))
 				.withPosition(2, 0);
 		OPERATOR_TAB
-				.add("Cube", new InstantCommand(() -> heldObjectIn = HeldObject.CUBE))
+				.add("Holding Cone", new InstantCommand(() -> heldObjectIn = HeldObject.CONE))
 				.withPosition(3, 0);
-		OPERATOR_TAB
-				.add("None", new InstantCommand(() -> heldObjectIn = HeldObject.NONE))
-				.withPosition(4, 0);
-		OPERATOR_TAB
-				.add("Cone", new InstantCommand(() -> heldObjectIn = HeldObject.CONE))
-				.withPosition(5, 0);
 
         hpSuggestion = OPERATOR_TAB.add("HP Suggestion", 0).withPosition(8, 0).withWidget("State of Node").getEntry();
         nodeSuperStateValues[0][0] = NodeSuperState.HOVER.value;
@@ -659,6 +659,10 @@ public class OperatorGridModule extends SubsystemBase {
 							break;
 					}
 				}
+                if (nodes[i][j].getInteger(0)== 7) {
+                    nodeStateValues[i][j]=0;
+                    nodeSuperStateValues[i][j]=0;
+                }
 			}
 		}
         // Check which links are complete
