@@ -35,7 +35,8 @@ public class DefaultDrive extends CommandBase {
                                                 * MAX_DRIVE_SPEED);
 
                 double rotation = DEADBAND_FILTER.applyDeadband(
-                                (Robot.isReal() ? 1 : -1) * Robot.driverController.getRightX(),
+
+                (Robot.isReal() ? 1 : -1) * Robot.driverController.getRightX(),
                                 DEADBAND_FILTER.getLowerBound());
 
                 Robot.swerve.drive(
