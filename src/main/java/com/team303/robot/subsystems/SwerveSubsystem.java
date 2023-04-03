@@ -64,6 +64,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
+import static com.team303.robot.autonomous.AutonomousProgram.AUTO_TAB;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -76,6 +79,16 @@ public class SwerveSubsystem extends SubsystemBase {
 	private final Field2d field2d = new Field2d();
 	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 	private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, 0);
+	
+	/* robot orientation chooser */
+	public static final SendableChooser<String> orientationChooser = new SendableChooser<>();
+
+	static {
+		orientationChooser.setDefaultOption("Forward", "Forward");
+		orientationChooser.addOption("Backward", "Forward");
+		AUTO_TAB.add("Facing", orientationChooser).withPosition(2,0);
+	}
+
 
 	public PhotonPoseEstimator visionPoseEstimator;
 	public SwerveDrivePoseEstimator poseEstimator;
@@ -188,6 +201,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (Robot.isReal()) {
 			odometry = new SwerveDriveOdometry(
+				// consider making angle value negative
 					kinematics, Rotation2d.fromDegrees(Robot.navX.getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
@@ -317,8 +331,13 @@ public class SwerveSubsystem extends SubsystemBase {
 		}
 		System.out.println("Resetting");
 
-		odometry.resetPosition(Robot.navX.getRotation2d(), newSwervePositions,
-				new Pose2d(2, 2, new Rotation2d()));
+		if (orientationChooser.getSelected().equals("Forward")) {			
+			odometry.resetPosition(Robot.navX.getRotation2d(), newSwervePositions,
+					new Pose2d(0, 0, new Rotation2d()));
+		} else {
+			odometry.resetPosition(Robot.navX.getRotation2d(), newSwervePositions,
+					new Pose2d(0, 0, new Rotation2d(Math.PI)));			
+		}
 		this.angle = 0;
 
 	}

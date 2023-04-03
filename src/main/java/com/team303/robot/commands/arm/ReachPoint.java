@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ReachPoint extends CommandBase {
     public Translation3d cartesianCoords;
-    private final double TOLERANCE = 2;
+    private final double TOLERANCE = 6;
 
     List<Double> angles;
 
