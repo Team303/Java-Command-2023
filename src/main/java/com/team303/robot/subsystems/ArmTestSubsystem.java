@@ -60,7 +60,7 @@ public class ArmTestSubsystem extends SubsystemBase {
         motor2.setIdleMode(IdleMode.kBrake);
         elbowMotor.setIdleMode(IdleMode.kBrake);
         wristMotor.setIdleMode(IdleMode.kBrake);
-        
+
         motor1.setInverted(true);
         motor2.setInverted(false);
         elbowMotor.setInverted(false);
@@ -70,9 +70,9 @@ public class ArmTestSubsystem extends SubsystemBase {
         elbowEncoder = elbowMotor.getEncoder();
         wristEncoder = wristMotor.getEncoder();
 
-        shoulderEncoder.setPositionConversionFactor(1/533);
-        elbowEncoder.setPositionConversionFactor(1/125);
-        wristEncoder.setPositionConversionFactor(1/45);
+        shoulderEncoder.setPositionConversionFactor(1 / 533);
+        elbowEncoder.setPositionConversionFactor(1 / 125);
+        wristEncoder.setPositionConversionFactor(1 / 45);
 
         // shoulderEncoder.setInverted(false);
         // elbowEncoder.setInverted(false);
@@ -101,19 +101,20 @@ public class ArmTestSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // if ((timer.get() - start) >= 100) {
-            shoulderEncodersTab.setDouble(shoulderEncoder.getPosition());
-            elbowEncodersTab.setDouble(elbowEncoder.getPosition());
-            wristEncodersTab.setDouble(wristEncoder.getPosition());
-            shoulder1SwitchTab.setBoolean(motor1Switch.isPressed());
-            shoulder2SwitchTab.setBoolean(motor2Switch.isPressed());
-            elbowSwitchTab.setBoolean(elbowSwitch.isPressed());
-            shoulder1SwitchForwardTab.setBoolean(motor1SwitchForward.isPressed());
-            shoulder2SwitchForwardTab.setBoolean(motor2SwitchForward.isPressed());
-            elbowSwitchForwardTab.setBoolean(elbowSwitchForward.isPressed()); 
-            countsPerRev.setDouble(shoulderEncoder.getCountsPerRevolution());
-            SmartDashboard.putNumber("encoders per rev Neo", shoulderEncoder.getCountsPerRevolution());
-            // System.out.println("Encoders rev neo: " + shoulderEncoder.getCountsPerRevolution());
-        //     start = timer.get();
+        shoulderEncodersTab.setDouble(shoulderEncoder.getPosition());
+        elbowEncodersTab.setDouble(elbowEncoder.getPosition());
+        wristEncodersTab.setDouble(wristEncoder.getPosition());
+        shoulder1SwitchTab.setBoolean(motor1Switch.isPressed());
+        shoulder2SwitchTab.setBoolean(motor2Switch.isPressed());
+        elbowSwitchTab.setBoolean(elbowSwitch.isPressed());
+        shoulder1SwitchForwardTab.setBoolean(motor1SwitchForward.isPressed());
+        shoulder2SwitchForwardTab.setBoolean(motor2SwitchForward.isPressed());
+        elbowSwitchForwardTab.setBoolean(elbowSwitchForward.isPressed());
+        countsPerRev.setDouble(shoulderEncoder.getCountsPerRevolution());
+        SmartDashboard.putNumber("encoders per rev Neo", shoulderEncoder.getCountsPerRevolution());
+        // System.out.println("Encoders rev neo: " +
+        // shoulderEncoder.getCountsPerRevolution());
+        // start = timer.get();
         // }
 
     }

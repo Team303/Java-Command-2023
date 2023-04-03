@@ -124,14 +124,16 @@ public class ArmSubsystem extends SubsystemBase {
 			.withPosition(4, 3).getEntry();
 	public static final GenericEntry wristEncoderErrorEntry = ARM_TAB.add("Wrist Encoder Error", false).withSize(1, 1)
 			.withPosition(5, 3).getEntry();
-	
+
 	/* relative to floor */
-	
+
 	public static final GenericEntry shoulderAbsoluteAngleFloorEntry = ARM_TAB.add("Shoulder Absolute Floor Angle", 0)
 			.withSize(1, 1).withPosition(3, 4).getEntry();
-	public static final GenericEntry elbowAbsoluteAngleFloorEntry = ARM_TAB.add("Elbow Absolute Floor Angle", 0).withSize(1, 1)
+	public static final GenericEntry elbowAbsoluteAngleFloorEntry = ARM_TAB.add("Elbow Absolute Floor Angle", 0)
+			.withSize(1, 1)
 			.withPosition(4, 4).getEntry();
-	public static final GenericEntry wristAbsoluteAngleFloorEntry = ARM_TAB.add("Wrist Absolute Floor Angle", 0).withSize(1, 1)
+	public static final GenericEntry wristAbsoluteAngleFloorEntry = ARM_TAB.add("Wrist Absolute Floor Angle", 0)
+			.withSize(1, 1)
 			.withPosition(5, 4).getEntry();
 
 	// radians/sec
@@ -556,11 +558,13 @@ public class ArmSubsystem extends SubsystemBase {
 		// TODO: Recompute the angles to fit the inputs wanted by the feedforward
 		// controller (relative to horizontal)
 
-		elbowJoint.controller.setP(((Math.PI/2 - (desiredShoulderAngle + desiredElbowAngle)) + Math.PI/2)  * 0.5);
+		elbowJoint.controller.setP(((Math.PI / 2 - (desiredShoulderAngle + desiredElbowAngle)) + Math.PI / 2) * 0.5);
 
-		double shoulderFeedForward = shoulderJoint.feedForward.calculate(Math.PI/2 - desiredShoulderAngle, 0);
-		double elbowFeedForward = elbowJoint.feedForward.calculate(Math.PI/2 - (desiredShoulderAngle + desiredElbowAngle), 0);
-		double wristFeedForward = wristJoint.feedForward.calculate(Math.PI/2 - (desiredShoulderAngle + desiredElbowAngle + desiredWristAngle), 0);
+		double shoulderFeedForward = shoulderJoint.feedForward.calculate(Math.PI / 2 - desiredShoulderAngle, 0);
+		double elbowFeedForward = elbowJoint.feedForward
+				.calculate(Math.PI / 2 - (desiredShoulderAngle + desiredElbowAngle), 0);
+		double wristFeedForward = wristJoint.feedForward
+				.calculate(Math.PI / 2 - (desiredShoulderAngle + desiredElbowAngle + desiredWristAngle), 0);
 
 		// Compute feedback
 		double shoulderFeedback = shoulderJoint.controller.calculate(
@@ -588,9 +592,9 @@ public class ArmSubsystem extends SubsystemBase {
 				&& shoulderJoint.atSoftReverseLimit();
 
 		// if (Math.signum(shoulderSpeed) < 0 && shoulderJoint.atHardLimit()) {
-		// 	shoulderSpeed = 0;
+		// shoulderSpeed = 0;
 		// } else if (forwardShoulderLimit || reverseShoulderLimit) {
-		// 	shoulderSpeed *= BOUNCE_FORCE;
+		// shoulderSpeed *= BOUNCE_FORCE;
 		// }
 
 		boolean forwardElbowLimit = Math.signum(elbowSpeed) > 0
@@ -599,12 +603,12 @@ public class ArmSubsystem extends SubsystemBase {
 				&& elbowJoint.atSoftReverseLimit();
 
 		// if (Math.signum(elbowSpeed) > 0 && elbowJoint.atHardLimit()) {
-		// 	elbowSpeed = 0;
-		// 	System.out.println("Elbow Hard limit reached and going forward");
-		// } else 
+		// elbowSpeed = 0;
+		// System.out.println("Elbow Hard limit reached and going forward");
+		// } else
 		// if (forwardElbowLimit || reverseElbowLimit) {
-		// 	elbowSpeed *= BOUNCE_FORCE;
-		// 	System.out.println("elbow soft limit reached");
+		// elbowSpeed *= BOUNCE_FORCE;
+		// System.out.println("elbow soft limit reached");
 		// }
 
 		boolean forwardWristLimit = Math.signum(wristSpeed) > 0
@@ -613,7 +617,7 @@ public class ArmSubsystem extends SubsystemBase {
 				&& (wristJoint.atHardLimit() || wristJoint.atSoftReverseLimit());
 
 		// if (forwardWristLimit || reverseWristLimit) {
-		// 	wristSpeed *= BOUNCE_FORCE;
+		// wristSpeed *= BOUNCE_FORCE;
 		// }
 
 		// Set motor speeds
@@ -723,12 +727,13 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 	}
 
-		/**
+	/**
 	 * Sets each joint motor to rotate towards the home position unless it is at its
+	 * 
 	 * @param shoulderSpeed speed of shoulder
-	 * @param elbowSpeed speed of elbow
-	 * @param wristSpeed speed of wrist
-	 * hard limit
+	 * @param elbowSpeed    speed of elbow
+	 * @param wristSpeed    speed of wrist
+	 *                      hard limit
 	 */
 	public void homeJoints(double shoulderSpeed, double elbowSpeed, double wristSpeed) {
 		// Move shoulder
@@ -827,9 +832,11 @@ public class ArmSubsystem extends SubsystemBase {
 		wristEncoderErrorEntry.setDouble(wristJoint.getJointAngle() - wristJoint.getEncoderPosition());
 
 		shoulderAbsoluteAngleFloorEntry.setDouble(90 - Math.toDegrees(shoulderJoint.getJointAngle()));
-		elbowAbsoluteAngleFloorEntry.setDouble(90 - (Math.toDegrees(shoulderJoint.getJointAngle()) + Math.toDegrees(elbowJoint.getJointAngle())));
-		wristAbsoluteAngleFloorEntry.setDouble(90 - (Math.toDegrees(shoulderJoint.getJointAngle()) + Math.toDegrees(elbowJoint.getJointAngle()) +  Math.toDegrees(wristJoint.getJointAngle())));
-		
+		elbowAbsoluteAngleFloorEntry.setDouble(
+				90 - (Math.toDegrees(shoulderJoint.getJointAngle()) + Math.toDegrees(elbowJoint.getJointAngle())));
+		wristAbsoluteAngleFloorEntry.setDouble(90 - (Math.toDegrees(shoulderJoint.getJointAngle())
+				+ Math.toDegrees(elbowJoint.getJointAngle()) + Math.toDegrees(wristJoint.getJointAngle())));
+
 		Logger.getInstance().recordOutput("MyMechanism", this.armSimulation);
 	}
 }

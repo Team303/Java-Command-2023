@@ -35,9 +35,12 @@ public class ReachPointContinuous extends CommandBase {
 
     // @Override
     // public boolean isFinished() {
-    //     return Math.abs(Math.toDegrees(arm.shoulderJoint.leftEncoder.getPosition() - angles.get(0))) < 2 &&
-    //         Math.abs(Math.toDegrees(arm.elbowJoint.encoder.getPosition() - angles.get(1))) < 2 &&
-    //         Math.abs(Math.toDegrees(arm.wristJoint.encoder.getPosition() - angles.get(2))) < 2;
+    // return Math.abs(Math.toDegrees(arm.shoulderJoint.leftEncoder.getPosition() -
+    // angles.get(0))) < 2 &&
+    // Math.abs(Math.toDegrees(arm.elbowJoint.encoder.getPosition() -
+    // angles.get(1))) < 2 &&
+    // Math.abs(Math.toDegrees(arm.wristJoint.encoder.getPosition() -
+    // angles.get(2))) < 2;
     // }
 
     @Override

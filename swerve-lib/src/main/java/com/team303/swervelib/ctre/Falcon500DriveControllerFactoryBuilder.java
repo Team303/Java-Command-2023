@@ -43,7 +43,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
         public ControllerImplementation create(Integer id, String canbus, MechanicalConfiguration mechConfiguration) {
             TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
-            double sensorPositionCoefficient = Math.PI * mechConfiguration.getWheelDiameter() * mechConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
+            double sensorPositionCoefficient = Math.PI * mechConfiguration.getWheelDiameter()
+                    * mechConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
 
             if (hasVoltageCompensation()) {
                 motorConfiguration.voltageCompSaturation = nominalVoltage;
@@ -64,7 +65,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
             motor.setNeutralMode(NeutralMode.Brake);
 
-            motor.setInverted(mechConfiguration.isDriveInverted() ? TalonFXInvertType.Clockwise : TalonFXInvertType.CounterClockwise);
+            motor.setInverted(mechConfiguration.isDriveInverted() ? TalonFXInvertType.Clockwise
+                    : TalonFXInvertType.CounterClockwise);
             motor.setSensorPhase(true);
 
             // Reduce CAN status frame rates
@@ -72,10 +74,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
                     motor.setStatusFramePeriod(
                             StatusFrameEnhanced.Status_1_General,
                             STATUS_FRAME_GENERAL_PERIOD_MS,
-                            CAN_TIMEOUT_MS
-                    ),
-                    "Failed to configure Falcon status frame period"
-            );
+                            CAN_TIMEOUT_MS),
+                    "Failed to configure Falcon status frame period");
 
             return new ControllerImplementation(motor, sensorPositionCoefficient);
         }
@@ -84,7 +84,9 @@ public final class Falcon500DriveControllerFactoryBuilder {
     private class ControllerImplementation implements DriveController {
         private final WPI_TalonFX motor;
         private final double sensorPositionCoefficient;
-        private final double nominalVoltage = hasVoltageCompensation() ? Falcon500DriveControllerFactoryBuilder.this.nominalVoltage : 12.0;
+        private final double nominalVoltage = hasVoltageCompensation()
+                ? Falcon500DriveControllerFactoryBuilder.this.nominalVoltage
+                : 12.0;
 
         private ControllerImplementation(WPI_TalonFX motor, double sensorPositionCoefficient) {
             this.motor = motor;

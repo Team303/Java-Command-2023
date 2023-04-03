@@ -1,7 +1,7 @@
 package com.team303.lib.math;
 
 public class DeadbandFilter {
-    
+
     private final double lowerBound;
     private final double upperBound;
 

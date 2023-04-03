@@ -21,10 +21,13 @@ public class SteerConfiguration<EncoderConfiguration> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         SteerConfiguration<?> that = (SteerConfiguration<?>) o;
-        return getMotorPort() == that.getMotorPort() && getEncoderConfiguration().equals(that.getEncoderConfiguration());
+        return getMotorPort() == that.getMotorPort()
+                && getEncoderConfiguration().equals(that.getEncoderConfiguration());
     }
 
     @Override

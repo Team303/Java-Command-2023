@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class HomeArm extends CommandBase {
     /**
-     * Deadline for the homing command to not delay the auto by more than is necessary
+     * Deadline for the homing command to not delay the auto by more than is
+     * necessary
      */
     private static final double HOMING_TIMEOUT = 3;
 

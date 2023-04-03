@@ -24,7 +24,7 @@ public class AutoLevelBasic extends CommandBase {
     @Override
     public void execute() {
         Robot.swerve.drive(new Translation2d(-(FeedbackController.calculate(-Robot.navX.getPitch(), 0)
-        + FeedforwardController.calculate(-Robot.navX.getPitch())) * 0.08,0),
+                + FeedforwardController.calculate(-Robot.navX.getPitch())) * 0.08, 0),
                 0, true);
 
         if (!(Math.abs(Robot.navX.getPitch()) < 4.80 || FeedbackController.atSetpoint())) {

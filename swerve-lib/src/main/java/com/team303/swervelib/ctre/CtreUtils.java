@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public final class CtreUtils {
-    private CtreUtils() {}
+    private CtreUtils() {
+    }
 
     public static void checkCtreError(ErrorCode errorCode, String message) {
         if (RobotBase.isReal() && errorCode != ErrorCode.OK) {

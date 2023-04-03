@@ -8,7 +8,8 @@ public class CanCoderAbsoluteConfiguration {
     private final String canbus;
     private final SensorInitializationStrategy initStrategy;
 
-    public CanCoderAbsoluteConfiguration(int id, double offset, String canbus, SensorInitializationStrategy initStrategy) {
+    public CanCoderAbsoluteConfiguration(int id, double offset, String canbus,
+            SensorInitializationStrategy initStrategy) {
         this.id = id;
         this.offset = offset;
         this.canbus = canbus;

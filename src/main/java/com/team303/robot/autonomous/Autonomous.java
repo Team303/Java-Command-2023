@@ -72,12 +72,17 @@ public class Autonomous {
         public static void init() {
                 HashMap<String, Command> eventMap = new HashMap<>();
                 // //In Inches
-                // eventMap.put("Top Cone", new SequentialCommandGroup(new ReachPoint(42, 48), new InstantCommand(Robot.claw::toggleState)));
-                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 35), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                // eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16, 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                eventMap.put("Top Cube",new ReachPoint(55, 42));
+                // eventMap.put("Top Cone", new SequentialCommandGroup(new ReachPoint(42, 48),
+                // new InstantCommand(Robot.claw::toggleState)));
+                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24,
+                // 35), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                // eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36),
+                // new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24,
+                // 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16,
+                // 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                eventMap.put("Top Cube", new ReachPoint(55, 42));
                 eventMap.put("Toggle State", new InstantCommand(Robot.claw::toggleState));
 
                 autoBuilder = new SwerveAutoBuilder(
@@ -97,7 +102,7 @@ public class Autonomous {
                                 // subsystem
                                 eventMap,
                                 true, // Should the path be automatically mirrored depending on allianc color.
-                                       // Optional, defaults to true
+                                      // Optional, defaults to true
                                 swerve // The drive subsystem. Used to properly set the requirements of path
                                        // following
                                        // commands
@@ -135,13 +140,18 @@ public class Autonomous {
                 create("Taxi Gate", () -> autoBuilder.fullAuto(pathGroupGate));
                 pathGroupForward = PathPlanner.loadPathGroup("Forward", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Taxi Forward", () -> autoBuilder.fullAuto(pathGroupForward));
-                pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
-                create("Forward and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore)));
+                pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score",
+                                new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Forward and Score",
+                                () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore)));
                 create("Score Cube", () -> new ReachPoint(73, 15));
-                pathGroupLevelBackwards = PathPlanner.loadPathGroup("Level Backwards", new PathConstraints(3, Swerve.MAX_VELOCITY));
-                
-                create("Score Cub and Level", () -> new SequentialCommandGroup(new ReachPoint(73, 15), autoBuilder.fullAuto(pathGroupLevel), new AutoLevelBasic()));
-                // create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16, 5)));
+                pathGroupLevelBackwards = PathPlanner.loadPathGroup("Level Backwards",
+                                new PathConstraints(3, Swerve.MAX_VELOCITY));
+
+                create("Score Cub and Level", () -> new SequentialCommandGroup(new ReachPoint(73, 15),
+                                autoBuilder.fullAuto(pathGroupLevel), new AutoLevelBasic()));
+                // create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16,
+                // 5)));
                 // create("Middle Node", () -> new ReachPoint(24, 35));
                 // create("New", () -> {
                 // try {
@@ -190,7 +200,8 @@ public class Autonomous {
                 // new AutolevelFeedforward()
                 // );
 
-                // create("Reach Point", () -> new ReachPoint(EFFECTOR_X.getDouble(0.0), EFFECTOR_Y.getDouble(0.0)));
+                // create("Reach Point", () -> new ReachPoint(EFFECTOR_X.getDouble(0.0),
+                // EFFECTOR_Y.getDouble(0.0)));
                 // create("Homing", () -> new HomeArm());
 
                 // create("reach selected", () ->

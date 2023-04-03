@@ -6,8 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 public interface SteerControllerFactory<Controller extends SteerController, SC> {
     default void addDashboardEntries(
             ShuffleboardContainer container,
-            Controller controller
-    ) {
+            Controller controller) {
         container.addNumber("Current Angle", () -> Math.toDegrees(controller.getStateAngle()));
         container.addNumber("Target Angle", () -> Math.toDegrees(controller.getReferenceAngle()));
     }
@@ -16,8 +15,7 @@ public interface SteerControllerFactory<Controller extends SteerController, SC> 
             ShuffleboardContainer dashboardContainer,
             SC steerConfiguration,
             String canbus,
-            MechanicalConfiguration mechConfiguration
-    ) {
+            MechanicalConfiguration mechConfiguration) {
         var controller = create(steerConfiguration, canbus, mechConfiguration);
         addDashboardEntries(dashboardContainer, controller);
 
@@ -27,8 +25,7 @@ public interface SteerControllerFactory<Controller extends SteerController, SC> 
     default Controller create(
             ShuffleboardContainer dashboardContainer,
             SC steerConfiguration,
-            MechanicalConfiguration mechConfiguration
-    ) {
+            MechanicalConfiguration mechConfiguration) {
         var controller = create(steerConfiguration, mechConfiguration);
         addDashboardEntries(dashboardContainer, controller);
 
@@ -36,9 +33,8 @@ public interface SteerControllerFactory<Controller extends SteerController, SC> 
     }
 
     default Controller create(
-            SC steerConfiguration, 
-            MechanicalConfiguration mechConfiguration
-    ) {
+            SC steerConfiguration,
+            MechanicalConfiguration mechConfiguration) {
         return create(steerConfiguration, "", mechConfiguration);
     }
 

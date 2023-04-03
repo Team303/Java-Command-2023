@@ -6,8 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 public interface DriveControllerFactory<Controller extends DriveController, DriveConfiguration> {
     default void addDashboardEntries(
             ShuffleboardContainer container,
-            Controller controller
-    ) {
+            Controller controller) {
         container.addNumber("Current Velocity", controller::getStateVelocity);
     }
 
@@ -15,8 +14,7 @@ public interface DriveControllerFactory<Controller extends DriveController, Driv
             ShuffleboardContainer container,
             DriveConfiguration driveConfiguration,
             String canbus,
-            MechanicalConfiguration mechConfiguration
-    ) {
+            MechanicalConfiguration mechConfiguration) {
         var controller = create(driveConfiguration, canbus, mechConfiguration);
         addDashboardEntries(container, controller);
 
@@ -26,8 +24,7 @@ public interface DriveControllerFactory<Controller extends DriveController, Driv
     default Controller create(
             ShuffleboardContainer container,
             DriveConfiguration driveConfiguration,
-            MechanicalConfiguration mechConfiguration
-    ) {
+            MechanicalConfiguration mechConfiguration) {
         var controller = create(driveConfiguration, mechConfiguration);
         addDashboardEntries(container, controller);
 
@@ -35,9 +32,8 @@ public interface DriveControllerFactory<Controller extends DriveController, Driv
     }
 
     default Controller create(
-        DriveConfiguration driveConfiguration,
-        MechanicalConfiguration mechConfiguration
-    ) {
+            DriveConfiguration driveConfiguration,
+            MechanicalConfiguration mechConfiguration) {
         return create(driveConfiguration, "", mechConfiguration);
     }
 

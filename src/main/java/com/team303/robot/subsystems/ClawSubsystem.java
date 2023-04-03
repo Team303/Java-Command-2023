@@ -14,26 +14,26 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static com.team303.robot.autonomous.AutonomousProgram.AUTO_TAB;
 
-
 public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	private static final ShuffleboardTab CLAW_TAB = Shuffleboard.getTab("Claw");
 	private static final GenericEntry clawPositionEntry = CLAW_TAB.add("Claw Position", 0).getEntry();
 	private static final GenericEntry clawSwitchReverseEntry = CLAW_TAB.add("Claw Switch Reverse", false).getEntry();
-	private static final GenericEntry stateEntry = AUTO_TAB.add("State", ClawState.OPEN.getName()).withPosition(0,2).getEntry();
-	private static final GenericEntry modeEntry = AUTO_TAB.add("Mode", GamePieceType.CONE.getName()).withPosition(1,2).getEntry();
+	private static final GenericEntry stateEntry = AUTO_TAB.add("State", ClawState.OPEN.getName()).withPosition(0, 2)
+			.getEntry();
+	private static final GenericEntry modeEntry = AUTO_TAB.add("Mode", GamePieceType.CONE.getName()).withPosition(1, 2)
+			.getEntry();
 	public static final SendableChooser<ClawState> clawStateChooser = new SendableChooser<>();
 	public static final SendableChooser<GamePieceType> clawModeChooser = new SendableChooser<>();
-	
+
 	static {
 		clawStateChooser.setDefaultOption("Open", ClawState.OPEN);
 		clawStateChooser.addOption("Closed", ClawState.ClOSED);
 		clawModeChooser.addOption("Cube", GamePieceType.CUBE);
 		clawModeChooser.setDefaultOption("Cone", GamePieceType.CONE);
-		AUTO_TAB.add("Open Close", clawStateChooser).withPosition(0,1);
-		AUTO_TAB.add("Cone Cube", clawModeChooser).withPosition(1,1);
+		AUTO_TAB.add("Open Close", clawStateChooser).withPosition(0, 1);
+		AUTO_TAB.add("Cone Cube", clawModeChooser).withPosition(1, 1);
 	}
-
 
 	/* Gear Ratios */
 	public static final double GEAR_RATIO_CLAW = 50;

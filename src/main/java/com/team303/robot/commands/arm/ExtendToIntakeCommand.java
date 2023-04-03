@@ -6,7 +6,7 @@ import java.util.List;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class ExtendToIntakeCommand extends CommandBase {
-    List<Double> desiredAngles = Arrays.asList(0.0,90.0,90.0);
+    List<Double> desiredAngles = Arrays.asList(0.0, 90.0, 90.0);
 
     public ExtendToIntakeCommand() {
         addRequirements(arm);

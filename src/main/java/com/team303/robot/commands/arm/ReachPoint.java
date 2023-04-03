@@ -30,15 +30,15 @@ public class ReachPoint extends CommandBase {
     public void execute() {
         angles = arm.reachEmbedded(cartesianCoords);
         Robot.arm.effectorRoot.setPosition(
-            (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
-            Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
+                (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
+                Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
     }
 
     @Override
     public boolean isFinished() {
         return Math.abs(Math.toDegrees(arm.shoulderJoint.getJointAngle() - angles.get(0))) < TOLERANCE &&
-            Math.abs(Math.toDegrees(arm.elbowJoint.getJointAngle() - angles.get(1))) < TOLERANCE &&
-            Math.abs(Math.toDegrees(arm.wristJoint.getJointAngle() - angles.get(2))) < TOLERANCE;
+                Math.abs(Math.toDegrees(arm.elbowJoint.getJointAngle() - angles.get(1))) < TOLERANCE &&
+                Math.abs(Math.toDegrees(arm.wristJoint.getJointAngle() - angles.get(2))) < TOLERANCE;
     }
 
     @Override
