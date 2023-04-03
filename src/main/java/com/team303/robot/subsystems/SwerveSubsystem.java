@@ -4,6 +4,7 @@ package com.team303.robot.subsystems;
 
 import static com.team303.robot.Robot.NAVX_ACCELERATION;
 import static com.team303.robot.Robot.NAVX_Y_VELOCITY;
+import static com.team303.robot.Robot.NAVX_ANGLE;
 import static com.team303.robot.modules.OperatorGridModule.nodeSuperStateValues;
 
 import java.awt.Point;
@@ -59,6 +60,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 // import com.team303.robot.commands.arm.ReachPoint;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -104,7 +107,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	private Pose2d pose = new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d());
 
 	public static final double MAX_VOLTAGE = 12.0;
-	public static double MAX_DRIVE_SPEED = 1;
+	public static double MAX_DRIVE_SPEED = 0.75;
 
 	/* Node Positions */
 	public static double[] nodePositions = new double[9];
@@ -138,7 +141,7 @@ public class SwerveSubsystem extends SubsystemBase {
 						DRIVEBASE_TAB.getLayout("leftFrontModule", BuiltInLayouts.kGrid)
 								.withSize(2, 4)
 								.withPosition(4, 0))
-				.withGearRatio(Swerve.MK4I_L2_LEFT_FRONT)
+				.withGearRatio(Swerve.MK4I_L1_LEFT_FRONT)
 				.withDriveMotor(MotorType.NEO, Swerve.LEFT_FRONT_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.LEFT_FRONT_STEER_ID)
 				.withSteerEncoderPort(Swerve.LEFT_FRONT_STEER_CANCODER_ID)
@@ -150,7 +153,7 @@ public class SwerveSubsystem extends SubsystemBase {
 						DRIVEBASE_TAB.getLayout("leftBackModule", BuiltInLayouts.kGrid)
 								.withSize(2, 4)
 								.withPosition(4, 0))
-				.withGearRatio(Swerve.MK4I_L2_LEFT_BACK)
+				.withGearRatio(Swerve.MK4I_L1_LEFT_BACK)
 				.withDriveMotor(MotorType.NEO, Swerve.LEFT_BACK_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.LEFT_BACK_STEER_ID)
 				.withSteerEncoderPort(Swerve.LEFT_BACK_STEER_CANCODER_ID)
@@ -162,7 +165,7 @@ public class SwerveSubsystem extends SubsystemBase {
 						DRIVEBASE_TAB.getLayout("rightFrontModule", BuiltInLayouts.kGrid)
 								.withSize(2, 4)
 								.withPosition(4, 0))
-				.withGearRatio(Swerve.MK4I_L2_RIGHT_FRONT)
+				.withGearRatio(Swerve.MK4I_L1_RIGHT_FRONT)
 				.withDriveMotor(MotorType.NEO, Swerve.RIGHT_FRONT_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.RIGHT_FRONT_STEER_ID)
 				.withSteerEncoderPort(Swerve.RIGHT_FRONT_STEER_CANCODER_ID)
@@ -174,7 +177,7 @@ public class SwerveSubsystem extends SubsystemBase {
 						DRIVEBASE_TAB.getLayout("rightBackModule", BuiltInLayouts.kGrid)
 								.withSize(2, 4)
 								.withPosition(4, 0))
-				.withGearRatio(Swerve.MK4I_L2_RIGHT_BACK)
+				.withGearRatio(Swerve.MK4I_L1_RIGHT_BACK)
 				.withDriveMotor(MotorType.NEO, Swerve.RIGHT_BACK_DRIVE_ID)
 				.withSteerMotor(MotorType.NEO, Swerve.RIGHT_BACK_STEER_ID)
 				.withSteerEncoderPort(Swerve.RIGHT_BACK_STEER_CANCODER_ID)
@@ -220,10 +223,11 @@ public class SwerveSubsystem extends SubsystemBase {
 		aprilTagField = initialLayout;
 		// photonvision pose estimator
 
-		if (false) {
-			visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP,
-					Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d());
-		}
+		// if (Robot.isReal()) {
+		// 	visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP,
+		// 			Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d(new Translation3d(), new Rotation3d()));
+		// 	visionPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+		// }
 		poseEstimator = new SwerveDrivePoseEstimator(
 				kinematics,
 				new Rotation2d(),
@@ -238,6 +242,33 @@ public class SwerveSubsystem extends SubsystemBase {
 				photonStandardDeviations);
 		DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
 		DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
+
+		// var thread = 
+		// 		new Thread(
+		// 			() -> {
+		// 				if (aprilTagField == null) {
+		// 					return;
+		// 				}
+		// 				while (!Thread.currentThread().isInterrupted()) {
+		// 					poseEstimator.update(
+		// 						Rotation2d.fromDegrees(-Robot.navX.getAngle()),
+		// 						Robot.swerve.getModulePositions());
+		// 					Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+		// 					if (result.isPresent()) {
+		// 						EstimatedRobotPose visionPoseEstimate = result.get();
+		// 						poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+		// 								visionPoseEstimate.timestampSeconds);
+		// 					}
+		// 					try {
+		// 					  Thread.sleep(Swerve.THREAD_SLEEP_DURATION_MS);
+		// 					} catch (InterruptedException e) {
+		// 					  Thread.currentThread().interrupt();
+		// 					}
+		// 				  }
+		// 			}
+		// 		);
+		// thread.setDaemon(true);
+		// thread.start();
 	}
 
 	public void resetToAbsoluteAngle() {
@@ -431,23 +462,23 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
-		// if (false) {
-		// 	Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-		// 	if (result.isPresent()) {
-		// 		EstimatedRobotPose visionPoseEstimate = result.get();
-		// 		poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-		// 				visionPoseEstimate.timestampSeconds);
-		// 	}
-		// }
 		// poseEstimator.update(
-		// Rotation2d.fromDegrees(-Robot.navX.getAngle()),
-		// Robot.swerve.getModulePositions());
-		 field2d.setRobotPose(getRobotPose());
+		// 	Rotation2d.fromDegrees(-Robot.navX.getAngle()),
+		// 	Robot.swerve.getModulePositions());
+		// Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+		// if (result.isPresent()) {
+		// 	EstimatedRobotPose visionPoseEstimate = result.get();
+		// 	poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+		// 			visionPoseEstimate.timestampSeconds);
+		// }
 
-		 lastPeriodic = timer.get();
+		field2d.setRobotPose(getRobotPose());
+
+		lastPeriodic = timer.get();
 
 		NAVX_Y_VELOCITY.setDouble(Robot.navX.getRawGyroZ(), 0);
 		NAVX_ACCELERATION.setDouble(Robot.navX.getRawAccelX());
+		NAVX_ANGLE.setDouble(Robot.navX.getAngle());
 		SmartDashboard.putNumber("Pitch acceleration", -Robot.navX.getRawAccelY());
 		SmartDashboard.putNumber("Pitch ", -Robot.navX.getPitch());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));

@@ -21,7 +21,6 @@ public class HomeArm extends CommandBase {
 
     public HomeArm() {
         addRequirements(arm);
-        timer = new Timer();
     }
 
     @Override
@@ -31,6 +30,7 @@ public class HomeArm extends CommandBase {
 
     @Override
     public void execute() {
+        System.out.println(timer.get());
         arm.homeJoints();
     }
 
@@ -42,6 +42,7 @@ public class HomeArm extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         // Reset arm encoders to known angles
+        arm.stopMotors();
         arm.resetEncodersToHomePosition();
 
         // Reset the stored end effector point

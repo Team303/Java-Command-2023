@@ -59,34 +59,38 @@ public final class RobotMap {
 		public static final double STARTING_X = 0;
 		public static final double STARTING_Y = 0;
 
+		/* Sleep Duration */
+
+		public static final long THREAD_SLEEP_DURATION_MS = 5;
+
 		/* Default Module Configurations */
-		public static final MechanicalConfiguration MK4I_L2_LEFT_FRONT = new MechanicalConfiguration(
+		public static final MechanicalConfiguration MK4I_L1_LEFT_FRONT = new MechanicalConfiguration(
             0.10033,
-            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+			(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
             true,
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);
 
-		public static final MechanicalConfiguration MK4I_L2_LEFT_BACK = new MechanicalConfiguration(
+		public static final MechanicalConfiguration MK4I_L1_LEFT_BACK = new MechanicalConfiguration(
             0.10033,
-            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+			(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
             false,
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);
 
-		public static final MechanicalConfiguration MK4I_L2_RIGHT_FRONT = new MechanicalConfiguration(
+		public static final MechanicalConfiguration MK4I_L1_RIGHT_FRONT = new MechanicalConfiguration(
             0.10033,
-            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+			(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
             true,
             (14.0 / 50.0) * (10.0 / 60.0),
             false
     	);
 
-		public static final MechanicalConfiguration MK4I_L2_RIGHT_BACK = new MechanicalConfiguration(
+		public static final MechanicalConfiguration MK4I_L1_RIGHT_BACK = new MechanicalConfiguration(
             0.10033,
-            (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+			(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
             true,
             (14.0 / 50.0) * (10.0 / 60.0),
             false
@@ -95,7 +99,7 @@ public final class RobotMap {
 		// static {
 		// 	double wheelCircumference = WHEEL_DIAMTER * Math.PI;
 		// 	double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
-		// 	double axelRotationsPerMotorRotation = 1 / MK4I_L2_LEFT_FRONT.getDriveReduction();
+		// 	double axelRotationsPerMotorRotation = 1 / MK4I_L1_LEFT_FRONT.getDriveReduction();
 
 		// 	DISTANCE_PER_ENCODER_PULSE = motorRotationsPerEncoderPulse
 		// 			* axelRotationsPerMotorRotation

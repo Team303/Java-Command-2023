@@ -63,6 +63,8 @@ public class Autonomous {
         static List<PathPlannerTrajectory> pathGroupGate;
         static List<PathPlannerTrajectory> pathGroupLevel;
         static List<PathPlannerTrajectory> pathGroupLevelScore;
+        static List<PathPlannerTrajectory> pathGroupLevelBackwards;
+        static List<PathPlannerTrajectory> pathGroupScore;
         private static SwerveAutoBuilder autoBuilder;
         public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
         public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
@@ -135,6 +137,10 @@ public class Autonomous {
                 create("Taxi Forward", () -> autoBuilder.fullAuto(pathGroupForward));
                 pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Forward and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore)));
+                create("Score Cube", () -> new ReachPoint(73, 15));
+                pathGroupLevelBackwards = PathPlanner.loadPathGroup("Level Backwards", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                
+                create("Score Cub and Level", () -> new SequentialCommandGroup(new ReachPoint(73, 15), autoBuilder.fullAuto(pathGroupLevel), new AutoLevelBasic()));
                 // create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16, 5)));
                 // create("Middle Node", () -> new ReachPoint(24, 35));
                 // create("New", () -> {

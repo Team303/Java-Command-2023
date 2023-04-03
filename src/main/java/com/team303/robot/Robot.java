@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final ArmSubsystem arm = null; //new ArmSubsystem();
 	public static final ClawSubsystem claw = new ClawSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
 	public static final LEDSubsystem ledStrip = null; //new LEDSubsystem();
@@ -153,12 +153,12 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.swerve.setDefaultCommand(new DefaultDrive(false));
 		Robot.claw.setDefaultCommand(new DefaultClaw());
 
 		// add Autos to Shuffleboard
-		Autonomous.init();
-		AutonomousProgram.addAutosToShuffleboard();
+		// Autonomous.init();
+		// AutonomousProgram.addAutosToShuffleboard();
 
 		// Start Camera
 		logger.start();
@@ -170,7 +170,7 @@ public class Robot extends LoggedRobot {
 		swerve.resetOdometry();
 
 		// Dont do IK during auto
-		Robot.arm.removeDefaultCommand();
+		// Robot.arm.removeDefaultCommand();
 
 		Robot.claw.state = clawStateChooser.getSelected();
 		Robot.claw.mode = clawModeChooser.getSelected();
@@ -180,7 +180,7 @@ public class Robot extends LoggedRobot {
 
 		// Home the arm while waiting for the drivebase delay
 		Command delay = new ParallelCommandGroup(
-				new HomeArm(),
+				// new HomeArm(),
 				new DriveWait(AutonomousProgram.getAutonomousDelay()));
 
 		// Schedule the selected autonomous command group
@@ -206,7 +206,7 @@ public class Robot extends LoggedRobot {
 
 		// Robot.arm.setDefaultCommand(new DefaultArm());
 		// if (operatorController.getLeftTriggerAxis() < 0.9) {
-			Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+			// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// } else {
 		// 	Robot.arm.setDefaultCommand(new DefaultArm());
 		// }
@@ -236,24 +236,24 @@ public class Robot extends LoggedRobot {
 		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
-		operatorController.b().onTrue(new InstantCommand(claw::toggleState));
-		operatorController.a().onTrue(new InstantCommand(claw::toggleMode));
+		// operatorController.b().onTrue(new InstantCommand(claw::toggleState));
+		// operatorController.a().onTrue(new InstantCommand(claw::toggleMode));
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
 
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
-		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
-		// Mid Cone
-		operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
-		// Bottom
-		operatorController.pov(270).whileTrue(new ReachPoint(28, 10).repeatedly());
+		// operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
+		// // Substation
+		// operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
+		// // Mid Cone
+		// operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
+		// // Bottom
+		// operatorController.pov(270).whileTrue(new ReachPoint(28, 10).repeatedly());
 
-		// operatorController.x().whileTrue(new HomeArmContinuous());
-		operatorController.x().toggleOnTrue(new HomeArmContinuous());
-		operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
+		// // operatorController.x().whileTrue(new HomeArmContinuous());
+		// operatorController.x().toggleOnTrue(new HomeArmContinuous(0.3, 0.3, 0.4));
+		// operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));
 
