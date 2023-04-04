@@ -64,9 +64,6 @@ public class Autonomous {
         static List<PathPlannerTrajectory> pathGroupGate;
         static List<PathPlannerTrajectory> pathGroupLevel;
         static List<PathPlannerTrajectory> pathGroupLevelScore;
-        static List<PathPlannerTrajectory> pathGroupLevelBackwards;
-        static List<PathPlannerTrajectory> pathGroupScore;
-        static List<PathPlannerTrajectory> pathGroupLevelBackwards;
         static List<PathPlannerTrajectory> pathGroupScore;
         private static SwerveAutoBuilder autoBuilder;
         public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();

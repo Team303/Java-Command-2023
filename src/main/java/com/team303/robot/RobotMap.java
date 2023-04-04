@@ -98,16 +98,10 @@ public final class RobotMap {
     	);
 
 		// static {
-<<<<<<< HEAD
 		// double wheelCircumference = WHEEL_DIAMTER * Math.PI;
 		// double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
 		// double axelRotationsPerMotorRotation = 1 /
 		// MK4I_L2_LEFT_FRONT.getDriveReduction();
-=======
-		// 	double wheelCircumference = WHEEL_DIAMTER * Math.PI;
-		// 	double motorRotationsPerEncoderPulse = 1 / ENCODER_COUNTS_PER_REV;
-		// 	double axelRotationsPerMotorRotation = 1 / MK4I_L1_LEFT_FRONT.getDriveReduction();
->>>>>>> master
 
 		// DISTANCE_PER_ENCODER_PULSE = motorRotationsPerEncoderPulse
 		// * axelRotationsPerMotorRotation
