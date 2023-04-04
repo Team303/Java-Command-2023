@@ -481,15 +481,6 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
-		// if (false) {
-		// Optional<EstimatedRobotPose> result =
-		// getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-		// if (result.isPresent()) {
-		// EstimatedRobotPose visionPoseEstimate = result.get();
-		// poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-		// visionPoseEstimate.timestampSeconds);
-		// }
-		// }
 		// poseEstimator.update(
 		// Rotation2d.fromDegrees(-Robot.navX.getAngle()),
 		// Robot.swerve.getModulePositions());

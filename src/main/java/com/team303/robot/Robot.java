@@ -68,6 +68,7 @@ public class Robot extends LoggedRobot {
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
 	 public static final OperatorGridModule operatorGrid = new OperatorGridModule();
+	 public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
