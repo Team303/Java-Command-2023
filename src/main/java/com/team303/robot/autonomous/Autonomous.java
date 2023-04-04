@@ -23,6 +23,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 
 /**
  * Quick guide to Comand Groups:
@@ -63,6 +64,8 @@ public class Autonomous {
         static List<PathPlannerTrajectory> pathGroupGate;
         static List<PathPlannerTrajectory> pathGroupLevel;
         static List<PathPlannerTrajectory> pathGroupLevelScore;
+        static List<PathPlannerTrajectory> pathGroupLevelBackwards;
+        static List<PathPlannerTrajectory> pathGroupScore;
         private static SwerveAutoBuilder autoBuilder;
         public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
         public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
@@ -70,17 +73,12 @@ public class Autonomous {
         public static void init() {
                 HashMap<String, Command> eventMap = new HashMap<>();
                 // //In Inches
-                // eventMap.put("Top Cone", new SequentialCommandGroup(new ReachPoint(42, 48),
-                // new InstantCommand(Robot.claw::toggleState)));
-                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24,
-                // 35), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                // eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36),
-                // new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24,
-                // 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16,
-                // 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                eventMap.put("Top Cube", new ReachPoint(55, 42));
+                // eventMap.put("Top Cone", new SequentialCommandGroup(new ReachPoint(42, 48), new InstantCommand(Robot.claw::toggleState)));
+                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 35), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                // eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16, 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
+                eventMap.put("Top Cube", new ReachPoint(73, 15));
                 eventMap.put("Toggle State", new InstantCommand(Robot.manipulator::nextState));
 
                 autoBuilder = new SwerveAutoBuilder(
@@ -88,11 +86,11 @@ public class Autonomous {
                                 swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the
                                 // beginning of auto
                                 swerve.getKinematics(), // SwerveDriveKinematics
-                                new PIDConstants(5, 0.0, 0.0), // PID constants to correct for translation
+                                new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for translation
                                 // error (used to create the X
                                 // and Y
                                 // PID controllers)
-                                new PIDConstants(0.1, 0.0, 0.0), // PID constants to correct for rotation
+                                new PIDConstants(0, 0, 0.0), // PID constants to correct for rotation
                                 // error (used to create the
                                 // rotation
                                 // controller)
@@ -138,12 +136,13 @@ public class Autonomous {
                 create("Taxi Gate", () -> autoBuilder.fullAuto(pathGroupGate));
                 pathGroupForward = PathPlanner.loadPathGroup("Forward", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Taxi Forward", () -> autoBuilder.fullAuto(pathGroupForward));
-                pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score",
-                                new PathConstraints(3, Swerve.MAX_VELOCITY));
-                create("Forward and Score",
-                                () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore)));
-                // create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16,
-                // 5)));
+                pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create("Forward and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore)));
+                create("Score Cube", () -> new ReachPoint(73, 15));
+                pathGroupScore = PathPlanner.loadPathGroup("Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
+
+                create("Score Cube and Level", () -> new SequentialCommandGroup(new ReachPoint(73, 15), new ParallelCommandGroup(autoBuilder.fullAuto(pathGroupScore), new HomeArm()), new AutoLevelBasic()));
+                // create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16, 5)));
                 // create("Middle Node", () -> new ReachPoint(24, 35));
                 // create("New", () -> {
                 // try {

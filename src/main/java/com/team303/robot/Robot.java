@@ -67,8 +67,7 @@ public class Robot extends LoggedRobot {
 	/* Robot Modules */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
-	// public static final OperatorGridModule operatorGrid = new
-	// OperatorGridModule();
+	 public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
@@ -219,7 +218,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		// Robot.arm.setDefaultCommand(new DefaultArm());
+		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// if (operatorController.getLeftTriggerAxis() < 0.9) {
 		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// } else {
@@ -251,8 +250,10 @@ public class Robot extends LoggedRobot {
 		// InstantCommand(operatorGrid::moveLeft));
 
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
-		// operatorController.x().onTrue(new
-		// InstantCommand(operatorGrid::queuePlacement));
+		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
+
+		operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
+		operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
 		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
@@ -271,7 +272,7 @@ public class Robot extends LoggedRobot {
 		operatorController.pov(270).whileTrue(new ReachPoint(28, 10).repeatedly());
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
-		operatorController.x().toggleOnTrue(new HomeArmContinuous());
+		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.3, 0.3, 0.4));
 		operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));

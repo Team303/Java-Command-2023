@@ -17,12 +17,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class OperatorGridModule extends SubsystemBase {
     public static final ShuffleboardTab OPERATOR_TAB = Shuffleboard.getTab("Operator");
     public static final NetworkTable operator = NetworkTableInstance.getDefault().getTable("Operator");
     public static final SendableChooser<HeldObject> heldObjectChooser = new SendableChooser<HeldObject>();
+    public static HeldObject heldObjectIn;
+
 
     public static final GenericEntry[][] nodes = new GenericEntry[3][9];
     public static GenericEntry hpSuggestion;
@@ -82,11 +85,19 @@ public class OperatorGridModule extends SubsystemBase {
                         .withWidget("State of Node").getEntry();
             }
         }
-        heldObjectChooser.setDefaultOption("None", HeldObject.NONE);
-        // heldObjectChooser.addOption("None", HeldObject.NONE);
-        heldObjectChooser.addOption("Cube", HeldObject.CUBE);
-        heldObjectChooser.addOption("Cone", HeldObject.CONE);
-        OPERATOR_TAB.add("Held Object Chooser", heldObjectChooser).withPosition(2, 0);
+        OPERATOR_TAB
+				.addString("Current Game Piece", () -> (heldObject != null ? heldObject.name() : "NONE"))
+				.withPosition(0, 0);
+		OPERATOR_TAB
+				.add("Holding Cube", new InstantCommand(() -> heldObjectIn = HeldObject.CUBE))
+				.withPosition(1, 0);
+		OPERATOR_TAB
+				.add("Holding None", new InstantCommand(() -> heldObjectIn = HeldObject.NONE))
+				.withPosition(2, 0);
+		OPERATOR_TAB
+				.add("Holding Cone", new InstantCommand(() -> heldObjectIn = HeldObject.CONE))
+				.withPosition(3, 0);
+
         hpSuggestion = OPERATOR_TAB.add("HP Suggestion", 0).withPosition(8, 0).withWidget("State of Node").getEntry();
         nodeSuperStateValues[0][0] = NodeSuperState.HOVER.value;
         timer.start();
@@ -171,6 +182,23 @@ public class OperatorGridModule extends SubsystemBase {
             }
         }
     }
+    private void changeTarget(int x, int y) {
+		System.out.print(x + " : " + y);
+		if (!hoverValue.equals(queuedValue)) {
+			nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.NONE.value;
+		} else {
+			nodeSuperStateValues[hoverValue.x][hoverValue.y] = NodeSuperState.QUEUED.value;
+		}
+		if (nodeSuperStateValues[x][y] == NodeSuperState.NONE.value
+				|| nodeSuperStateValues[x][y] == NodeSuperState.QUEUED.value) {
+			nodeSuperStateValues[x][y] = NodeSuperState.HOVER.value;
+			hoverValue.x = x;
+			hoverValue.y = y;
+			System.out.println("manual Select");
+			return;
+		}
+	}
+
 
     public void manualSuggest() {
         int state = (int) hpSuggestion.getInteger(0);
@@ -613,6 +641,30 @@ public class OperatorGridModule extends SubsystemBase {
 
     @Override
     public void periodic() {
+        //check if something was selected by touchscreen
+        for (int i = 0; i < nodes.length; i++) {
+			for (int j = 0; j < nodes[i].length; j++) {
+				if (nodes[i][j].getInteger(0) == 6) {
+					switch (nodeSuperStateValues[i][j]) {
+						case 0:
+							changeTarget(i, j);
+							queuePlacement();
+							break;
+						case 3:
+							queuePlacement();
+							break;
+						case 4:
+							queueManualOverride = false;
+							setPiece();
+							break;
+					}
+				}
+                if (nodes[i][j].getInteger(0)== 7) {
+                    nodeStateValues[i][j]=0;
+                    nodeSuperStateValues[i][j]=0;
+                }
+			}
+		}
         // Check which links are complete
         for (int i = 0; i < 3; i++) {
             for (int j = 1; j < 8;) {
@@ -639,7 +691,7 @@ public class OperatorGridModule extends SubsystemBase {
                 }
             }
         }
-        if (heldObject != heldObjectChooser.getSelected()) {
+        if (heldObject != heldObjectIn) {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 9; j++) {
                     if (nodeSuperStateValues[i][j] == NodeSuperState.INVALID.value
@@ -648,7 +700,7 @@ public class OperatorGridModule extends SubsystemBase {
                     }
                 }
             }
-            heldObject = heldObjectChooser.getSelected();
+            heldObject = heldObjectIn;
             autoQueuePlacement();
         }
         if (suggestManualOverride && heldObject != HeldObject.NONE) {
