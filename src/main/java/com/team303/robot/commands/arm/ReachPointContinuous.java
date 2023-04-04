@@ -27,18 +27,18 @@ public class ReachPointContinuous extends CommandBase {
     @Override
     public void execute() {
         angles = arm.reachEmbedded(cartesianCoords);
-        // System.out.println("running reachpoint");
+        System.out.println("running reachpoint");
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
     }
 
-    // @Override
-    // public boolean isFinished() {
-    //     return Math.abs(Math.toDegrees(arm.shoulderJoint.leftEncoder.getPosition() - angles.get(0))) < 2 &&
-    //         Math.abs(Math.toDegrees(arm.elbowJoint.encoder.getPosition() - angles.get(1))) < 2 &&
-    //         Math.abs(Math.toDegrees(arm.wristJoint.encoder.getPosition() - angles.get(2))) < 2;
-    // }
+    @Override
+    public boolean isFinished() {
+        return Math.abs(Math.toDegrees(arm.shoulderJoint.leftEncoder.getPosition() - angles.get(0))) < 2 &&
+            Math.abs(Math.toDegrees(arm.elbowJoint.encoder.getPosition() - angles.get(1))) < 2 &&
+            Math.abs(Math.toDegrees(arm.wristJoint.encoder.getPosition() - angles.get(2))) < 2;
+    }
 
     @Override
     public void end(boolean interrupted) {
