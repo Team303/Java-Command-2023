@@ -44,7 +44,7 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
     private final CANSparkMax intakeMotor = new CANSparkMax(19, MotorType.kBrushless);
     private final SparkMaxLimitSwitch intakeSwitchReverseLimit;
 
-    public IntakeState state = IntakeState.NONE;
+    public static IntakeState state = IntakeState.NONE;
 
     public static enum IntakeState implements ManipulatorState {
         NONE,
@@ -122,6 +122,15 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
         intakeSwitchReverseEntry.setBoolean(intakeSwitchReverseLimit.isPressed());
         stateEntry.setString(state.getName());
         modeEntry.setString(mode.getName());
+
+        // switch(this.state) {
+        //     case INTAKE:
+        //         setManipulatorSpeed(1);
+        //     case OUTTAKE:
+        //         setManipulatorSpeed(-1);
+        //     default:
+        //         setManipulatorSpeed(0);
+        // }
     }
 
 }

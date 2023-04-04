@@ -34,6 +34,8 @@ import org.littletonrobotics.junction.Logger;
 import java.util.List;
 
 import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;
+import static com.team303.robot.Robot.manipulator;
+
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -263,9 +265,9 @@ public class ArmSubsystem extends SubsystemBase {
 
 		private final DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(9);
 
-		private final ProfiledPIDController controller = new ProfiledPIDController(1.2, 0, 0.2,
+		private final ProfiledPIDController controller = new ProfiledPIDController(25, 0.5, 0.2,
 				new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
-		private final ArmFeedforward feedForward = new ArmFeedforward(0.5, 0, 0, 0);
+		private final ArmFeedforward feedForward = new ArmFeedforward(3, 0, 0, 0);
 		private MechanismLigament2d simulator;
 		private MechanismLigament2d real;
 
@@ -307,7 +309,8 @@ public class ArmSubsystem extends SubsystemBase {
 
 		@Override
 		public boolean atSoftReverseLimit() {
-			return this.getJointAngle() < Math.toRadians(elbowLimits[1]);
+			return this.getJointAngle() < Math.
+			toRadians(elbowLimits[1]);
 		}
 	}
 
@@ -317,9 +320,9 @@ public class ArmSubsystem extends SubsystemBase {
 
 		private final SparkMaxLimitSwitch switchReverse = motor.getReverseLimitSwitch(Type.kNormallyOpen);
 
-		private final ProfiledPIDController controller = new ProfiledPIDController(0.7, 0.05, 0.05,
+		private final ProfiledPIDController controller = new ProfiledPIDController(2, 0.05, 0.05,
 				new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION));
-		private final ArmFeedforward feedForward = new ArmFeedforward(0.01, 0, 0, 0);
+		private final ArmFeedforward feedForward = new ArmFeedforward(0.01, 0.4, 0, 0);
 		private MechanismLigament2d simulator;
 		private MechanismLigament2d real;
 
@@ -395,6 +398,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public ArmSubsystem() {
 		// Initialize Inverse Kinematics with constant values
+		if (manipulator instanceof ClawSubsystem) {
 		this.armChainHorizontal.setArmLength(62f)
 				.setSegmentLengthRatio(0, 31 / 62f)
 				.setSegmentLengthRatio(1, 31 / 62f)
@@ -420,6 +424,34 @@ public class ArmSubsystem extends SubsystemBase {
 				.addGloballyConstrainedGripper((float) Math.toRadians(-90), 8f)
 				.setSolveDistanceThreshold(1f)
 				.setMaxIterationAttempts(5000);
+		} else if (manipulator instanceof IntakeSubsystem) {
+			this.armChainHorizontal.setArmLength(62f)
+				.setSegmentLengthRatio(0, 31 / 62f)
+				.setSegmentLengthRatio(1, 31 / 62f)
+				.setSegmentLengths()
+				.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
+				.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
+				.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+				.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+				.initializeChain()
+				.addGloballyConstrainedGripper((float) Math.toRadians(-45), 8f)
+				.setSolveDistanceThreshold(1f)
+				.setMaxIterationAttempts(5000);
+
+		this.armChainVertical.setArmLength(62f)
+				.setSegmentLengthRatio(0, 31 / 62f)
+				.setSegmentLengthRatio(1, 31 / 62f)
+				.setSegmentLengths()
+				.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
+				.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
+				.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+				.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+				.initializeChain()
+				.addGloballyConstrainedGripper((float) Math.toRadians(45), 8f)
+				.setSolveDistanceThreshold(1f)
+				.setMaxIterationAttempts(5000);
+
+		} else {}
 
 		// Create arm simulation components
 
@@ -622,8 +654,8 @@ public class ArmSubsystem extends SubsystemBase {
 
 		// Set motor speeds
 		shoulderJoint.setSpeed(shoulderSpeed);
-		elbowJoint.setSpeed(elbowSpeed);
-		wristJoint.setSpeed(wristSpeed);
+		elbowJoint.setSpeed(elbowSpeed + elbowFeedForward);
+		wristJoint.setSpeed(wristSpeed + wristFeedForward);
 
 		// Update shuffleboard
 		shoulderSpeedEntry.setDouble(shoulderSpeed);
@@ -724,6 +756,8 @@ public class ArmSubsystem extends SubsystemBase {
 		// Move wrist
 		if (!wristJoint.atHardLimit()) {
 			wristJoint.setSpeed(-0.3);
+		} else if (Robot.manipulator instanceof IntakeSubsystem) {
+			wristJoint.setSpeed(-0.15);
 		}
 	}
 

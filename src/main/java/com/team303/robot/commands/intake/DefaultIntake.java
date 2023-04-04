@@ -18,12 +18,16 @@ public class DefaultIntake extends CommandBase {
         // TODO: Check direction of motor
         if (manipulator.getState() == IntakeState.INTAKE) {
             // Only try to move the motor when the switch is not depressed
-            manipulator.setManipulatorSpeed(-0.5);
+            System.out.println("Intake");
+            manipulator.setManipulatorSpeed(-1);
         } else if (manipulator.getState() == IntakeState.OUTTAKE) {
-            manipulator.setManipulatorSpeed(0.5);
+            manipulator.setManipulatorSpeed(1);
+            System.out.println("Outake");
         } else {
             manipulator.setManipulatorSpeed(0);
+            System.out.println("None");
         }
+
 
     }
 }

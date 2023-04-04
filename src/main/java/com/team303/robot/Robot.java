@@ -36,6 +36,7 @@ import com.team303.robot.commands.arm.ReachPoint;
 import com.team303.robot.commands.arm.ReachPointContinuous;
 import com.team303.robot.commands.intake.DefaultIntake;
 import com.team303.robot.subsystems.ClawSubsystem.ClawState;
+import com.team303.robot.subsystems.IntakeSubsystem.IntakeState;
 import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
 import frc.robot.BuildConstants;
 import com.team303.robot.commands.arm.ReachAngles;
@@ -71,10 +72,10 @@ public class Robot extends LoggedRobot {
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
+	public static final ManipulatorSubsystem manipulator = new IntakeSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	// public static final ClawSubsystem claw = null; //new ClawSubsystem();
 	// public static final IntakeSubsystem intake = new IntakeSubsystem();
-	public static final ManipulatorSubsystem manipulator = new IntakeSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
 	public static final LEDSubsystem ledStrip = null; // new LEDSubsystem();
 
@@ -161,7 +162,7 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.manipulator.setDefaultCommand(new DefaultClaw());
+		Robot.manipulator.setDefaultCommand(new DefaultIntake());
 		// Robot.intake.setDefaultCommand(new DefaultIntake());
 
 		// add Autos to Shuffleboard
@@ -252,12 +253,14 @@ public class Robot extends LoggedRobot {
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
 		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
-		operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
-		operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
+		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
+		//operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
-		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
-		operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
+		operatorController.b().onTrue(Commands.runOnce(() -> {manipulator.setState(IntakeState.INTAKE);})).onFalse(Commands.runOnce(() -> {manipulator.setState(IntakeState.NONE);}));
+		operatorController.x().onTrue(Commands.runOnce(() -> {manipulator.setState(IntakeState.OUTTAKE);})).onFalse(Commands.runOnce(() -> {manipulator.setState(IntakeState.NONE);}));
+
+		operatorController.a().onTrue(Commands.runOnce(() -> manipulator.setState(IntakeState.NONE)));
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
@@ -265,15 +268,15 @@ public class Robot extends LoggedRobot {
 		// Top Cone
 		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
 		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
+		operatorController.pov(90).whileTrue(new ReachPoint(60, 22.5).repeatedly());
 		// Mid Cone
 		operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
 		// Bottom
 		operatorController.pov(270).whileTrue(new ReachPoint(28, 10).repeatedly());
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
-		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.3, 0.3, 0.4));
-		operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
+		operatorController.a().toggleOnTrue(new HomeArmContinuous(0.3, 0.3, 0.4));
+		// operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));
 
