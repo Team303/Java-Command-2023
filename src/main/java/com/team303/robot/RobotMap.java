@@ -51,7 +51,7 @@ public final class RobotMap {
 		public static final double DRIVE_GEAR_RATIO = 12.75; // Toughbox mini 12.75:1
 		// public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for
 		// each encoder unit
-		public static final double MAX_VELOCITY = 4;
+		public static final double MAX_VELOCITY = 4.2;
 
 		public static final double MAX_ACCELERATION = 3; // Meters per second
 		public static final double MAX_RPS = 183.33; // Max rotations per second
@@ -118,7 +118,7 @@ public final class RobotMap {
 		public static final double SIMULATION_OFFSET = 0;
 		public static final double SIMULATION_SCALE = 84 / 2.54;
 		public static final double GEAR_RATIO_SHOULDER = 266.66;
-		public static final double GEAR_RATIO_ELBOW = 125;
+		public static final double GEAR_RATIO_ELBOW = 216;
 		public static final double GEAR_RATIO_WRIST = 45;
 		// public static final double INCHES_TO_
 		/*

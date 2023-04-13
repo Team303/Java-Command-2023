@@ -29,6 +29,6 @@ public class HomeArmContinuous extends CommandBase {
         // Reset arm encoders to known angles
         arm.resetEncodersToHomePosition();
 
-        cartesianStorage = new Translation3d(8, 0, 15);
+        cartesianStorage = new Translation3d(10, 0, 17);
     }
 }

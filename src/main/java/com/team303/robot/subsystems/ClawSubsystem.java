@@ -64,7 +64,7 @@ public class ClawSubsystem extends SubsystemBase implements ManipulatorSubsystem
 	public ClawSubsystem() {
 		/* Claw Actuation Motor */
 
-		clawMotor.setInverted(true);
+		clawMotor.setInverted(false);
 		clawMotor.setIdleMode(IdleMode.kBrake);
 
 		clawMotor.setSmartCurrentLimit(20);

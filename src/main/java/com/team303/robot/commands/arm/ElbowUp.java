@@ -24,6 +24,6 @@ public class ElbowUp extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Robot.arm.elbowJoint.getEncoderPosition() < 30;
+        return Robot.arm.elbowJoint.getEncoderPosition() < angle;
     }
 }

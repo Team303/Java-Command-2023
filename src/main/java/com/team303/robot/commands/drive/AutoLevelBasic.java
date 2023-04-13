@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class AutoLevelBasic extends CommandBase {
-    private final PIDController FeedbackController = new PIDController(0.025, 0, 0.01);
+    private final PIDController FeedbackController = new PIDController(0.02, 0, 0.01);
     private final SimpleMotorFeedforward FeedforwardController = new SimpleMotorFeedforward(
-            1, 0.5);
+            0.75, 0.5);
 
     private double lastTime = Timer.getFPGATimestamp();
 

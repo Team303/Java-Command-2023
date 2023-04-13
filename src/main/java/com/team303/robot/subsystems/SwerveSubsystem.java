@@ -64,6 +64,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import static com.team303.robot.autonomous.AutonomousProgram.AUTO_TAB;
@@ -79,21 +80,16 @@ public class SwerveSubsystem extends SubsystemBase {
 	private final Field2d field2d = new Field2d();
 	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 	private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25, 0.25, 0);
-	
-	/* robot orientation chooser */
-	public static final SendableChooser<String> orientationChooser = new SendableChooser<>();
-
-	static {
-		orientationChooser.setDefaultOption("Forward", "Forward");
-		orientationChooser.addOption("Backward", "Forward");
-		AUTO_TAB.add("Facing", orientationChooser).withPosition(2,0);
-	}
-
 
 	public PhotonPoseEstimator visionPoseEstimator;
 	public SwerveDrivePoseEstimator poseEstimator;
 
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Data");
+
+	public static final GenericEntry FRONT_LEFT_ENC = DRIVEBASE_TAB.add("front left", 0).getEntry();
+	public static final GenericEntry FRONT_RIGHT_ENC = DRIVEBASE_TAB.add("front right", 0).getEntry();
+	public static final GenericEntry BACK_LEFT_ENC = DRIVEBASE_TAB.add("back left", 0).getEntry();
+	public static final GenericEntry BACK_RIGHT_ENC = DRIVEBASE_TAB.add("back right", 0).getEntry();
 
 	// private Rotation2d angle = new Rotation2d();
 	public double angle = 0;
@@ -120,7 +116,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	private Pose2d pose = new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d());
 
 	public static final double MAX_VOLTAGE = 12.0;
-	public static double MAX_DRIVE_SPEED = 0.75;
+	public static double MAX_DRIVE_SPEED = 0.99;
 
 	/* Node Positions */
 	public static double[] nodePositions = new double[9];
@@ -201,7 +197,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (Robot.isReal()) {
 			odometry = new SwerveDriveOdometry(
-				// consider making angle value negative
+					// consider making angle value negative
 					kinematics, Rotation2d.fromDegrees(Robot.navX.getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
@@ -238,9 +234,9 @@ public class SwerveSubsystem extends SubsystemBase {
 		// photonvision pose estimator
 
 		// if (Robot.isReal()) {
-		// 	visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP,
-		// 			Robot.photonvision.getCamera(CameraName.CAM1), new Transform3d(new Translation3d(), new Rotation3d()));
-		// 	visionPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+		// 	visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+		// 			Robot.photonvision.getCamera(CameraName.CAM1),
+		// 			new Transform3d(new Translation3d(), new Rotation3d()));
 		// }
 		poseEstimator = new SwerveDrivePoseEstimator(
 				kinematics,
@@ -256,33 +252,6 @@ public class SwerveSubsystem extends SubsystemBase {
 				photonStandardDeviations);
 		DRIVEBASE_TAB.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
 		DRIVEBASE_TAB.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
-
-		// var thread = 
-		// 		new Thread(
-		// 			() -> {
-		// 				if (aprilTagField == null) {
-		// 					return;
-		// 				}
-		// 				while (!Thread.currentThread().isInterrupted()) {
-		// 					poseEstimator.update(
-		// 						Rotation2d.fromDegrees(-Robot.navX.getAngle()),
-		// 						Robot.swerve.getModulePositions());
-		// 					Optional<EstimatedRobotPose> result = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-		// 					if (result.isPresent()) {
-		// 						EstimatedRobotPose visionPoseEstimate = result.get();
-		// 						poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-		// 								visionPoseEstimate.timestampSeconds);
-		// 					}
-		// 					try {
-		// 					  Thread.sleep(Swerve.THREAD_SLEEP_DURATION_MS);
-		// 					} catch (InterruptedException e) {
-		// 					  Thread.currentThread().interrupt();
-		// 					}
-		// 				  }
-		// 			}
-		// 		);
-		// thread.setDaemon(true);
-		// thread.start();
 	}
 
 	public void resetToAbsoluteAngle() {
@@ -331,13 +300,8 @@ public class SwerveSubsystem extends SubsystemBase {
 		}
 		System.out.println("Resetting");
 
-		if (orientationChooser.getSelected().equals("Forward")) {			
-			odometry.resetPosition(Robot.navX.getRotation2d(), newSwervePositions,
-					new Pose2d(0, 0, new Rotation2d()));
-		} else {
-			odometry.resetPosition(Robot.navX.getRotation2d(), newSwervePositions,
-					new Pose2d(0, 0, new Rotation2d(Math.PI)));			
-		}
+		odometry.resetPosition(Robot.navX.getRotation2d(), newSwervePositions,
+				new Pose2d(0, 0, new Rotation2d(Math.PI)));
 		this.angle = 0;
 
 	}
@@ -445,14 +409,17 @@ public class SwerveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		double triggerPressure = Robot.driverController.getLeftTriggerAxis();
-		if (Robot.driverController.b().getAsBoolean()) {
-			MAX_DRIVE_SPEED = 1.0;
-		} else if (triggerPressure > 0.01) {
-			// Map max speed from 0-100 to 50-20
-			MAX_DRIVE_SPEED = triggerPressure * -3 / 10 + 0.5;
-		} else if (!Robot.driverController.b().getAsBoolean()) {
-			MAX_DRIVE_SPEED = 0.75;
-		}
+		// if (Robot.driverController.b().getAsBoolean()) {
+		// 	MAX_DRIVE_SPEED = 1.0;
+		// } 
+		
+		// if (triggerPressure > 0.01) {
+		// 	// Map max speed from 0-100 to 50-20
+		// 	MAX_DRIVE_SPEED = triggerPressure * -3 / 10 + 0.5;
+		// } 
+		// else if (!Robot.driverController.b().getAsBoolean()) {
+		// 	MAX_DRIVE_SPEED = 0.75;
+		// }
 
 		if (Robot.isReal()) {
 			// Update Poses
@@ -481,12 +448,29 @@ public class SwerveSubsystem extends SubsystemBase {
 							new SwerveModulePosition(positions[3], state[3].angle),
 					});
 		}
+
+		// poseEstimator.update(
+		// 		Rotation2d.fromDegrees(-Robot.navX.getAngle()),
+		// 		Robot.swerve.getModulePositions());
+		// Optional<EstimatedRobotPose> result =
+		// 		getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+
+		// if (result.isPresent()) {
+		// 	EstimatedRobotPose visionPoseEstimate = result.get();
+		// 	poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+		// 	visionPoseEstimate.timestampSeconds);
+		// }
 		// poseEstimator.update(
 		// Rotation2d.fromDegrees(-Robot.navX.getAngle()),
 		// Robot.swerve.getModulePositions());
-		field2d.setRobotPose(getRobotPose());
+		// field2d.setRobotPose(getRobotPose());
 
 		lastPeriodic = timer.get();
+
+		FRONT_LEFT_ENC.setDouble(leftFrontModule.getDriveDistance());
+		FRONT_RIGHT_ENC.setDouble(rightFrontModule.getDriveDistance());
+		BACK_LEFT_ENC.setDouble(leftBackModule.getDriveDistance());
+		BACK_RIGHT_ENC.setDouble(rightBackModule.getDriveDistance());
 
 		NAVX_Y_VELOCITY.setDouble(Robot.navX.getRawGyroZ(), 0);
 		NAVX_ACCELERATION.setDouble(Robot.navX.getRawAccelX());
@@ -585,12 +569,12 @@ public class SwerveSubsystem extends SubsystemBase {
 		);
 	}
 
-	// @Override
-	// public String toString() {
-	// var pose = getRobotPose();
-	// return String.format("(%.2f, %.2f) %.2f degrees",
-	// pose.getX(),
-	// pose.getY(),
-	// pose.getRotation().getDegrees());
-	// }
+	@Override
+	public String toString() {
+	var pose = getRobotPose();
+	return String.format("(%.2f, %.2f) %.2f degrees",
+	pose.getX(),
+	pose.getY(),
+	pose.getRotation().getDegrees());
+	}
 }

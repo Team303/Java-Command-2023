@@ -39,6 +39,7 @@ import com.team303.robot.subsystems.ClawSubsystem.ClawState;
 import com.team303.robot.subsystems.IntakeSubsystem.IntakeState;
 import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
 import frc.robot.BuildConstants;
+import com.team303.robot.commands.arm.ElbowUp;
 import com.team303.robot.commands.arm.ReachAngles;
 import static com.team303.robot.subsystems.ClawSubsystem.clawStateChooser;
 import static com.team303.robot.subsystems.ClawSubsystem.clawModeChooser;
@@ -50,6 +51,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -68,11 +70,11 @@ public class Robot extends LoggedRobot {
 	/* Robot Modules */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
-	 public static final OperatorGridModule operatorGrid = new OperatorGridModule();
+	public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ManipulatorSubsystem manipulator = new IntakeSubsystem();
+	public static final ManipulatorSubsystem manipulator = new ClawSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	// public static final ClawSubsystem claw = null; //new ClawSubsystem();
 	// public static final IntakeSubsystem intake = new IntakeSubsystem();
@@ -127,7 +129,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		Logger logger = Logger.getInstance();
 		navX.reset();
-		// CameraServer.startAutomaticCapture();
+		CameraServer.startAutomaticCapture();
 
 		// Record metadata
 		logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -162,7 +164,7 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.manipulator.setDefaultCommand(new DefaultIntake());
+		Robot.manipulator.setDefaultCommand(new DefaultClaw());
 		// Robot.intake.setDefaultCommand(new DefaultIntake());
 
 		// add Autos to Shuffleboard
@@ -180,15 +182,21 @@ public class Robot extends LoggedRobot {
 
 		// Dont do IK during auto
 		Robot.arm.removeDefaultCommand();
-		if (manipulator instanceof ClawSubsystem) {
-			ClawSubsystem stateClaw = (ClawSubsystem) manipulator;
-			stateClaw.state = clawStateChooser.getSelected();
-			stateClaw.mode = clawModeChooser.getSelected();
-		} else {
-			IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
-			stateIntake.state = intakeStateChooser.getSelected();
-			stateIntake.mode = intakeModeChooser.getSelected();
-		}
+		// Command startCommand = new SequentialCommandGroup(new ElbowUp(30), new
+		// HomeArm());
+		// if (manipulator instanceof ClawSubsystem) {
+		ClawSubsystem stateClaw = (ClawSubsystem) manipulator;
+		stateClaw.state = clawStateChooser.getSelected();
+		stateClaw.mode = clawModeChooser.getSelected();
+		// startCommand = stateClaw.state==ClawState.OPEN ? startCommand = new HomeArm()
+		// :
+		// new SequentialCommandGroup(new ElbowUp(45), new HomeArm());
+		// } else {
+		// IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
+		// stateIntake.state = intakeStateChooser.getSelected();
+		// stateIntake.mode = intakeModeChooser.getSelected();
+		// // startCommand = Commands.none();
+		// }
 
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
@@ -241,8 +249,9 @@ public class Robot extends LoggedRobot {
 	private void configureButtonBindings() {
 		/* Operator Controls */
 
-		// Custom grid widget button bindings
-		// operatorController.pov(0).onTrue(new InstantCommand(operatorGrid::moveUp));
+		// Custo m grid widget button bindings
+		// operat\9\n9n9nnnnnnnnnnnnnnn\nnnnnnnnnnnnnnnnnnnnnnnnnn9
+
 		// operatorController.pov(90).onTrue(new
 		// InstantCommand(operatorGrid::moveRight));
 		// operatorController.pov(180).onTrue(new
@@ -251,16 +260,21 @@ public class Robot extends LoggedRobot {
 		// InstantCommand(operatorGrid::moveLeft));
 
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
-		// operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
+		// operatorController.x().onTrue(new
+		// InstantCommand(operatorGrid::queuePlacement));
 
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
-		//operatorController.x().onTrue(new InstantCommand(operatorGrid::queuePlacement));
+		// operatorController.x().onTrue(new
+		// InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
-		operatorController.b().onTrue(Commands.runOnce(() -> {manipulator.setState(IntakeState.INTAKE);})).onFalse(Commands.runOnce(() -> {manipulator.setState(IntakeState.NONE);}));
-		operatorController.x().onTrue(Commands.runOnce(() -> {manipulator.setState(IntakeState.OUTTAKE);})).onFalse(Commands.runOnce(() -> {manipulator.setState(IntakeState.NONE);}));
+		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
+		// operatorController.x().onTrue(new
+		// InstantCommand(operatorGrid::queuePlacement));
 
-		operatorController.a().onTrue(Commands.runOnce(() -> manipulator.setState(IntakeState.NONE)));
+		// Claw Control
+		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
+		operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
@@ -268,14 +282,15 @@ public class Robot extends LoggedRobot {
 		// Top Cone
 		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
 		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(60, 22.5).repeatedly());
+		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
 		// Mid Cone
 		operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
 		// Bottom
-		operatorController.pov(270).whileTrue(new ReachPoint(28, 10).repeatedly());
+		operatorController.pov(270)
+				.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10)));
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
-		operatorController.a().toggleOnTrue(new HomeArmContinuous(0.3, 0.3, 0.4));
+		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.2, 0.3));
 		// operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));

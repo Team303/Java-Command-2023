@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
-import static com.team303.robot.subsystems.IntakeSubsystem.state;
-import com.team303.robot.subsystems.IntakeSubsystem.IntakeState;
+// import static com.team303.robot.subsystems.IntakeSubsystem.state;
+// import com.team303.robot.subsystems.IntakeSubsystem.IntakeState;
 
 public class HomeArm extends CommandBase {
     /**
@@ -49,10 +49,10 @@ public class HomeArm extends CommandBase {
         arm.resetEncodersToHomePosition();
 
         // Reset the stored end effector point
-        cartesianStorage = new Translation3d(13, 0, 20);
+        cartesianStorage = new Translation3d(10, 0, 17);
 
         // Stop the deadline timer
         timer.stop();
-        state = IntakeState.NONE;
+        // state = IntakeState.NONE;
     }
 }
