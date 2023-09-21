@@ -118,7 +118,7 @@ public final class RobotMap {
 		public static final double SIMULATION_OFFSET = 0;
 		public static final double SIMULATION_SCALE = 84 / 2.54;
 		public static final double GEAR_RATIO_SHOULDER = 266.66;
-		public static final double GEAR_RATIO_ELBOW = 216;
+		public static final double GEAR_RATIO_ELBOW = 216 * (42/18);
 		public static final double GEAR_RATIO_WRIST = 45;
 		// public static final double INCHES_TO_
 		/*
