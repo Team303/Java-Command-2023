@@ -115,7 +115,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	private Pose2d pose = new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d());
 
-	public static double MAX_VOLTAGE = 6.0;
+	public static double MAX_VOLTAGE = 12.0;
 	public static double MAX_DRIVE_SPEED = 1;
 
 	/* Node Positions */

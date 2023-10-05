@@ -37,7 +37,6 @@ import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianSt
 import static com.team303.robot.Robot.manipulator;
 
 public class ArmSubsystem extends SubsystemBase {
-	public static boolean isVerticalChain2 = false; 
 
 	public static final ShuffleboardTab ARM_TAB = Shuffleboard.getTab("Arm");
 
@@ -270,7 +269,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 		private final DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(9);
 
-		private final ProfiledPIDController controller = new ProfiledPIDController(0.7, 0.05, 0,
+		private final ProfiledPIDController controller = new ProfiledPIDController(0.35, 0.05, 0,
 				new TrapezoidProfile.Constraints(MAX_VELOCITY_ELBOW, MAX_ACCELERATION));
 		private final ArmFeedforward feedForward = new ArmFeedforward(0, -0.4, 0, 0);
 		private MechanismLigament2d simulator;
@@ -343,8 +342,8 @@ public class ArmSubsystem extends SubsystemBase {
 
 		@Override
 		public void setSpeed(double speed) {
-			// motor.set(speed);
-			motor.set(0);
+			motor.set(speed);
+			//motor.set(0);
 		}
 
 		@Override
@@ -377,7 +376,6 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public static ArmChain armChainHorizontal = new ArmChain();
 	public static ArmChain armChainVertical = new ArmChain();
-	public static ArmChain armChainVertical2 = new ArmChain();
 	public FabrikController armKinematics = new FabrikController();
 
 	public ShoulderJoint shoulderJoint = new ShoulderJoint();
@@ -429,22 +427,10 @@ public class ArmSubsystem extends SubsystemBase {
 					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
 					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
 					.initializeChain()
-					.addGloballyConstrainedGripper((float) Math.toRadians(30), 4f)
+					.addGloballyConstrainedGripper((float) Math.toRadians(45), 4f)
 					.setSolveDistanceThreshold(1f)
 					.setMaxIterationAttempts(5000);
-			this.armChainVertical2.setArmLength(62f)
-					.setSegmentLengthRatio(0, 31 / 62f)
-					.setSegmentLengthRatio(1, 31 / 62f)
-					.setSegmentLengths()
-					.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
-					.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
-					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
-					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
-					.initializeChain()
-					.addGloballyConstrainedGripper((float) Math.toRadians(-30), 4f)
-					.setSolveDistanceThreshold(1f)
-					.setMaxIterationAttempts(5000);
-		} else if (manipulator instanceof IntakeSubsystem) {
+		} else  {
 			this.armChainHorizontal.setArmLength(62f)
 					.setSegmentLengthRatio(0, 31 / 62f)
 					.setSegmentLengthRatio(1, 31 / 62f)
@@ -470,20 +456,6 @@ public class ArmSubsystem extends SubsystemBase {
 					.addGloballyConstrainedGripper((float) Math.toRadians(30), 8f)
 					.setSolveDistanceThreshold(1f)
 					.setMaxIterationAttempts(5000);
-			this.armChainVertical2.setArmLength(62f)
-					.setSegmentLengthRatio(0, 31 / 62f)
-					.setSegmentLengthRatio(1, 31 / 62f)
-					.setSegmentLengths()
-					.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
-					.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
-					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
-					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
-					.initializeChain()
-					.addGloballyConstrainedGripper((float) Math.toRadians(-120), 8f)
-					.setSolveDistanceThreshold(1f)
-					.setMaxIterationAttempts(5000);
-
-		} else {
 		}
 
 		// Create arm simulation components
@@ -500,7 +472,7 @@ public class ArmSubsystem extends SubsystemBase {
 		shoulderJoint.simulator = armRoot.append(
 				new MechanismLigament2d(
 						"shoulder",
-						(double) armChainHorizontal.getSegmentLength(0) / Arm.SIMULATION_SCALE,
+						(double) armChainVertical.getSegmentLength(0) / Arm.SIMULATION_SCALE,
 						0,
 						5.0,
 						new Color8Bit(255, 0, 0)));
@@ -508,7 +480,7 @@ public class ArmSubsystem extends SubsystemBase {
 		elbowJoint.simulator = shoulderJoint.simulator.append(
 				new MechanismLigament2d(
 						"elbow",
-						(double) (armChainHorizontal.getSegmentLength(1)) / Arm.SIMULATION_SCALE,
+						(double) (armChainVertical.getSegmentLength(1)) / Arm.SIMULATION_SCALE,
 						0.0,
 						5.0,
 						new Color8Bit(0, 255, 0)));
@@ -592,15 +564,7 @@ public class ArmSubsystem extends SubsystemBase {
 			armChainVertical.solveForEmbedded();
 			return reach(armChainVertical.getIKAnglesRadians());
 	
-		}
-		else if ((isVerticalChain2)) {
-			armChainVertical2.updateEmbedded((float) translation.getX(), (float) translation.getZ());
-			armChainVertical2.solveForEmbedded();
-			return reach(armChainVertical2.getIKAnglesRadians());
-		}
-		else {
-			
-
+		} else {
 			armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
 			armChainHorizontal.solveForEmbedded();
 			return reach(armChainHorizontal.getIKAnglesRadians());
@@ -705,7 +669,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 		// REMOVE WRIST JOINT DUE TO MECHANICAL ISSUES
 
-		// wristJoint.setSpeed(wristSpeed);
+		wristJoint.setSpeed(wristSpeed);
 
 		// Update shuffleboard
 		shoulderSpeedEntry.setDouble(shoulderSpeed);
@@ -758,7 +722,7 @@ public class ArmSubsystem extends SubsystemBase {
 		if (!forwardWristLimit && !reverseWristLimit) {
 
 			//REMOVE WRIST MOVEMENT
-			// wristJoint.setSpeed(wristSpeed);
+			wristJoint.setSpeed(wristSpeed);
 		}
 	}
 
@@ -813,11 +777,11 @@ public class ArmSubsystem extends SubsystemBase {
 
 		//REMOVE WRIST JOINT DUE TO MECHANICAL ERROR
 
-		// if (!wristJoint.atHardLimit()) {
-		// 	wristJoint.setSpeed(-0.3);
-		// } else {
-		// 	wristJoint.setSpeed(0);
-		// }
+		if (!wristJoint.atHardLimit()) {
+			wristJoint.setSpeed(-0.3);
+		} else {
+			wristJoint.setSpeed(0);
+		}
 	}
 
 	/**
@@ -837,7 +801,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 		// Move wrist
 		// REMOVE WRIST MOVEMENT DUE TO MECHANICAL ERROR
-		// wristJoint.setSpeed(!wristJoint.atHardLimit() ? -Math.abs(wristSpeed) : 0);
+		wristJoint.setSpeed(!wristJoint.atHardLimit() ? -Math.abs(wristSpeed) : 0);
 	}
 
 	public void stopMotors() {

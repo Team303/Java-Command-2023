@@ -33,6 +33,7 @@ import com.team303.robot.subsystems.IntakeSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.subsystems.ManipulatorSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
+import com.team303.robot.commands.arm.DefaultIKControlCommand;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.GenericEntry;
@@ -48,12 +49,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import com.team303.robot.commands.arm.ReachPoint;
 import frc.robot.BuildConstants;
 
 public class Robot extends LoggedRobot {
 
 	/* roboRIO Sensors */
-	public static final AHRS navX = new AHRS();
+	public static final AHRS navX = new AHRS();=
 
 	/* Robot Modules */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
@@ -62,8 +64,8 @@ public class Robot extends LoggedRobot {
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ManipulatorSubsystem manipulator = new ClawSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final ManipulatorSubsystem manipulator= null; // = new ClawSubsystem();
+	public static final ArmSubsystem arm = null; //= new ArmSubsystem();
 	// public static final ClawSubsystem claw = new ClawSubsystem();
 	// public static final IntakeSubsystem intake = new IntakeSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
@@ -141,7 +143,7 @@ public class Robot extends LoggedRobot {
 		// Set up data receivers & replay source
 		if (Robot.isReal()) {
 			// Running on a real robot, log to a USB stick
-			logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+			logger.addDataReceiver(new WPILOGWriter("/AdvantageScopeLogs"));
 			logger.addDataReceiver(new NT4Publisher());
 		} else {
 			logger.addDataReceiver(new WPILOGWriter(""));
@@ -152,10 +154,10 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.manipulator.setDefaultCommand(new DefaultClaw());
+		// Robot.manipulator.setDefaultCommand(new DefaultClaw());
 		// Robot.intake.setDefaultCommand(new DefaultIntake());
 
-		// add Autos to Shuffleboard
+		// add Autos to Shuffleboard 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
 
@@ -169,23 +171,25 @@ public class Robot extends LoggedRobot {
 		swerve.resetOdometry();
 
 		// Dont do IK during auto
-		Robot.arm.removeDefaultCommand();
-		Command startCommand = new SequentialCommandGroup(new ElbowUp(30), new
-		HomeArm());
-		if (manipulator instanceof ClawSubsystem) {
-		ClawSubsystem stateClaw = (ClawSubsystem) manipulator;
-		stateClaw.state = clawStateChooser.getSelected();
-		stateClaw.mode = clawModeChooser.getSelected();
-		if(stateClaw.state ==ClawState.OPEN) { startCommand.andThen(new HomeArm());
-		} else {
-		startCommand.andThen(new SequentialCommandGroup(new ElbowUp(45), new HomeArm()));
-		}
-		} else {
-		IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
-		stateIntake.state = intakeStateChooser.getSelected();
-		stateIntake.mode = intakeModeChooser.getSelected();
-		// startCommand = Commands.none();
-		}
+		// Robot.arm.removeDefaultCommand();
+		// Command startCommand = new SequentialCommandGroup(new
+		// HomeArm());
+		// if (manipulator instanceof ClawSubsystem) {
+		// ClawSubsystem stateClaw = (ClawSubsystem) manipulator;
+		// stateClaw.state = clawStateChooser.getSelected();
+		// stateClaw.mode = clawModeChooser.getSelected();
+		// if(stateClaw.state ==ClawState.OPEN) { startCommand.andThen(new HomeArm());
+		// } else {
+		// startCommand.andThen(new SequentialCommandGroup(new ElbowUp(45), new HomeArm()));
+		// }
+		// } else {
+		// IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
+		// stateIntake.svtate = intakeStateChooser.getSelected();
+		// stateIntake.mode = intakeModeChooser.getSelected();
+		// // startCommand = Commands.none();
+
+		
+		// }
 
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
@@ -199,7 +203,7 @@ public class Robot extends LoggedRobot {
 		if (autonomousRoutine != null) {
 			// Run the delay/home and the selected routine sequentially
 			this.autonomousCommand = new SequentialCommandGroup(
-					startCommand,
+					// startCommand,
 					delay,
 					autonomousRoutine);
 		} else {
@@ -256,7 +260,7 @@ public class Robot extends LoggedRobot {
 		// InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
-		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
+		// operatorController.y().onTrue( new InstantCommand(operatorGrid::setPiece));
 		// operatorController.x().onTrue(new
 		// InstantCommand(operatorGrid::queuePlacement));
 
@@ -268,44 +272,38 @@ public class Robot extends LoggedRobot {
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
 
-		// Top Cone
+		// // Top Cone
 		// operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
-		// Substation
+		// // Substation
 		// operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
-		// Mid Cone
-		// operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
-		// Bottom
+		// // Mid Cone
+		// operatorController.pov(180).whileTrue(new ReachPoint(30, 26).repeatedly());
+		// // Bottom
 		// operatorController.pov(270)
 		// .onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10)));
 
-		// operatorController.x().whileTrue(new HomeArmContinuous());
-		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.2, 0.3));
+		// // operatorController.x().whileTrue(new HomeArmContinuous());
+		// operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.35, 0.35));
 		// operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));
 
-		Robot.operatorController.rightBumper().onTrue(new InstantCommand(() -> {
-			ArmSubsystem.isVerticalChain2 = true;
-		})).onFalse(new InstantCommand(() -> {
-			ArmSubsystem.isVerticalChain2 = true;
-		}));
-
 		// Lock swerve wheels while x is held
 		/* Driver Controls */
 
-		driverController.a().toggleOnTrue(new InstantCommand(() -> {
-			if (SwerveSubsystem.MAX_VOLTAGE == 12.0) {
-				SwerveSubsystem.MAX_VOLTAGE = 6.0;
-			} else {
-				SwerveSubsystem.MAX_VOLTAGE = 12.0;
-			}
-		}));
+		// driverController.a().toggleOnTrue(new InstantCommand(() -> {
+		// 	if (SwerveSubsystem.MAX_VOLTAGE == 12.0) {
+		// 		SwerveSubsystem.MAX_VOLTAGE = 6.0;
+		// 	} else {
+		// 		SwerveSubsystem.MAX_VOLTAGE = 12.0;
+		// 	}
+		// }));
 
 		// driverController.a().whileTrue(Commands.runOnce(swerve::lockWheels));
 
 		// Reset field oriented drive when y is pressed
 		driverController.y()
-				.onTrue(Commands.runOnce(navX::reset).andThen(Commands.runOnce(swerve::resetOdometry)));
+				.onTrue(Commands.runOnce(navX::reset));
 
 		// Auto level while a is held
 		driverController.x().whileTrue(new AutoLevelBasic());

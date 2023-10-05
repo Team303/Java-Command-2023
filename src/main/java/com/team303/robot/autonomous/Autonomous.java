@@ -66,6 +66,7 @@ public class Autonomous {
         static List<PathPlannerTrajectory> pathGroupLevel;
         static List<PathPlannerTrajectory> pathGroupLevelScore;
         static List<PathPlannerTrajectory> pathGroupScore;
+        static List<PathPlannerTrajectory> pathGroupLevelScoreTaxi;
         private static SwerveAutoBuilder autoBuilder;
         public static final GenericEntry EFFECTOR_X = CONTROLLER_TAB.add("Set X", 0).getEntry();
         public static final GenericEntry EFFECTOR_Y = CONTROLLER_TAB.add("Set Y", 0).getEntry();
@@ -77,8 +78,8 @@ public class Autonomous {
                 // eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16, 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                eventMap.put("Top Cube", new ReachPoint(73, 15));
-                eventMap.put("Toggle State", new InstantCommand(Robot.manipulator::nextState));
+                // eventMap.put("Top Cube", new ReachPoint(73, 15));
+                // eventMap.put("Toggle State", new InstantCommand(Robot.manipulator::nextState));
 
                 autoBuilder = new SwerveAutoBuilder(
                                 // swerve::getRobotPose, // Pose2d supplier
@@ -130,17 +131,19 @@ public class Autonomous {
                 pathGroupLevel = PathPlanner.loadPathGroup("Level", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Auto Level", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevel),
                                 new AutoLevelBasic()));
-                pathGroupSubstation = PathPlanner.loadPathGroup("Towards Substation",
-                                new PathConstraints(3, Swerve.MAX_VELOCITY));
-                create("Taxi Substation", () -> autoBuilder.fullAuto(pathGroupSubstation));
-                pathGroupGate = PathPlanner.loadPathGroup("Towards Gate", new PathConstraints(3, Swerve.MAX_VELOCITY));
-                create("Taxi Gate", () -> autoBuilder.fullAuto(pathGroupGate));
+                // pathGroupSubstation = PathPlanner.loadPathGroup("Towards Substation",
+                //                 new PathConstraints(3, Swerve.MAX_VELOCITY));
+                // create("Taxi Substation", () -> autoBuilder.fullAuto(pathGroupSubstation));
+                // pathGroupGate = PathPlanner.loadPathGroup("Towards Gate", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                // create("Taxi Gate", () -> autoBuilder.fullAuto(pathGroupGate));
                 pathGroupForward = PathPlanner.loadPathGroup("Forward", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Taxi Forward", () -> autoBuilder.fullAuto(pathGroupForward));
                 pathGroupScore = PathPlanner.loadPathGroup("Forward Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Forward and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupScore)));
                 pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Auto Level and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore), new AutoLevelBasic()));
+                pathGroupLevelScoreTaxi = PathPlanner.loadPathGroup("Level Backup Score Taxi", new PathConstraints(3, Swerve.MAX_VELOCITY));
+                create(" Auto Level Score and Taxi", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScoreTaxi), new AutoLevelBasic()));
                 // create("Score Cube", () -> new ReachPoint(73, 15));
                 // pathGroupScore = PathPlanner.loadPathGroup("Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
 
