@@ -38,7 +38,7 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
     public static final double GEAR_RATIO_INTAKE = 50;
 
     /* Speed Constants */
-    public static final double MAX_INTAKE_SPEED = 0.5;
+    public static final double MAX_INTAKE_SPEED = 1;
 
     /* Motors */
     private final CANSparkMax intakeMotor = new CANSparkMax(19, MotorType.kBrushless);
@@ -93,6 +93,22 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
         }
     }
 
+    public void toggleIntake() {
+        if (this.state != IntakeState.INTAKE) {
+            this.state = IntakeState.INTAKE;
+        } else {
+            this.state = IntakeState.NONE;
+        }
+    }
+
+    public void toggleOuttake() {
+        if (this.state != IntakeState.OUTTAKE) {
+            this.state = IntakeState.OUTTAKE;
+        } else {
+            this.state = IntakeState.NONE;
+        }
+    }
+
     public void setState(ManipulatorState state) {
         this.state = (IntakeState) state;
     }
@@ -123,14 +139,14 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
         stateEntry.setString(state.getName());
         modeEntry.setString(mode.getName());
 
-        // switch(this.state) {
-        //     case INTAKE:
-        //         setManipulatorSpeed(1);
-        //     case OUTTAKE:
-        //         setManipulatorSpeed(-1);
-        //     default:
-        //         setManipulatorSpeed(0);
-        // }
+        switch(this.state) {
+            case INTAKE:
+                setManipulatorSpeed(1);
+            case OUTTAKE:
+                setManipulatorSpeed(-1);
+            default:
+                setManipulatorSpeed(0);
+        }
     }
 
 }

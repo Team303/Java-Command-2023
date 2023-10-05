@@ -1,7 +1,9 @@
 package com.team303.robot;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import static com.team303.robot.subsystems.ClawSubsystem.clawModeChooser;
+import static com.team303.robot.subsystems.ClawSubsystem.clawStateChooser;
+import static com.team303.robot.subsystems.IntakeSubsystem.intakeModeChooser;
+import static com.team303.robot.subsystems.IntakeSubsystem.intakeStateChooser;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -13,12 +15,11 @@ import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
-import com.team303.robot.commands.arm.DefaultArm;
+import com.team303.robot.commands.arm.ElbowUp;
 import com.team303.robot.commands.arm.HomeArm;
 import com.team303.robot.commands.arm.HomeArmContinuous;
 import com.team303.robot.commands.claw.DefaultClaw;
 import com.team303.robot.commands.drive.AutoLevelBasic;
-import com.team303.robot.commands.drive.AutolevelFeedforward;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.modules.OperatorGridModule;
@@ -27,31 +28,18 @@ import com.team303.robot.modules.UltrasonicModule;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.ArmTestSubsystem;
 import com.team303.robot.subsystems.ClawSubsystem;
+import com.team303.robot.subsystems.ClawSubsystem.ClawState;
 import com.team303.robot.subsystems.IntakeSubsystem;
-import com.team303.robot.subsystems.SwerveSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.subsystems.ManipulatorSubsystem;
-import com.team303.robot.commands.arm.DefaultIKControlCommand;
-import com.team303.robot.commands.arm.ReachPoint;
-import com.team303.robot.commands.arm.ReachPointContinuous;
-import com.team303.robot.commands.intake.DefaultIntake;
-import com.team303.robot.subsystems.ClawSubsystem.ClawState;
-import com.team303.robot.subsystems.IntakeSubsystem.IntakeState;
-import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
-import frc.robot.BuildConstants;
-import com.team303.robot.commands.arm.ElbowUp;
-import com.team303.robot.commands.arm.ReachAngles;
-import static com.team303.robot.subsystems.ClawSubsystem.clawStateChooser;
-import static com.team303.robot.subsystems.ClawSubsystem.clawModeChooser;
-import static com.team303.robot.subsystems.IntakeSubsystem.intakeStateChooser;
-import static com.team303.robot.subsystems.IntakeSubsystem.intakeModeChooser;
+import com.team303.robot.subsystems.SwerveSubsystem;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -60,7 +48,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.cameraserver.CameraServer;
+import frc.robot.BuildConstants;
 
 public class Robot extends LoggedRobot {
 
@@ -76,7 +64,7 @@ public class Robot extends LoggedRobot {
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ManipulatorSubsystem manipulator = new ClawSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
-	// public static final ClawSubsystem claw = null; //new ClawSubsystem();
+	// public static final ClawSubsystem claw = new ClawSubsystem();
 	// public static final IntakeSubsystem intake = new IntakeSubsystem();
 	public static final ArmTestSubsystem armTest = null; // new ArmTest();
 	public static final LEDSubsystem ledStrip = null; // new LEDSubsystem();
@@ -182,34 +170,36 @@ public class Robot extends LoggedRobot {
 
 		// Dont do IK during auto
 		Robot.arm.removeDefaultCommand();
-		// Command startCommand = new SequentialCommandGroup(new ElbowUp(30), new
-		// HomeArm());
-		// if (manipulator instanceof ClawSubsystem) {
+		Command startCommand = new SequentialCommandGroup(new ElbowUp(30), new
+		HomeArm());
+		if (manipulator instanceof ClawSubsystem) {
 		ClawSubsystem stateClaw = (ClawSubsystem) manipulator;
 		stateClaw.state = clawStateChooser.getSelected();
 		stateClaw.mode = clawModeChooser.getSelected();
-		// startCommand = stateClaw.state==ClawState.OPEN ? startCommand = new HomeArm()
-		// :
-		// new SequentialCommandGroup(new ElbowUp(45), new HomeArm());
-		// } else {
-		// IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
-		// stateIntake.state = intakeStateChooser.getSelected();
-		// stateIntake.mode = intakeModeChooser.getSelected();
-		// // startCommand = Commands.none();
-		// }
+		if(stateClaw.state ==ClawState.OPEN) { startCommand.andThen(new HomeArm());
+		} else {
+		startCommand.andThen(new SequentialCommandGroup(new ElbowUp(45), new HomeArm()));
+		}
+		} else {
+		IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
+		stateIntake.state = intakeStateChooser.getSelected();
+		stateIntake.mode = intakeModeChooser.getSelected();
+		// startCommand = Commands.none();
+		}
 
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
 		Command delay = new ParallelCommandGroup(
-				new HomeArm(),
-				new DriveWait(AutonomousProgram.getAutonomousDelay()));
+				// new HomeArm(),
+				new DriveWait(AutonomousProgram.getAutonomousDelay())); 
 
 		// Schedule the selected autonomous command group
 		if (autonomousRoutine != null) {
 			// Run the delay/home and the selected routine sequentially
 			this.autonomousCommand = new SequentialCommandGroup(
+					startCommand,
 					delay,
 					autonomousRoutine);
 		} else {
@@ -229,7 +219,7 @@ public class Robot extends LoggedRobot {
 
 		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// if (operatorController.getLeftTriggerAxis() < 0.9) {
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// } else {
 		// Robot.arm.setDefaultCommand(new DefaultArm());
 		// }
@@ -250,8 +240,6 @@ public class Robot extends LoggedRobot {
 		/* Operator Controls */
 
 		// Custo m grid widget button bindings
-		// operat\9\n9n9nnnnnnnnnnnnnnn\nnnnnnnnnnnnnnnnnnnnnnnnnn9
-
 		// operatorController.pov(90).onTrue(new
 		// InstantCommand(operatorGrid::moveRight));
 		// operatorController.pov(180).onTrue(new
@@ -272,22 +260,23 @@ public class Robot extends LoggedRobot {
 		// operatorController.x().onTrue(new
 		// InstantCommand(operatorGrid::queuePlacement));
 
-		// Claw Control
-		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
-		operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
+		// Manipulator Control
+		// operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
+		// operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
+
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
 
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
+		// operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
 		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
+		// operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
 		// Mid Cone
-		operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
+		// operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
 		// Bottom
-		operatorController.pov(270)
-				.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10)));
+		// operatorController.pov(270)
+		// .onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10)));
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
 		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.2, 0.3));
@@ -295,10 +284,24 @@ public class Robot extends LoggedRobot {
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));
 
+		Robot.operatorController.rightBumper().onTrue(new InstantCommand(() -> {
+			ArmSubsystem.isVerticalChain2 = true;
+		})).onFalse(new InstantCommand(() -> {
+			ArmSubsystem.isVerticalChain2 = true;
+		}));
+
 		// Lock swerve wheels while x is held
 		/* Driver Controls */
 
-		driverController.x().whileTrue(Commands.runOnce(swerve::lockWheels));
+		driverController.a().toggleOnTrue(new InstantCommand(() -> {
+			if (SwerveSubsystem.MAX_VOLTAGE == 12.0) {
+				SwerveSubsystem.MAX_VOLTAGE = 6.0;
+			} else {
+				SwerveSubsystem.MAX_VOLTAGE = 12.0;
+			}
+		}));
+
+		// driverController.a().whileTrue(Commands.runOnce(swerve::lockWheels));
 
 		// Reset field oriented drive when y is pressed
 		driverController.y()

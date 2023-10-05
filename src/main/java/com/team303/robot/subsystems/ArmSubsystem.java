@@ -37,6 +37,7 @@ import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianSt
 import static com.team303.robot.Robot.manipulator;
 
 public class ArmSubsystem extends SubsystemBase {
+	public static boolean isVerticalChain2 = false; 
 
 	public static final ShuffleboardTab ARM_TAB = Shuffleboard.getTab("Arm");
 
@@ -342,7 +343,8 @@ public class ArmSubsystem extends SubsystemBase {
 
 		@Override
 		public void setSpeed(double speed) {
-			motor.set(speed);
+			// motor.set(speed);
+			motor.set(0);
 		}
 
 		@Override
@@ -375,6 +377,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public static ArmChain armChainHorizontal = new ArmChain();
 	public static ArmChain armChainVertical = new ArmChain();
+	public static ArmChain armChainVertical2 = new ArmChain();
 	public FabrikController armKinematics = new FabrikController();
 
 	public ShoulderJoint shoulderJoint = new ShoulderJoint();
@@ -429,6 +432,18 @@ public class ArmSubsystem extends SubsystemBase {
 					.addGloballyConstrainedGripper((float) Math.toRadians(30), 4f)
 					.setSolveDistanceThreshold(1f)
 					.setMaxIterationAttempts(5000);
+			this.armChainVertical2.setArmLength(62f)
+					.setSegmentLengthRatio(0, 31 / 62f)
+					.setSegmentLengthRatio(1, 31 / 62f)
+					.setSegmentLengths()
+					.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
+					.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
+					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+					.initializeChain()
+					.addGloballyConstrainedGripper((float) Math.toRadians(-30), 4f)
+					.setSolveDistanceThreshold(1f)
+					.setMaxIterationAttempts(5000);
 		} else if (manipulator instanceof IntakeSubsystem) {
 			this.armChainHorizontal.setArmLength(62f)
 					.setSegmentLengthRatio(0, 31 / 62f)
@@ -452,7 +467,19 @@ public class ArmSubsystem extends SubsystemBase {
 					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
 					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
 					.initializeChain()
-					.addGloballyConstrainedGripper((float) Math.toRadians(45), 8f)
+					.addGloballyConstrainedGripper((float) Math.toRadians(30), 8f)
+					.setSolveDistanceThreshold(1f)
+					.setMaxIterationAttempts(5000);
+			this.armChainVertical2.setArmLength(62f)
+					.setSegmentLengthRatio(0, 31 / 62f)
+					.setSegmentLengthRatio(1, 31 / 62f)
+					.setSegmentLengths()
+					.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
+					.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
+					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+					.initializeChain()
+					.addGloballyConstrainedGripper((float) Math.toRadians(-120), 8f)
 					.setSolveDistanceThreshold(1f)
 					.setMaxIterationAttempts(5000);
 
@@ -560,14 +587,23 @@ public class ArmSubsystem extends SubsystemBase {
 	 * Update the embeded anlges from a 3d point and reach for that point
 	 */
 	public List<Double> reachEmbedded(Translation3d translation) {
-		if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
-			armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
-			armChainHorizontal.solveForEmbedded();
-			return reach(armChainHorizontal.getIKAnglesRadians());
-		} else {
+		if (Robot.operatorController.getRightTriggerAxis() > 0.9) {
 			armChainVertical.updateEmbedded((float) translation.getX(), (float) translation.getZ());
 			armChainVertical.solveForEmbedded();
 			return reach(armChainVertical.getIKAnglesRadians());
+	
+		}
+		else if ((isVerticalChain2)) {
+			armChainVertical2.updateEmbedded((float) translation.getX(), (float) translation.getZ());
+			armChainVertical2.solveForEmbedded();
+			return reach(armChainVertical2.getIKAnglesRadians());
+		}
+		else {
+			
+
+			armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
+			armChainHorizontal.solveForEmbedded();
+			return reach(armChainHorizontal.getIKAnglesRadians());
 		}
 	}
 
@@ -665,7 +701,11 @@ public class ArmSubsystem extends SubsystemBase {
 		shoulderJoint.setSpeed(shoulderSpeed);
 		// }
 		elbowJoint.setSpeed(elbowSpeed);
-		wristJoint.setSpeed(wristSpeed);
+
+
+		// REMOVE WRIST JOINT DUE TO MECHANICAL ISSUES
+
+		// wristJoint.setSpeed(wristSpeed);
 
 		// Update shuffleboard
 		shoulderSpeedEntry.setDouble(shoulderSpeed);
@@ -716,7 +756,9 @@ public class ArmSubsystem extends SubsystemBase {
 				&& (wristJoint.atHardLimit() || wristJoint.atSoftReverseLimit());
 
 		if (!forwardWristLimit && !reverseWristLimit) {
-			wristJoint.setSpeed(wristSpeed);
+
+			//REMOVE WRIST MOVEMENT
+			// wristJoint.setSpeed(wristSpeed);
 		}
 	}
 
@@ -768,13 +810,14 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 
 		// Move wrist
-		if (!wristJoint.atHardLimit()) {
-			wristJoint.setSpeed(-0.3);
-		} else if (Robot.manipulator instanceof IntakeSubsystem) {
-			wristJoint.setSpeed(-0.15);
-		} else {
-			wristJoint.setSpeed(0);
-		}
+
+		//REMOVE WRIST JOINT DUE TO MECHANICAL ERROR
+
+		// if (!wristJoint.atHardLimit()) {
+		// 	wristJoint.setSpeed(-0.3);
+		// } else {
+		// 	wristJoint.setSpeed(0);
+		// }
 	}
 
 	/**
@@ -793,7 +836,8 @@ public class ArmSubsystem extends SubsystemBase {
 		elbowJoint.setSpeed(!elbowJoint.atHardLimit() ? Math.abs(elbowSpeed) : 0);
 
 		// Move wrist
-		wristJoint.setSpeed(!wristJoint.atHardLimit() ? -Math.abs(wristSpeed) : 0);
+		// REMOVE WRIST MOVEMENT DUE TO MECHANICAL ERROR
+		// wristJoint.setSpeed(!wristJoint.atHardLimit() ? -Math.abs(wristSpeed) : 0);
 	}
 
 	public void stopMotors() {
@@ -882,5 +926,6 @@ public class ArmSubsystem extends SubsystemBase {
 				+ Math.toDegrees(elbowJoint.getJointAngle()) + Math.toDegrees(wristJoint.getJointAngle())));
 
 		Logger.getInstance().recordOutput("MyMechanism", this.armSimulation);
+		Logger.getInstance().recordOutput("Raw Acceleration", Robot.navX.getRawAccelX());
 	}
 }

@@ -115,8 +115,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	private Pose2d pose = new Pose2d(Swerve.STARTING_X, Swerve.STARTING_Y, new Rotation2d());
 
-	public static final double MAX_VOLTAGE = 12.0;
-	public static double MAX_DRIVE_SPEED = 0.99;
+	public static double MAX_VOLTAGE = 6.0;
+	public static double MAX_DRIVE_SPEED = 1;
 
 	/* Node Positions */
 	public static double[] nodePositions = new double[9];
@@ -409,17 +409,17 @@ public class SwerveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		double triggerPressure = Robot.driverController.getLeftTriggerAxis();
-		// if (Robot.driverController.b().getAsBoolean()) {
-		// 	MAX_DRIVE_SPEED = 1.0;
-		// } 
+		if (Robot.driverController.b().getAsBoolean()) {
+			MAX_DRIVE_SPEED = 1.0;
+		} 
 		
-		// if (triggerPressure > 0.01) {
-		// 	// Map max speed from 0-100 to 50-20
-		// 	MAX_DRIVE_SPEED = triggerPressure * -3 / 10 + 0.5;
-		// } 
-		// else if (!Robot.driverController.b().getAsBoolean()) {
-		// 	MAX_DRIVE_SPEED = 0.75;
-		// }
+		if (triggerPressure > 0.2) {
+			// Map max speed from 0-100 to 50-20
+			MAX_DRIVE_SPEED = triggerPressure * -3 / 10 + 0.5;
+		} 
+		else if (!Robot.driverController.b().getAsBoolean()) {
+			MAX_DRIVE_SPEED = 0.75;
+		}
 
 		if (Robot.isReal()) {
 			// Update Poses

@@ -51,9 +51,9 @@ public final class RobotMap {
 		public static final double DRIVE_GEAR_RATIO = 12.75; // Toughbox mini 12.75:1
 		// public static final double DISTANCE_PER_ENCODER_PULSE; // Inches traveled for
 		// each encoder unit
-		public static final double MAX_VELOCITY = 4.2;
+		public static final double MAX_VELOCITY = 3;
 
-		public static final double MAX_ACCELERATION = 3; // Meters per second
+		public static final double MAX_ACCELERATION = 2; // Meters per second per second
 		public static final double MAX_RPS = 183.33; // Max rotations per second
 
 		/* Starting Position */
