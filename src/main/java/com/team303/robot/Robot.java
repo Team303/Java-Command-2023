@@ -280,14 +280,14 @@ public class Robot extends LoggedRobot {
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
 
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
+		operatorController.pov(0).whileTrue(new ReachPoint(78.974, 92.246).repeatedly());
 		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
+		operatorController.pov(90).whileTrue(new ReachPoint(86.356, 105.204).repeatedly());
 		// Mid Cone
-		operatorController.pov(180).whileTrue(new ReachPoint(40, 39).repeatedly());
+		operatorController.pov(180).whileTrue(new ReachPoint(102.233, 86.082).repeatedly());
 		// Bottom
 		operatorController.pov(270)
-				.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10)));
+				.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(29.178, 82.041)));
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
 		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.2, 0.3));
