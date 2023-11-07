@@ -5,7 +5,7 @@ import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianSt
 
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Arm;
-
+import com.team303.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.List;
@@ -44,6 +44,9 @@ public class ReachPoint extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         cartesianStorage = new Translation3d(cartesianCoords.getX(), 0, cartesianCoords.getZ());
+        ArmSubsystem.getNinjagoxcoordinate().setDouble(cartesianCoords.getX());
+        ArmSubsystem.getNinjagozcoordinate().setDouble(cartesianCoords.getZ());
+        
     }
 
 }

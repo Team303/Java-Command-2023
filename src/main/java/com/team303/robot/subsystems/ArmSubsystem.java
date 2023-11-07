@@ -11,8 +11,10 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.team303.lib.kinematics.ArmChain;
 import com.team303.lib.kinematics.FabrikController;
 import com.team303.robot.Robot;
+import com.team303.robot.RobotMap;
 import com.team303.robot.RobotMap.Arm;
-
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -28,7 +30,12 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.List;
@@ -39,6 +46,7 @@ import static com.team303.robot.Robot.manipulator;
 public class ArmSubsystem extends SubsystemBase {
 
 	public static final ShuffleboardTab ARM_TAB = Shuffleboard.getTab("Arm");
+
 
 	/* Row 1 */
 
@@ -136,6 +144,39 @@ public class ArmSubsystem extends SubsystemBase {
 	public static final GenericEntry wristAbsoluteAngleFloorEntry = ARM_TAB.add("Wrist Absolute Floor Angle", 0)
 			.withSize(1, 1)
 			.withPosition(5, 4).getEntry();
+
+	// ninjago coordinates
+	public static final GenericEntry ninjagoXCoordinate = ARM_TAB.add("X Coordinate", 0)
+	.withSize(1, 1)
+	.withPosition(3, 5).getEntry();
+
+	public static final GenericEntry ninjagoZCoordinate = ARM_TAB.add("Z Coordinate", 0)
+	.withSize(1, 1)
+	.withPosition(4, 5).getEntry();
+
+	// fake ninjago coordinates
+	public static final GenericEntry fakeNinjagoXCoordinate = ARM_TAB.add("Fake X Coordinate", 0)
+	.withSize(1, 1)
+	.withPosition(3, 5).getEntry();
+
+	public static final GenericEntry fakeNinjagoZCoordinate = ARM_TAB.add("Fake Z Coordinate", 0)
+	.withSize(1, 1)
+	.withPosition(4, 5).getEntry();
+
+
+	
+
+	public static GenericEntry getNinjagoxcoordinate() {
+		return ninjagoXCoordinate;
+	}
+
+	public static GenericEntry getNinjagozcoordinate() {
+		return ninjagoZCoordinate;
+	}
+
+	public static ShuffleboardTab getArmTab() {
+		return ARM_TAB;
+	}
 
 	// radians/sec
 	public static final double MAX_VELOCITY = (2 * Math.PI) * 0.35;
@@ -796,6 +837,12 @@ public class ArmSubsystem extends SubsystemBase {
 		wristJoint.setSpeed(!wristJoint.atHardLimit() ? -Math.abs(wristSpeed) : 0);
 	}
 
+	public static void lloydkaijayzanecolenyamasterwudarethninjagorulesaryasucksaravruleshappybirthdayarav() {
+		ArmSubsystem.ninjagoXCoordinate.setDouble(ArmSubsystem.fakeNinjagoXCoordinate.getDouble(10));
+		ArmSubsystem.ninjagoZCoordinate.setDouble(ArmSubsystem.fakeNinjagoZCoordinate.getDouble(10));
+
+	}
+
 	public void stopMotors() {
 		shoulderJoint.setSpeed(0);
 		elbowJoint.setSpeed(0);
@@ -810,6 +857,8 @@ public class ArmSubsystem extends SubsystemBase {
 				&& elbowJoint.atHardLimit()
 				&& wristJoint.atHardLimit();
 	}
+
+	
 
 	@Override
 	public void periodic() {
@@ -881,6 +930,8 @@ public class ArmSubsystem extends SubsystemBase {
 		wristAbsoluteAngleFloorEntry.setDouble(90 - (Math.toDegrees(shoulderJoint.getJointAngle())
 				+ Math.toDegrees(elbowJoint.getJointAngle()) + Math.toDegrees(wristJoint.getJointAngle())));
 
+		cartesianStorage = new Translation3d(	ninjagoXCoordinate.getDouble(cartesianStorage.getX()), 0, ninjagoZCoordinate.getDouble(cartesianStorage.getZ()));
+ 
 		Logger.getInstance().recordOutput("MyMechanism", this.armSimulation);
 	}
 }

@@ -4,6 +4,7 @@ import static com.team303.robot.Robot.arm;
 import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
 
 import com.team303.robot.Robot;
+import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.RobotMap.Arm;
 
 import edu.wpi.first.math.MathUtil;
@@ -57,6 +58,10 @@ public class DefaultIKControlCommand extends CommandBase {
         z = Math.max(z, 0);
 
         cartesianStorage = new Translation3d(x, 0.0, z);
+
+        ArmSubsystem.getNinjagoxcoordinate().setDouble(x);
+        ArmSubsystem.getNinjagozcoordinate().setDouble(z);
+
 
         arm.reachEmbedded(cartesianStorage);
 

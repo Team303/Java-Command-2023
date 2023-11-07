@@ -21,6 +21,6 @@ public class ReachAngles extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        arm.setEncodersDegrees(desiredAngles.get(0), desiredAngles.get(1), desiredAngles.get(2));
+        // arm.setEncodersDegrees(desiredAngles.get(0), desiredAngles.get(1), desiredAngles.get(2));
     }
 }

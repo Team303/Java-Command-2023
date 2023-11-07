@@ -12,7 +12,9 @@ import com.kauailabs.navx.frc.AHRS;
 import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
+import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.autonomous.AutonomousProgram;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import com.team303.robot.commands.arm.DefaultArm;
 import com.team303.robot.commands.arm.HomeArm;
 import com.team303.robot.commands.arm.HomeArmContinuous;
@@ -61,6 +63,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.XboxController;
+import com.team303.robot.commands.arm.ShuffleBoardPoint;
 
 public class Robot extends LoggedRobot {
 
@@ -71,6 +75,9 @@ public class Robot extends LoggedRobot {
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
 	public static final OperatorGridModule operatorGrid = new OperatorGridModule();
+
+	//ninjago stuff
+	public static final XboxController operatorNinja = new XboxController(RobotMap.IOConstants.OPERATOR_CONTROLLER);
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
@@ -222,14 +229,14 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		// This makes sure that the autonomous stops running when teleop starts running.
+	// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
-			autonomousCommand.cancel();
+		autonomousCommand.cancel();
 		}
 
+		 Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+ //if (operatorController.getLeftTriggerAxis() < 0.9) {
 		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
-		// if (operatorController.getLeftTriggerAxis() < 0.9) {
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// } else {
 		// Robot.arm.setDefaultCommand(new DefaultArm());
 		// }
@@ -243,24 +250,24 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void disabledPeriodic() {
 		// While disabled, continuously reset the angle of the swerve modules
-		swerve.resetToAbsoluteAngle();
+										swerve.resetToAbsoluteAngle();
 	}
 
-	private void configureButtonBindings() {
+private void configureButtonBindings() {
 		/* Operator Controls */
 
 		// Custo m grid widget button bindings
 		// operat\9\n9n9nnnnnnnnnnnnnnn\nnnnnnnnnnnnnnnnnnnnnnnnnn9
 
 		// operatorController.pov(90).onTrue(new
-		// InstantCommand(operatorGrid::moveRight));
+	// InstantCommand(operatorGrid::moveRight));
 		// operatorController.pov(180).onTrue(new
 		// InstantCommand(operatorGrid::moveDown));
-		// operatorController.pov(270).onTrue(new
+// operatorController.pov(270).onTrue(new
 		// InstantCommand(operatorGrid::moveLeft));
 
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
-		// operatorController.x().onTrue(new
+// operatorController.x().onTrue(new
 		// InstantCommand(operatorGrid::queuePlacement));
 
 		// operatorController.y().onTrue(new InstantCommand(operatorGrid::setPiece));
@@ -274,23 +281,37 @@ public class Robot extends LoggedRobot {
 
 		// Claw Control
 		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
-		operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
+	operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
+		// // Top Cone
+		// operatorController.pov(0).toggleOnTrue(new ReachAngles(0.1484, -1.4195, ninjago));
+		// // Substation
+		// operatorController.pov(90).toggleOnTrue(new ReachAngles(0.4336, -1.6048, ninjago));
+		// // Mid Cone
+		// operatorController.pov(180).toggleOnTrue(new ReachAngles(0.183, -1.595, ninjago));
+		// // Bottom
+		// operatorController.pov(270)
+		// 		.toggleOnTrue(new SequentialCommandGroup(new HomeArm(), new ReachAngles(0.503, 1.739, ninjago)));
 
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ReachPoint(78.974, 92.246).repeatedly());
+		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
+
 		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(86.356, 105.204).repeatedly());
+		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
 		// Mid Cone
-		operatorController.pov(180).whileTrue(new ReachPoint(102.233, 86.082).repeatedly());
+		operatorController.pov(180).whileTrue(new ReachPoint(73, 39).repeatedly());
 		// Bottom
 		operatorController.pov(270)
-				.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(29.178, 82.041)));
+						.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10)));
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
 		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.2, 0.3));
+
+		operatorController.y().whileTrue(new ShuffleBoardPoint().repeatedly());
+
+
 		// operatorController.y().toggleOnTrue(new ReachAngles(-19.5, 160.0, -86.0));
 
 		// driverController.pov(0).onTrue(new ReachPoint(36, 0));
