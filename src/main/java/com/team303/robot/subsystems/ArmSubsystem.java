@@ -414,8 +414,13 @@ public class ArmSubsystem extends SubsystemBase {
 		}
 	}
 
+
 	public static ArmChain armChainHorizontal = new ArmChain();
 	public static ArmChain armChainVertical = new ArmChain();
+	public static ArmChain armChainHorizontalCone = new ArmChain();
+	public static ArmChain armChainVerticalCone = new ArmChain();
+	public static ArmChain armChainHorizontalCube = new ArmChain();
+	public static ArmChain armChainVerticalCube = new ArmChain();
 	public FabrikController armKinematics = new FabrikController();
 
 	public ShoulderJoint shoulderJoint = new ShoulderJoint();
@@ -437,6 +442,13 @@ public class ArmSubsystem extends SubsystemBase {
 	public static float[] elbowLimits = { 170, 30 };
 	public static float[] wristLimits = { 135, -135 };
 
+	enum IntakeState {
+		CONE_INTAKE,
+		CUBE_INTAKE,
+		CONE_OUTTAKE,
+		CUBE_OUTTAKE,
+	}
+
 	// Home position angles for each joint
 	public static final double SHOULDER_START_ANGLE = -10.5;
 	public static final double ELBOW_START_ANGLE = 160.0;
@@ -444,6 +456,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	public ArmSubsystem() {
 		// Initialize Inverse Kinematics with constant values
+		
 		if (manipulator instanceof ClawSubsystem) {
 			this.armChainHorizontal.setArmLength(62f)
 					.setSegmentLengthRatio(0, 31 / 62f)
@@ -471,7 +484,8 @@ public class ArmSubsystem extends SubsystemBase {
 					.setSolveDistanceThreshold(1f)
 					.setMaxIterationAttempts(5000);
 		} else if (manipulator instanceof IntakeSubsystem) {
-			this.armChainHorizontal.setArmLength(62f)
+			
+			this.armChainHorizontalCube.setArmLength(62f)
 					.setSegmentLengthRatio(0, 31 / 62f)
 					.setSegmentLengthRatio(1, 31 / 62f)
 					.setSegmentLengths()
@@ -484,7 +498,33 @@ public class ArmSubsystem extends SubsystemBase {
 					.setSolveDistanceThreshold(1f)
 					.setMaxIterationAttempts(5000);
 
-			this.armChainVertical.setArmLength(62f)
+			this.armChainVerticalCube.setArmLength(62f)
+					.setSegmentLengthRatio(0, 31 / 62f)
+					.setSegmentLengthRatio(1, 31 / 62f)
+					.setSegmentLengths()
+					.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
+					.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
+					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+					.initializeChain()
+					.addGloballyConstrainedGripper((float) Math.toRadians(45), 8f)
+					.setSolveDistanceThreshold(1f)
+					.setMaxIterationAttempts(5000);
+
+			this.armChainHorizontalCone.setArmLength(62f)
+					.setSegmentLengthRatio(0, 31 / 62f)
+					.setSegmentLengthRatio(1, 31 / 62f)
+					.setSegmentLengths()
+					.setAngleConstraint(0, shoulderLimits[0], -shoulderLimits[1])
+					.setAngleConstraint(1, elbowLimits[0], -elbowLimits[1])
+					.setSegmentInitialDirection(0, (float) Math.toRadians(90))
+					.setSegmentInitialDirection(1, (float) Math.toRadians(0))
+					.initializeChain()
+					.addGloballyConstrainedGripper((float) Math.toRadians(-45), 8f)
+					.setSolveDistanceThreshold(1f)
+					.setMaxIterationAttempts(5000);
+
+			this.armChainVerticalCone.setArmLength(62f)
 					.setSegmentLengthRatio(0, 31 / 62f)
 					.setSegmentLengthRatio(1, 31 / 62f)
 					.setSegmentLengths()
