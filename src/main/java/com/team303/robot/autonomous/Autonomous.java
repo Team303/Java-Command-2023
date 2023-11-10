@@ -15,9 +15,11 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.RobotMap.Swerve;
 import com.team303.robot.commands.arm.ReachPoint;
+import com.team303.robot.commands.arm.ShuffleBoardPoint;
 import com.team303.robot.commands.drive.AutoLevelBasic;
 import com.team303.robot.commands.arm.HomeArm;
 import com.team303.robot.Robot;
+import com.team303.robot.util.EffectorState;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -77,8 +79,6 @@ public class Autonomous {
                 // eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16, 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                eventMap.put("Top Cube", new ReachPoint(73, 15));
-                eventMap.put("Toggle State", new InstantCommand(Robot.manipulator::nextState));
 
                 autoBuilder = new SwerveAutoBuilder(
                                 // swerve::getRobotPose, // Pose2d supplier
@@ -141,67 +141,18 @@ public class Autonomous {
                 create("Forward and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupScore)));
                 pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Auto Level and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore), new AutoLevelBasic()));
-                // create("Score Cube", () -> new ReachPoint(73, 15));
-                // pathGroupScore = PathPlanner.loadPathGroup("Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
 
-                // create("Score Cube and Level", () -> new SequentialCommandGroup(new ReachPoint(73, 15), new ParallelCommandGroup(autoBuilder.fullAuto(pathGroupScore), new HomeArm()), new AutoLevelBasic()));
-                // create("Bottom Node", () -> new SequentialCommandGroup(new ReachPoint(16, 5)));
-                // create("Middle Node", () -> new ReachPoint(24, 35));
-                // create("New", () -> {
-                // try {
-                // return new SequentialCommandGroup(
-                // new InstantCommand(Robot.navX::reset),
-                // new FollowTrajectory("output/New.wpilib.json")
-                // );
-                // } catch (FileNotFoundException e) {
-                // e.printStackTrace();
-                // return new DriveWait(15);
-                // }});
 
-                // create("StraighForward1", () -> {
-                // try {
-                // return new SequentialCommandGroup(
-                // new InstantCommand(Robot.navX::reset),
-                // new FollowTrajectory("output/StraightForward1.wpilib.json")
-                // );
-                // } catch (FileNotFoundException e) {
-                // e.printStackTrace();
-                // return new DriveWait(15);
-                // }});
+                // JUST FOR TESTING
+                create("Reach Point Test", () -> new ShuffleBoardPoint());
 
-                // create("NavX Test", () -> {
-                // try {
-                // return new SequentialCommandGroup(
-                // new InstantCommand(Robot.navX::reset),
-                // new TurnToAngle(180),
-                // new FollowTrajectory("output/New.wpilib.json")
-                // );
-                // } catch (FileNotFoundException e) {
-                // e.printStackTrace();
-                // return new DriveWait(15);
-                // }
-                // }
-                // );
+                // intake ground
+                create("In Cube Test", () -> new ReachPoint(22, 16));
+                
+                // outtake high cube
+                create("Out Cube Test", () -> new ReachPoint(73, 15));
+                // outtake high cone
+                create("Out Cone Test", () -> new ReachPoint(73, 15));
 
-                // create("Drivepose", () -> Robot.swerve.driveToPose(Robot.swerve.getPose(),
-                // new Pose2d(5, 5, new Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
-
-                // create("Apriltag", () -> new AlignAprilTag());
-
-                // create("AprilTag", () -> new AprilTagAlign(2));
-
-                // create("Autolevel", () ->
-                // new AutolevelFeedforward()
-                // );
-
-                // create("Reach Point", () -> new ReachPoint(EFFECTOR_X.getDouble(0.0),
-                // EFFECTOR_Y.getDouble(0.0)));
-                // create("Homing", () -> new HomeArm());
-
-                // create("reach selected", () ->
-                // Robot.swerve.driveToPose(Robot.swerve.getPose(), new Pose2d(5, 5, new
-                // Rotation2d()), new Pose2d(4, 4, new Rotation2d())));
-
-                // create("drive to node", () -> swerve.driveToNode());
         }
 }

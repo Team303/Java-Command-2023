@@ -51,8 +51,8 @@ public class HomeArm extends CommandBase {
 
         // Reset the stored end effector point
         cartesianStorage = new Translation3d(10, 0, 17);
-        ArmSubsystem.getNinjagoxcoordinate().setDouble(10);
-        ArmSubsystem.getNinjagozcoordinate().setDouble(17);
+        ArmSubsystem.getXCoordinateTab().setDouble(10);
+        ArmSubsystem.getYCoordinateTab().setDouble(17);
         // Stop the deadline timer
         timer.stop();
         // state = IntakeState.NONE;

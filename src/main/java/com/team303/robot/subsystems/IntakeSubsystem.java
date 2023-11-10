@@ -60,6 +60,8 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
 
                 case OUTTAKE:
                     return "Outtake";
+                case NONE:
+                    return "NONE";
                 default:
                     return "NONE";
 
@@ -121,7 +123,6 @@ public class IntakeSubsystem extends SubsystemBase implements ManipulatorSubsyst
     public void periodic() {
         intakeSwitchReverseEntry.setBoolean(intakeSwitchReverseLimit.isPressed());
         stateEntry.setString(state.getName());
-        modeEntry.setString(mode.getName());
 
         // switch(this.state) {
         //     case INTAKE:

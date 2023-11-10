@@ -14,8 +14,6 @@ public class ShuffleBoardPoint extends CommandBase {
 
     public ShuffleBoardPoint() {
         addRequirements(arm);
-        //cartesianStorage = new Translation3d(x, 0, z);
-        //ArmSubsystem.lloydkaijayzanecolenyamasterwudarethninjagorulesaryasucksaravruleshappybirthdayarav();
     }
 
     @Override
@@ -25,6 +23,6 @@ public class ShuffleBoardPoint extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        ArmSubsystem.lloydkaijayzanecolenyamasterwudarethninjagorulesaryasucksaravruleshappybirthdayarav();
+        ArmSubsystem.setReachPoint();
     }
 }
