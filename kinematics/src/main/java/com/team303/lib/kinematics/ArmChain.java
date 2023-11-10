@@ -81,7 +81,10 @@ public class ArmChain {
         Vec2f output = new Vec2f();
         output.x = (float) Math.cos(angleRadians);
         output.y = (float) Math.sin(angleRadians);
-        segmentInitialDirection.add(segmentIndex, output);
+        if (segmentIndex >= segmentInitialDirection.size())
+            segmentInitialDirection.add(segmentIndex, output);
+        else 
+            segmentInitialDirection.set(segmentIndex, output);
         return this;
     }
 
@@ -129,23 +132,30 @@ public class ArmChain {
         return this;
     }
 
-    public void setGloballyConstrainedGripper(float constraintAngleRadians, float lengthInches) {
-        chain.removeBone(getNumBones() - 1);
-        addGloballyConstrainedGripper(constraintAngleRadians, lengthInches);
+    // for constraining base bone
+    public void setGloballyConstrainedBase(float constraintAngleRadians) {
+        for (int i = 0; i < getNumBones(); i++) {
+            chain.removeBone(i);
+        }
+
+        setSegmentInitialDirection(0, constraintAngleRadians);
+        Vec2f baseEndLoc = segmentInitialDirection.get(0).times(segmentLength.get(0));
+        FabrikBone2D base = new FabrikBone2D(new Vec2f(), baseEndLoc);
+        chain.addBone(base);
+        chain.setBaseboneConstraintType(BaseboneConstraintType2D.GLOBAL_ABSOLUTE);
+        chain.setBaseboneConstraintUV(segmentInitialDirection.get(0));
+        chain.setEmbeddedTargetMode(true);
+        for (int i = 1; i < segmentLength.size(); i++) {
+            chain.addConsecutiveConstrainedBone(segmentInitialDirection.get(i), segmentLength.get(i),
+                    segmentAngleConstraint.get(i)[0], segmentAngleConstraint.get(i)[1]);
+        }
+
+        chain.addConsecutiveBone(this.gripper);
     }
 
-    /**
-     * Sets a new global angle constraint
-     *
-     * @param angleRadians The new angle in radians for the angle to be constrained
-     *                     to
-     */
-    public ArmChain setGripperGlobalConstraint(float angleRadians) {
-        Vec2f output = new Vec2f();
-        output.x = (float) Math.cos(angleRadians);
-        output.y = (float) Math.sin(angleRadians);
-        this.gripper.setGlobalConstraintUV(output);
-        return this;
+    public void setGloballyConstrainedGripper(float constraintAngleRadians) {
+        chain.removeBone(getNumBones() - 1);
+        addGloballyConstrainedGripper(constraintAngleRadians, 4f);
     }
 
     public double getGripperGlobalConstraint() {

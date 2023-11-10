@@ -148,12 +148,12 @@ public class ArmSubsystem extends SubsystemBase {
 			.withPosition(5, 4).getEntry();
 
 	// coordinates
-	private static final GenericEntry xCoordinateTab = ARM_TAB.add("X Coordinate", 0)
+	private static final GenericEntry xCoordinateTab = ARM_TAB.add("X Coordinate", 28)
 			.withSize(1, 1)
 			.withPosition(7, 1)
 			.getEntry();
 
-	private static final GenericEntry yCoordinateTab = ARM_TAB.add("Z Coordinate", 0)
+	private static final GenericEntry yCoordinateTab = ARM_TAB.add("Z Coordinate", 10)
 			.withSize(1, 1)
 			.withPosition(7, 2)
 			.getEntry();
@@ -168,18 +168,6 @@ public class ArmSubsystem extends SubsystemBase {
 			.withSize(1, 1)
 			.withPosition(8, 2)
 			.getEntry();
-
-	//effector coordinates
-
-	// public static final GenericEntry effectorXCoordinateTab = ARM_TAB.add("Effector X", 0)
-	// 		.withSize(1,1)
-	// 		.withPosition(6, 0)
-	// 		.getEntry();
-
-	// public static final GenericEntry effectorYCoordinateTab = ARM_TAB.add("Effector X", 0)
-	// 		.withSize(1,1)
-	// 		.withPosition(7, 0)
-	// 		.getEntry();
 
 	public static GenericEntry getXCoordinateTab() {
 		return xCoordinateTab;
@@ -591,16 +579,16 @@ public class ArmSubsystem extends SubsystemBase {
 
 		switch (this.effectorState) {
 			case IN_CONE:
-				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(45), 4f);
+				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(45));
 				break;
 			case IN_CUBE:
-				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(70), 4f);
+				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(70));
 				break;
 			case OUT_CONE:
-				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(-60), 4f);
+				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(-60));
 				break;
 			case OUT_CUBE:
-				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(45), 4f);
+				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(45));
 				break;
 		}
 
@@ -901,8 +889,8 @@ public class ArmSubsystem extends SubsystemBase {
 		elbowJoint.real.setAngle(-Math.toDegrees(this.elbowJoint.getJointAngle()));
 		wristJoint.real.setAngle(-Math.toDegrees(this.wristJoint.getJointAngle()));
 
-		effectorXEntry.setDouble(cartesianStorage.getX());
-		effectorYEntry.setDouble(cartesianStorage.getZ());
+		effectorXEntry.setDouble(armChainHorizontal.getEffectorPoint().get(0));
+		effectorYEntry.setDouble(armChainHorizontal.getEffectorPoint().get(1));
 
 		shoulderEncoderEntry.setDouble(shoulderJoint.getEncoderPosition());
 		elbowEncoderEntry.setDouble(elbowJoint.getEncoderPosition());
@@ -931,9 +919,6 @@ public class ArmSubsystem extends SubsystemBase {
 		shoulderEncoderErrorEntry.setDouble(shoulderJoint.getJointAngle() - shoulderJoint.getEncoderPosition());
 		elbowEncoderErrorEntry.setDouble(elbowJoint.getJointAngle() - elbowJoint.getEncoderPosition());
 		wristEncoderErrorEntry.setDouble(wristJoint.getJointAngle() - wristJoint.getEncoderPosition());
-
-		// effectorXCoordinateTab.setDouble((double) armChainHorizontal.getEffectorPoint().get(0));
-		// effectorYCoordinateTab.setDouble((double) armChainHorizontal.getEffectorPoint().get(1));
 
 		shoulderAbsoluteAngleFloorEntry.setDouble(90 - Math.toDegrees(shoulderJoint.getJointAngle()));
 		elbowAbsoluteAngleFloorEntry.setDouble(

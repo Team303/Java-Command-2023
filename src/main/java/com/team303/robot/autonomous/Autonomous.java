@@ -147,11 +147,13 @@ public class Autonomous {
                 // JUST FOR TESTING
                 create("Reach Point Test", () -> new ShuffleBoardPoint());
 
-                // intake single substation
-                create("In Cube Test", () -> new ReachPoint(20, 15, EffectorState.IN_CUBE));
+                // intake ground
+                create("In Cube Test", () -> new ReachPoint(22, 16, EffectorState.IN_CUBE));
                 
                 // outtake high cube
                 create("Out Cube Test", () -> new ReachPoint(73, 15, EffectorState.OUT_CUBE));
+                // outtake high cone
+                create("Out Cone Test", () -> new ReachPoint(73, 15, EffectorState.OUT_CONE));
 
         }
 }
