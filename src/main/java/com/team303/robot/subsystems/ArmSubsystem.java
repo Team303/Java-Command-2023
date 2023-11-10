@@ -574,7 +574,7 @@ public class ArmSubsystem extends SubsystemBase {
 	 * Update the embeded anlges from a 3d point and reach for that point
 	 */
 
-	public List<Double> reachEmbedded(Translation3d translation, EffectorState effectorState) {
+	public void setEffectorState(EffectorState effectorState) {
 		this.effectorState = effectorState;
 
 		switch (this.effectorState) {
@@ -591,22 +591,17 @@ public class ArmSubsystem extends SubsystemBase {
 				armChainHorizontal.setGloballyConstrainedGripper((float) Math.toRadians(45));
 				break;
 		}
+	}
 
+	public List<Double> reachEmbedded(Translation3d translation, EffectorState effectorState) {
+		this.setEffectorState(effectorState);
 		return reachEmbedded(translation);
 	}
 	
 	public List<Double> reachEmbedded(Translation3d translation) {
-		// if (Robot.operatorController.getRightTriggerAxis() < 0.9) {
 		armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
 		armChainHorizontal.solveForEmbedded();
 		return reach(armChainHorizontal.getIKAnglesRadians());
-		// } 
-		
-		// else {
-		// 	armChainVertical.updateEmbedded((float) translation.getX(), (float) translation.getZ());
-		// 	armChainVertical.solveForEmbedded();
-		// 	return reach(armChainVertical.getIKAnglesRadians());
-		// }
 	}
 
 	/**
@@ -708,6 +703,127 @@ public class ArmSubsystem extends SubsystemBase {
 		// Update shuffleboard
 		shoulderSpeedEntry.setDouble(shoulderSpeed);
 		elbowSpeedEntry.setDouble(elbowSpeed);
+		wristSpeedEntry.setDouble(wristSpeed);
+
+		return desiredRadianAngles;
+	}
+
+	public List<Double> reachShoulderElbow(Translation3d translation, EffectorState effectorState) {
+		this.setEffectorState(effectorState);
+		armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
+		armChainHorizontal.solveForEmbedded();
+		return reachShoulderElbow(armChainHorizontal.getIKAnglesRadians());
+	}
+
+	public List<Double> reachWrist(Translation3d translation, EffectorState effectorState) {
+		this.setEffectorState(effectorState);
+		armChainHorizontal.updateEmbedded((float) translation.getX(), (float) translation.getZ());
+		armChainHorizontal.solveForEmbedded();
+		return reachWrist(armChainHorizontal.getIKAnglesRadians());
+	}
+
+	/* reach only shoulder and elbow */
+	public List<Double> reachShoulderElbow(List<Double> desiredRadianAngles) {
+		// Pull angles out of list
+		double desiredShoulderAngle = desiredRadianAngles.get(0);
+		double desiredElbowAngle = desiredRadianAngles.get(1);
+
+		shoulderReachAngle = desiredShoulderAngle;
+		elbowReachAngle = desiredElbowAngle;
+
+		// Round to nearest degree for shuffleboard display
+		shoulderAngleEntry.setDouble(Math.round(Math.toDegrees(desiredShoulderAngle)));
+		elbowAngleEntry.setDouble(Math.round(Math.toDegrees(desiredElbowAngle)));
+
+		// Compute feedforward
+		// TODO: Recompute the angles to fit the inputs wanted by the feedforward
+
+		double shoulderFeedForward = shoulderJoint.feedForward.calculate(Math.PI / 2 - desiredShoulderAngle, 0);
+		double elbowFeedForward = elbowJoint.feedForward
+				.calculate(Math.PI / 2 - (desiredShoulderAngle + desiredElbowAngle), 0);
+
+		// Compute feedback
+		double shoulderFeedback = shoulderJoint.controller.calculate(
+				shoulderJoint.getJointAngle(),
+				desiredShoulderAngle);
+		double elbowFeedback = elbowJoint.controller.calculate(
+				elbowJoint.getJointAngle(),
+				desiredElbowAngle);
+
+		// Compute joint speeds based on feedback and feedforward while limiting
+		// movement based on hard and soft limits
+
+		final double BOUNCE_FORCE = -0.125;
+
+		double shoulderSpeed = shoulderFeedback;
+		double elbowSpeed = elbowFeedback;
+
+		boolean forwardShoulderLimit = Math.signum(shoulderSpeed) > 0
+				&& shoulderJoint.atSoftForwardLimit();
+		boolean reverseShoulderLimit = Math.signum(shoulderSpeed) < 0
+				&& shoulderJoint.atSoftReverseLimit();
+
+		// if (Math.signum(shoulderSpeed) < 0 && shoulderJoint.atHardLimit()) {
+		// shoulderSpeed = 0;
+		// } else if (forwardShoulderLimit || reverseShoulderLimit) {
+		// shoulderSpeed *= BOUNCE_FORCE;
+		// }
+
+		boolean forwardElbowLimit = Math.signum(elbowSpeed) > 0
+				&& elbowJoint.atSoftForwardLimit();
+		boolean reverseElbowLimit = Math.signum(elbowSpeed) < 0
+				&& elbowJoint.atSoftReverseLimit();
+
+		shoulderJoint.setSpeed(shoulderSpeed);
+		elbowJoint.setSpeed(elbowSpeed);
+		wristJoint.setSpeed(0);
+
+		// Update shuffleboard
+		shoulderSpeedEntry.setDouble(shoulderSpeed);
+		elbowSpeedEntry.setDouble(elbowSpeed);
+
+
+		return desiredRadianAngles;
+	}
+
+	public List<Double> reachWrist(List<Double> desiredRadianAngles) {
+		// Pull angles out of list
+		double desiredWristAngle = desiredRadianAngles.get(2);
+
+		wristReachAngle = desiredWristAngle;
+
+		// Round to nearest degree for shuffleboard display
+		wristAngleEntry.setDouble(Math.round(Math.toDegrees(desiredWristAngle)));
+
+		// Compute feedforward
+		// TODO: Recompute the angles to fit the inputs wanted by the feedforward
+		// controller (relative to horizontal)
+
+		// elbowJoint.controller.setP(((Math.PI / 2 - (desiredShoulderAngle +
+		// desiredElbowAngle)) + Math.PI / 2) * 0.5);
+		// System.out.println(elbowJoint.controller.getP());
+
+		// Compute feedback
+		double wristFeedback = wristJoint.controller.calculate(
+				wristJoint.getJointAngle(),
+				desiredWristAngle);
+
+		// Compute joint speeds based on feedback and feedforward while limiting
+		// movement based on hard and soft limits
+
+		final double BOUNCE_FORCE = -0.125;
+
+		double wristSpeed = wristFeedback;
+
+		boolean forwardWristLimit = Math.signum(wristSpeed) > 0
+				&& (wristJoint.atSoftForwardLimit());
+		boolean reverseWristLimit = Math.signum(wristSpeed) < 0
+				&& (wristJoint.atHardLimit() || wristJoint.atSoftReverseLimit());
+
+		shoulderJoint.setSpeed(0);
+		elbowJoint.setSpeed(0);
+		wristJoint.setSpeed(wristSpeed);
+
 		wristSpeedEntry.setDouble(wristSpeed);
 
 		return desiredRadianAngles;
