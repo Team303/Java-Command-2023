@@ -40,6 +40,8 @@ import com.team303.robot.commands.intake.DefaultIntake;
 import com.team303.robot.subsystems.ClawSubsystem.ClawState;
 import com.team303.robot.subsystems.IntakeSubsystem.IntakeState;
 import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
+import com.team303.robot.util.EffectorState;
+
 import frc.robot.BuildConstants;
 import com.team303.robot.commands.arm.ElbowUp;
 import com.team303.robot.commands.arm.ReachAngles;
@@ -296,15 +298,14 @@ private void configureButtonBindings() {
 		// 		.toggleOnTrue(new SequentialCommandGroup(new HomeArm(), new ReachAngles(0.503, 1.739, ninjago)));
 
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ReachPoint(73, 15).repeatedly());
+		operatorController.pov(0).whileTrue(new ReachPoint(73, 15, EffectorState.OUT_CUBE).repeatedly());
 
-		// Substation
-		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5).repeatedly());
+		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5, EffectorState.OUT_CUBE).repeatedly());
 		// Mid Cone
-		operatorController.pov(180).whileTrue(new ReachPoint(73, 39).repeatedly());
+		operatorController.pov(180).whileTrue(new ReachPoint(73, 39, EffectorState.OUT_CUBE).repeatedly());
 		// Bottom
 		operatorController.pov(270)
-						.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10)));
+						.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10, EffectorState.IN_CUBE)));
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
 		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.2, 0.3));

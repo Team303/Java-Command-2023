@@ -129,6 +129,11 @@ public class ArmChain {
         return this;
     }
 
+    public void setGloballyConstrainedGripper(float constraintAngleRadians, float lengthInches) {
+        chain.removeBone(getNumBones() - 1);
+        addGloballyConstrainedGripper(constraintAngleRadians, lengthInches);
+    }
+
     /**
      * Sets a new global angle constraint
      *

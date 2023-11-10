@@ -9,26 +9,30 @@ import com.team303.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.List;
+import com.team303.robot.util.EffectorState;
 
 public class ReachPoint extends CommandBase {
     public Translation3d cartesianCoords;
     private final double TOLERANCE = 6;
+    private EffectorState effectorState;
 
     List<Double> angles;
 
-    public ReachPoint(double x, double z) {
+    public ReachPoint(double x, double z, EffectorState effectorState) {
+        this.effectorState = effectorState;
         this.cartesianCoords = new Translation3d(x, 0.0, z);
         addRequirements(arm);
     }
 
-    public ReachPoint(Translation3d cartesianCoords) {
+    public ReachPoint(Translation3d cartesianCoords, EffectorState effectorState) {
+        this.effectorState = effectorState;
         this.cartesianCoords = cartesianCoords;
         addRequirements(arm);
     }
 
     @Override
     public void execute() {
-        angles = arm.reachEmbedded(cartesianCoords);
+        angles = arm.reachEmbedded(cartesianCoords, effectorState);
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
