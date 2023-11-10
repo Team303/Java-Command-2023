@@ -44,8 +44,8 @@ public class ReachPoint extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         cartesianStorage = new Translation3d(cartesianCoords.getX(), 0, cartesianCoords.getZ());
-        ArmSubsystem.getNinjagoxcoordinate().setDouble(cartesianCoords.getX());
-        ArmSubsystem.getNinjagozcoordinate().setDouble(cartesianCoords.getZ());
+        ArmSubsystem.getXCoordinateTab().setDouble(cartesianCoords.getX());
+        ArmSubsystem.getYCoordinateTab().setDouble(cartesianCoords.getZ());
         
     }
 

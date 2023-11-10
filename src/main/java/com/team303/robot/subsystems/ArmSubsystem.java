@@ -127,11 +127,11 @@ public class ArmSubsystem extends SubsystemBase {
 
 	/* Row 4 Part 2 */
 
-	public static final GenericEntry shoulderEncoderErrorEntry = ARM_TAB.add("Shoulder Encoder Error", false)
+	public static final GenericEntry shoulderEncoderErrorEntry = ARM_TAB.add("Shoulder Encoder Error", 0.0)
 			.withSize(1, 1).withPosition(3, 3).getEntry();
-	public static final GenericEntry elbowEncoderErrorEntry = ARM_TAB.add("Elbow Encoder Error", false).withSize(1, 1)
+	public static final GenericEntry elbowEncoderErrorEntry = ARM_TAB.add("Elbow Encoder Error", 0.0).withSize(1, 1)
 			.withPosition(4, 3).getEntry();
-	public static final GenericEntry wristEncoderErrorEntry = ARM_TAB.add("Wrist Encoder Error", false).withSize(1, 1)
+	public static final GenericEntry wristEncoderErrorEntry = ARM_TAB.add("Wrist Encoder Error", 0.9).withSize(1, 1)
 			.withPosition(5, 3).getEntry();
 
 	/* relative to floor */
@@ -145,33 +145,34 @@ public class ArmSubsystem extends SubsystemBase {
 			.withSize(1, 1)
 			.withPosition(5, 4).getEntry();
 
-	// ninjago coordinates
-	public static final GenericEntry ninjagoXCoordinate = ARM_TAB.add("X Coordinate", 0)
-	.withSize(1, 1)
-	.withPosition(3, 5).getEntry();
+	// coordinates
+	private static final GenericEntry xCoordinateTab = ARM_TAB.add("X Coordinate", 0)
+			.withSize(1, 1)
+			.withPosition(7, 1)
+			.getEntry();
 
-	public static final GenericEntry ninjagoZCoordinate = ARM_TAB.add("Z Coordinate", 0)
-	.withSize(1, 1)
-	.withPosition(4, 5).getEntry();
+	private static final GenericEntry yCoordinateTab = ARM_TAB.add("Z Coordinate", 0)
+			.withSize(1, 1)
+			.withPosition(7, 2)
+			.getEntry();
 
-	// fake ninjago coordinates
-	public static final GenericEntry fakeNinjagoXCoordinate = ARM_TAB.add("Fake X Coordinate", 0)
-	.withSize(1, 1)
-	.withPosition(3, 5).getEntry();
+	//new coordinates
+	public static final GenericEntry newXCoordinateTab = ARM_TAB.add("Fake X Coordinate", 0)
+			.withSize(1, 1)
+			.withPosition(8, 1)
+			.getEntry();
 
-	public static final GenericEntry fakeNinjagoZCoordinate = ARM_TAB.add("Fake Z Coordinate", 0)
-	.withSize(1, 1)
-	.withPosition(4, 5).getEntry();
+	public static final GenericEntry newZCoordinateTab = ARM_TAB.add("Fake Z Coordinate", 0)
+			.withSize(1, 1)
+			.withPosition(8, 2)
+			.getEntry();
 
-
-	
-
-	public static GenericEntry getNinjagoxcoordinate() {
-		return ninjagoXCoordinate;
+	public static GenericEntry getXCoordinateTab() {
+		return xCoordinateTab;
 	}
 
-	public static GenericEntry getNinjagozcoordinate() {
-		return ninjagoZCoordinate;
+	public static GenericEntry getYCoordinateTab() {
+		return yCoordinateTab;
 	}
 
 	public static ShuffleboardTab getArmTab() {
@@ -837,9 +838,9 @@ public class ArmSubsystem extends SubsystemBase {
 		wristJoint.setSpeed(!wristJoint.atHardLimit() ? -Math.abs(wristSpeed) : 0);
 	}
 
-	public static void lloydkaijayzanecolenyamasterwudarethninjagorulesaryasucksaravruleshappybirthdayarav() {
-		ArmSubsystem.ninjagoXCoordinate.setDouble(ArmSubsystem.fakeNinjagoXCoordinate.getDouble(10));
-		ArmSubsystem.ninjagoZCoordinate.setDouble(ArmSubsystem.fakeNinjagoZCoordinate.getDouble(10));
+	public static void setReachPoint() {
+		ArmSubsystem.xCoordinateTab.setDouble(ArmSubsystem.newXCoordinateTab.getDouble(10));
+		ArmSubsystem.yCoordinateTab.setDouble(ArmSubsystem.newZCoordinateTab.getDouble(10));
 
 	}
 
@@ -930,7 +931,7 @@ public class ArmSubsystem extends SubsystemBase {
 		wristAbsoluteAngleFloorEntry.setDouble(90 - (Math.toDegrees(shoulderJoint.getJointAngle())
 				+ Math.toDegrees(elbowJoint.getJointAngle()) + Math.toDegrees(wristJoint.getJointAngle())));
 
-		cartesianStorage = new Translation3d(	ninjagoXCoordinate.getDouble(cartesianStorage.getX()), 0, ninjagoZCoordinate.getDouble(cartesianStorage.getZ()));
+		cartesianStorage = new Translation3d(xCoordinateTab.getDouble(cartesianStorage.getX()), 0, yCoordinateTab.getDouble(cartesianStorage.getZ()));
  
 		Logger.getInstance().recordOutput("MyMechanism", this.armSimulation);
 	}

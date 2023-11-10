@@ -25,6 +25,6 @@ public class ShuffleBoardPoint extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        ArmSubsystem.lloydkaijayzanecolenyamasterwudarethninjagorulesaryasucksaravruleshappybirthdayarav();
+        ArmSubsystem.setReachPoint();
     }
 }

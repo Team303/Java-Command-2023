@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.RobotMap.Swerve;
 import com.team303.robot.commands.arm.ReachPoint;
+import com.team303.robot.commands.arm.ShuffleBoardPoint;
 import com.team303.robot.commands.drive.AutoLevelBasic;
 import com.team303.robot.commands.arm.HomeArm;
 import com.team303.robot.Robot;
@@ -141,6 +142,7 @@ public class Autonomous {
                 create("Forward and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupScore)));
                 pathGroupLevelScore = PathPlanner.loadPathGroup("Level and Backup and Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
                 create("Auto Level and Score", () -> new SequentialCommandGroup(autoBuilder.fullAuto(pathGroupLevelScore), new AutoLevelBasic()));
+                create("Reach Point Test", () -> new ShuffleBoardPoint());
                 // create("Score Cube", () -> new ReachPoint(73, 15));
                 // pathGroupScore = PathPlanner.loadPathGroup("Score", new PathConstraints(3, Swerve.MAX_VELOCITY));
 

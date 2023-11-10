@@ -169,7 +169,7 @@ public class Robot extends LoggedRobot {
 
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
-
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		Robot.manipulator.setDefaultCommand(new DefaultClaw());
 		// Robot.intake.setDefaultCommand(new DefaultIntake());
@@ -188,7 +188,7 @@ public class Robot extends LoggedRobot {
 		swerve.resetOdometry();
 
 		// Dont do IK during auto
-		Robot.arm.removeDefaultCommand();
+		// Robot.arm.removeDefaultCommand();
 		// Command startCommand = new SequentialCommandGroup(new ElbowUp(30), new
 		// HomeArm());
 		// if (manipulator instanceof ClawSubsystem) {
@@ -234,7 +234,7 @@ public class Robot extends LoggedRobot {
 		autonomousCommand.cancel();
 		}
 
-		 Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
  //if (operatorController.getLeftTriggerAxis() < 0.9) {
 		// Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		// } else {

@@ -59,8 +59,8 @@ public class DefaultIKControlCommand extends CommandBase {
 
         cartesianStorage = new Translation3d(x, 0.0, z);
 
-        ArmSubsystem.getNinjagoxcoordinate().setDouble(x);
-        ArmSubsystem.getNinjagozcoordinate().setDouble(z);
+        ArmSubsystem.getXCoordinateTab().setDouble(x);
+        ArmSubsystem.getYCoordinateTab().setDouble(z);
 
 
         arm.reachEmbedded(cartesianStorage);
