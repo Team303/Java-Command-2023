@@ -79,7 +79,6 @@ public class Autonomous {
                 // eventMap.put("Top Cube", new SequentialCommandGroup(new ReachPoint(42, 36), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 // eventMap.put("Middle Cone", new SequentialCommandGroup(new ReachPoint(24, 25), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
                 // eventMap.put("Bottom Hybrid", new SequentialCommandGroup(new ReachPoint(16, 5), new InstantCommand(Robot.claw::toggleState))); //TEST THESE
-                eventMap.put("Toggle State", new InstantCommand(Robot.manipulator::nextState));
 
                 autoBuilder = new SwerveAutoBuilder(
                                 // swerve::getRobotPose, // Pose2d supplier
@@ -148,12 +147,12 @@ public class Autonomous {
                 create("Reach Point Test", () -> new ShuffleBoardPoint());
 
                 // intake ground
-                create("In Cube Test", () -> new ReachPoint(22, 16, EffectorState.IN_CUBE));
+                create("In Cube Test", () -> new ReachPoint(22, 16));
                 
                 // outtake high cube
-                create("Out Cube Test", () -> new ReachPoint(73, 15, EffectorState.OUT_CUBE));
+                create("Out Cube Test", () -> new ReachPoint(73, 15));
                 // outtake high cone
-                create("Out Cone Test", () -> new ReachPoint(73, 15, EffectorState.OUT_CONE));
+                create("Out Cone Test", () -> new ReachPoint(73, 15));
 
         }
 }

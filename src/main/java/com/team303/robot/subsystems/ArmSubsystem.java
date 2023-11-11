@@ -12,6 +12,7 @@ import com.team303.lib.kinematics.ArmChain;
 import com.team303.lib.kinematics.FabrikController;
 import com.team303.robot.Robot;
 import com.team303.robot.RobotMap;
+import static com.team303.robot.autonomous.AutonomousProgram.AUTO_TAB;
 import com.team303.robot.RobotMap.Arm;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -42,13 +43,12 @@ import com.team303.robot.util.EffectorState;
 import java.util.List;
 
 import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianStorage;
-import static com.team303.robot.Robot.manipulator;
 
 public class ArmSubsystem extends SubsystemBase {
 
 	public static final ShuffleboardTab ARM_TAB = Shuffleboard.getTab("Arm");
 
-	private EffectorState effectorState = EffectorState.IN_CONE;
+	public static EffectorState effectorState = EffectorState.IN_CONE;
 
 	/* Row 1 */
 
@@ -168,6 +168,11 @@ public class ArmSubsystem extends SubsystemBase {
 			.withSize(1, 1)
 			.withPosition(8, 2)
 			.getEntry();
+	
+	public static final GenericEntry ninjaStatus = AUTO_TAB.add("Ninja Status", "Cone Intake")
+	.withSize(1, 1)
+	.withPosition(2, 2)
+	.getEntry();
 
 	public static GenericEntry getXCoordinateTab() {
 		return xCoordinateTab;
@@ -180,6 +185,7 @@ public class ArmSubsystem extends SubsystemBase {
 	public static ShuffleboardTab getArmTab() {
 		return ARM_TAB;
 	}
+
 
 	// radians/sec
 	public static final double MAX_VELOCITY = (2 * Math.PI) * 0.35;
@@ -367,6 +373,7 @@ public class ArmSubsystem extends SubsystemBase {
 		private final RelativeEncoder encoder = motor.getEncoder();
 
 		private final SparkMaxLimitSwitch switchReverse = motor.getReverseLimitSwitch(Type.kNormallyOpen);
+		private final SparkMaxLimitSwitch switchForward = motor.getForwardLimitSwitch(Type.kNormallyOpen);
 
 		private final ProfiledPIDController controller = new ProfiledPIDController(0.7, 0.05, 0,
 				new TrapezoidProfile.Constraints(MAX_VELOCITY_WRIST, MAX_ACCELERATION));
@@ -403,7 +410,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 		@Override
 		public boolean atHardLimit() {
-			return switchReverse.isPressed();
+			return switchReverse.isPressed() || switchForward.isPressed();
 		}
 
 		@Override
@@ -694,11 +701,14 @@ public class ArmSubsystem extends SubsystemBase {
 		// }
 
 		// Set motor speeds
-		// if (Math.abs(Math.toDegrees(elbowJoint.getJointAngle() - desiredRadianAngles.get(1))) < 20) {
-		shoulderJoint.setSpeed(shoulderSpeed);
-		// }
-		elbowJoint.setSpeed(elbowSpeed);
-		wristJoint.setSpeed(wristSpeed);
+		if (!shoulderJoint.atHardLimit())
+			shoulderJoint.setSpeed(shoulderSpeed);
+
+		if (!elbowJoint.atHardLimit())
+			elbowJoint.setSpeed(elbowSpeed);
+
+		if (!wristJoint.atHardLimit())
+			wristJoint.setSpeed(wristSpeed);
 
 		// Update shuffleboard
 		shoulderSpeedEntry.setDouble(shoulderSpeed);
@@ -774,8 +784,12 @@ public class ArmSubsystem extends SubsystemBase {
 		boolean reverseElbowLimit = Math.signum(elbowSpeed) < 0
 				&& elbowJoint.atSoftReverseLimit();
 
-		shoulderJoint.setSpeed(shoulderSpeed);
-		elbowJoint.setSpeed(elbowSpeed);
+		if (!shoulderJoint.atHardLimit())
+			shoulderJoint.setSpeed(shoulderSpeed);
+
+		if (!elbowJoint.atHardLimit())
+			elbowJoint.setSpeed(elbowSpeed);
+
 		wristJoint.setSpeed(0);
 
 		// Update shuffleboard
@@ -822,7 +836,9 @@ public class ArmSubsystem extends SubsystemBase {
 
 		shoulderJoint.setSpeed(0);
 		elbowJoint.setSpeed(0);
-		wristJoint.setSpeed(wristSpeed);
+
+		if (!wristJoint.atHardLimit())
+			wristJoint.setSpeed(wristSpeed);
 
 		wristSpeedEntry.setDouble(wristSpeed);
 
@@ -924,11 +940,9 @@ public class ArmSubsystem extends SubsystemBase {
 		// Move wrist
 		if (!wristJoint.atHardLimit()) {
 			wristJoint.setSpeed(-0.3);
-		} else if (Robot.manipulator instanceof IntakeSubsystem) {
-			wristJoint.setSpeed(-0.15);
 		} else {
-			wristJoint.setSpeed(0);
-		}
+			wristJoint.setSpeed(-0.15);
+		} 
 	}
 
 	/**
@@ -1035,6 +1049,25 @@ public class ArmSubsystem extends SubsystemBase {
 		shoulderEncoderErrorEntry.setDouble(shoulderJoint.getJointAngle() - shoulderJoint.getEncoderPosition());
 		elbowEncoderErrorEntry.setDouble(elbowJoint.getJointAngle() - elbowJoint.getEncoderPosition());
 		wristEncoderErrorEntry.setDouble(wristJoint.getJointAngle() - wristJoint.getEncoderPosition());
+
+		switch(ArmSubsystem.effectorState) {
+			case IN_CUBE: {
+				ninjaStatus.setString("Cube Intake");
+				break;
+			}
+			case IN_CONE: {
+				ninjaStatus.setString("Cone Intake");
+				break;
+			}
+			case OUT_CUBE: {
+				ninjaStatus.setString("Cube Outtake");
+				break;
+			}
+			case OUT_CONE: {
+				ninjaStatus.setString("Cone Outtake");
+				break;
+			}
+		}
 
 		shoulderAbsoluteAngleFloorEntry.setDouble(90 - Math.toDegrees(shoulderJoint.getJointAngle()));
 		elbowAbsoluteAngleFloorEntry.setDouble(

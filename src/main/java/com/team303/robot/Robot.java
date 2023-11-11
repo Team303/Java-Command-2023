@@ -12,6 +12,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
+import static com.team303.robot.subsystems.IntakeSubsystem.state;
 import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.autonomous.AutonomousProgram;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -35,7 +36,6 @@ import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.subsystems.ManipulatorSubsystem;
 import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.arm.ReachPoint;
-import com.team303.robot.commands.arm.ReachPointContinuous;
 import com.team303.robot.commands.intake.DefaultIntake;
 import com.team303.robot.subsystems.ClawSubsystem.ClawState;
 import com.team303.robot.subsystems.IntakeSubsystem.IntakeState;
@@ -43,7 +43,6 @@ import com.team303.robot.subsystems.ManipulatorSubsystem.GamePieceType;
 import com.team303.robot.util.EffectorState;
 
 import frc.robot.BuildConstants;
-import com.team303.robot.commands.arm.ElbowUp;
 import com.team303.robot.commands.arm.ReachAngles;
 import static com.team303.robot.subsystems.ClawSubsystem.clawStateChooser;
 import static com.team303.robot.subsystems.ClawSubsystem.clawModeChooser;
@@ -67,6 +66,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.XboxController;
 import com.team303.robot.commands.arm.ShuffleBoardPoint;
+import com.team303.robot.commands.arm.ninjagoReach;
 
 public class Robot extends LoggedRobot {
 
@@ -83,7 +83,7 @@ public class Robot extends LoggedRobot {
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ManipulatorSubsystem manipulator = new ClawSubsystem();
+	public static final IntakeSubsystem intake = new IntakeSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	// public static final ClawSubsystem claw = null; //new ClawSubsystem();
 	// public static final IntakeSubsystem intake = new IntakeSubsystem();
@@ -173,7 +173,7 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 		Robot.arm.setDefaultCommand(new DefaultIKControlCommand(false));
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.manipulator.setDefaultCommand(new DefaultClaw());
+		Robot.intake.setDefaultCommand(new DefaultIntake());
 		// Robot.intake.setDefaultCommand(new DefaultIntake());
 
 		// add Autos to Shuffleboard
@@ -191,21 +191,6 @@ public class Robot extends LoggedRobot {
 
 		// Dont do IK during auto
 		// Robot.arm.removeDefaultCommand();
-		// Command startCommand = new SequentialCommandGroup(new ElbowUp(30), new
-		// HomeArm());
-		// if (manipulator instanceof ClawSubsystem) {
-		ClawSubsystem stateClaw = (ClawSubsystem) manipulator;
-		stateClaw.state = clawStateChooser.getSelected();
-		stateClaw.mode = clawModeChooser.getSelected();
-		// startCommand = stateClaw.state==ClawState.OPEN ? startCommand = new HomeArm()
-		// :
-		// new SequentialCommandGroup(new ElbowUp(45), new HomeArm());
-		// } else {
-		// IntakeSubsystem stateIntake = (IntakeSubsystem) manipulator;
-		// stateIntake.state = intakeStateChooser.getSelected();
-		// stateIntake.mode = intakeModeChooser.getSelected();
-		// // startCommand = Commands.none();
-		// }
 
 		// Chooses which auto we do from Shuffleboard
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
@@ -282,8 +267,8 @@ private void configureButtonBindings() {
 		// InstantCommand(operatorGrid::queuePlacement));
 
 		// Claw Control
-		operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
-	operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
+		// 	operatorController.b().onTrue(new InstantCommand(manipulator::nextState));
+		// operatorController.a().onTrue(new InstantCommand(manipulator::toggleMode));
 		// operatorController.rightBumper().onTrue(Commands.runOnce(() ->
 		// arm.setClawAngleConstraint((float)Math.toRadians(0)))).onFalse(Commands.runOnce(()
 		// -> arm.setClawAngleConstraint((float)Math.toRadians(-90))));
@@ -296,16 +281,25 @@ private void configureButtonBindings() {
 		// // Bottom
 		// operatorController.pov(270)
 		// 		.toggleOnTrue(new SequentialCommandGroup(new HomeArm(), new ReachAngles(0.503, 1.739, ninjago)));
+		operatorController.a().toggleOnTrue(new InstantCommand(() -> intake.setState(IntakeState.INTAKE)))
+				.toggleOnFalse(new InstantCommand(() -> intake.setState(IntakeState.NONE)));
+		operatorController.b().toggleOnTrue(new InstantCommand(() -> intake.setState(IntakeState.OUTTAKE)))
+				.toggleOnFalse(new InstantCommand(() -> intake.setState(IntakeState.NONE)));
 
+
+		operatorController.rightBumper().toggleOnTrue(new InstantCommand(() -> {ArmSubsystem.effectorState = EffectorState.IN_CONE;}));
+		operatorController.leftBumper().toggleOnTrue(new InstantCommand(() -> {ArmSubsystem.effectorState = EffectorState.IN_CUBE;}));
+		operatorController.rightTrigger().toggleOnTrue(new InstantCommand(() -> {ArmSubsystem.effectorState = EffectorState.OUT_CONE;}));
+		operatorController.leftTrigger().toggleOnTrue(new InstantCommand(() -> {ArmSubsystem.effectorState = EffectorState.OUT_CUBE;}));
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ReachPoint(73, 15, EffectorState.OUT_CUBE).repeatedly());
+		operatorController.pov(0).whileTrue(new ninjagoReach(73, 15).repeatedly());
 
-		operatorController.pov(90).whileTrue(new ReachPoint(50, 42.5, EffectorState.OUT_CUBE).repeatedly());
+		operatorController.pov(90).whileTrue(new ninjagoReach(50, 42.5).repeatedly());
 		// Mid Cone
-		operatorController.pov(180).whileTrue(new ReachPoint(73, 39, EffectorState.OUT_CUBE).repeatedly());
+		operatorController.pov(180).whileTrue(new ninjagoReach(73, 39).repeatedly());
 		// Bottom
 		operatorController.pov(270)
-						.onTrue(new SequentialCommandGroup(new HomeArm(), new ReachPoint(28, 10, EffectorState.IN_CUBE)));
+						.onTrue(new SequentialCommandGroup(new HomeArm(), new ninjagoReach(28, 10)));
 
 		// operatorController.x().whileTrue(new HomeArmContinuous());
 		operatorController.x().toggleOnTrue(new HomeArmContinuous(0.2, 0.2, 0.3));

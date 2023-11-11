@@ -13,26 +13,23 @@ import com.team303.robot.util.EffectorState;
 
 public class ReachPoint extends CommandBase {
     public Translation3d cartesianCoords;
-    private final double TOLERANCE = 6;
-    private EffectorState effectorState;
+    private final double TOLERANCE = 3;
 
     List<Double> angles;
 
-    public ReachPoint(double x, double z, EffectorState effectorState) {
-        this.effectorState = effectorState;
+    public ReachPoint(double x, double z) {
         this.cartesianCoords = new Translation3d(x, 0.0, z);
         addRequirements(arm);
     }
 
-    public ReachPoint(Translation3d cartesianCoords, EffectorState effectorState) {
-        this.effectorState = effectorState;
+    public ReachPoint(Translation3d cartesianCoords) {
         this.cartesianCoords = cartesianCoords;
         addRequirements(arm);
     }
 
     @Override
     public void execute() {
-        angles = arm.reachEmbedded(cartesianCoords, effectorState);
+        angles = arm.reachEmbedded(cartesianCoords, ArmSubsystem.effectorState);
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
