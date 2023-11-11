@@ -5,12 +5,14 @@ import static com.team303.robot.commands.arm.DefaultIKControlCommand.cartesianSt
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Timer;
 
 public class HomeArmContinuous extends CommandBase {
 
     double shoulderSpeed;
     double elbowSpeed;
     double wristSpeed;
+    private double lastTime = Timer.getFPGATimestamp();
 
     public HomeArmContinuous(double shoulderSpeed, double elbowSpeed, double wristSpeed) {
         addRequirements(arm);
@@ -21,7 +23,13 @@ public class HomeArmContinuous extends CommandBase {
 
     @Override
     public void execute() {
-        arm.homeJoints(this.shoulderSpeed, this.elbowSpeed, this.wristSpeed);
+        
+        if (Timer.getFPGATimestamp() - lastTime < 3) {
+            arm.homeJoints(this.shoulderSpeed, this.elbowSpeed, this.wristSpeed);
+        } else {
+            arm.homeJoints(this.shoulderSpeed, this.elbowSpeed, 0);
+        }
+        
     }
 
     @Override

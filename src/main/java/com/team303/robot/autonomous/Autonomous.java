@@ -16,6 +16,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.RobotMap.Swerve;
 import com.team303.robot.commands.arm.ReachPoint;
 import com.team303.robot.commands.arm.ShuffleBoardPoint;
+import com.team303.robot.commands.arm.ninjagoReach;
 import com.team303.robot.commands.drive.AutoLevelBasic;
 import com.team303.robot.commands.arm.HomeArm;
 import com.team303.robot.Robot;
@@ -147,12 +148,12 @@ public class Autonomous {
                 create("Reach Point Test", () -> new ShuffleBoardPoint());
 
                 // intake ground
-                create("In Cube Test", () -> new ReachPoint(22, 16));
+                create("In Cube Test", () -> new ninjagoReach(28, 10));
                 
                 // outtake high cube
-                create("Out Cube Test", () -> new ReachPoint(73, 15));
+                create("Out Cube Test", () -> new ninjagoReach(73, 15));
                 // outtake high cone
-                create("Out Cone Test", () -> new ReachPoint(73, 15));
+                create("Out Cone Test", () -> new ninjagoReach(73, 15));
 
         }
 }

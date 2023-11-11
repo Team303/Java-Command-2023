@@ -11,25 +11,26 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.List;
 import com.team303.robot.util.EffectorState;
 
-public class ReachPointShoulderElbow extends CommandBase {
+public class ReachPointElbow extends CommandBase {
     public Translation3d cartesianCoords;
     private final double TOLERANCE = 3;
 
     List<Double> angles;
 
-    public ReachPointShoulderElbow(double x, double z) {
+    public ReachPointElbow(double x, double z) {
         this.cartesianCoords = new Translation3d(x, 0.0, z);
         addRequirements(arm);
     }
 
-    public ReachPointShoulderElbow(Translation3d cartesianCoords) {
+    public ReachPointElbow(Translation3d cartesianCoords) {
         this.cartesianCoords = cartesianCoords;
         addRequirements(arm);
     }
 
     @Override
     public void execute() {
-        angles = arm.reachShoulderElbow(cartesianCoords, ArmSubsystem.effectorState);
+        angles = arm.reachElbow(cartesianCoords, ArmSubsystem.effectorState);
+        System.out.println("Reach Elbow");
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
@@ -37,8 +38,7 @@ public class ReachPointShoulderElbow extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(Math.toDegrees(arm.shoulderJoint.getJointAngle() - angles.get(0))) < TOLERANCE &&
-                Math.abs(Math.toDegrees(arm.elbowJoint.getJointAngle() - angles.get(1))) < TOLERANCE;
+        return Math.abs(Math.toDegrees(arm.elbowJoint.getJointAngle() - angles.get(1))) < TOLERANCE;
     }
 
     @Override

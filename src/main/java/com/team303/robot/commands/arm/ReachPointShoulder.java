@@ -11,40 +11,42 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.List;
 import com.team303.robot.util.EffectorState;
 
-public class ReachPointWrist extends CommandBase {
+public class ReachPointShoulder extends CommandBase {
     public Translation3d cartesianCoords;
     private final double TOLERANCE = 3;
 
     List<Double> angles;
 
-    public ReachPointWrist(double x, double z) {
+    public ReachPointShoulder(double x, double z) {
         this.cartesianCoords = new Translation3d(x, 0.0, z);
         addRequirements(arm);
     }
 
-    public ReachPointWrist(Translation3d cartesianCoords) {
+    public ReachPointShoulder(Translation3d cartesianCoords) {
         this.cartesianCoords = cartesianCoords;
         addRequirements(arm);
     }
 
     @Override
     public void execute() {
-        angles = arm.reachWrist(cartesianCoords, ArmSubsystem.effectorState);
-        System.out.println("Reach Wrist");
+        angles = arm.reachShoulder(cartesianCoords, ArmSubsystem.effectorState);
+        System.out.println("Reach Shoulder");
         Robot.arm.effectorRoot.setPosition(
                 (Arm.SIMULATION_OFFSET + 150) / Arm.SIMULATION_SCALE + cartesianCoords.getX(),
                 Arm.SIMULATION_OFFSET / Arm.SIMULATION_OFFSET + cartesianStorage.getZ());
     }
 
-    // @Override
-    // public boolean isFinished() {
-    //     return Math.abs(Math.toDegrees(arm.wristJoint.getJointAngle() - angles.get(2))) < TOLERANCE;
-    // }
+    @Override
+    public boolean isFinished() {
+        return Math.abs(Math.toDegrees(arm.shoulderJoint.getJointAngle() - angles.get(0))) < TOLERANCE;
+    }
 
     @Override
     public void end(boolean interrupted) {
         cartesianStorage = new Translation3d(cartesianCoords.getX(), 0, cartesianCoords.getZ());
         ArmSubsystem.getXCoordinateTab().setDouble(cartesianCoords.getX());
         ArmSubsystem.getYCoordinateTab().setDouble(cartesianCoords.getZ());
+        
     }
+
 }

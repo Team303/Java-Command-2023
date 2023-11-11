@@ -292,11 +292,11 @@ private void configureButtonBindings() {
 		operatorController.rightTrigger().toggleOnTrue(new InstantCommand(() -> {ArmSubsystem.effectorState = EffectorState.OUT_CONE;}));
 		operatorController.leftTrigger().toggleOnTrue(new InstantCommand(() -> {ArmSubsystem.effectorState = EffectorState.OUT_CUBE;}));
 		// Top Cone
-		operatorController.pov(0).whileTrue(new ninjagoReach(73, 15).repeatedly());
+		operatorController.pov(0).onTrue(new ninjagoReach(73, 15).repeatedly());
 
-		operatorController.pov(90).whileTrue(new ninjagoReach(50, 42.5).repeatedly());
+		operatorController.pov(90).onTrue(new ninjagoReach(50, 42.5).repeatedly());
 		// Mid Cone
-		operatorController.pov(180).whileTrue(new ninjagoReach(73, 39).repeatedly());
+		operatorController.pov(180).onTrue(new ninjagoReach(73, 39).repeatedly());
 		// Bottom
 		operatorController.pov(270)
 						.onTrue(new SequentialCommandGroup(new HomeArm(), new ninjagoReach(28, 10)));
