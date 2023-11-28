@@ -233,11 +233,11 @@ public class SwerveSubsystem extends SubsystemBase {
 		aprilTagField = initialLayout;
 		// photonvision pose estimator
 
-		// if (Robot.isReal()) {
-		// 	visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
-		// 			Robot.photonvision.getCamera(CameraName.CAM1),
-		// 			new Transform3d(new Translation3d(), new Rotation3d()));
-		// }
+		if (Robot.isReal()) {
+			visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+					Robot.photonvision.getCamera(CameraName.CAM1),
+					new Transform3d(new Translation3d(), new Rotation3d()));
+		}
 		poseEstimator = new SwerveDrivePoseEstimator(
 				kinematics,
 				new Rotation2d(),
@@ -452,18 +452,19 @@ public class SwerveSubsystem extends SubsystemBase {
 		// poseEstimator.update(
 		// 		Rotation2d.fromDegrees(-Robot.navX.getAngle()),
 		// 		Robot.swerve.getModulePositions());
-		// Optional<EstimatedRobotPose> result =
-		// 		getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+		Optional<EstimatedRobotPose> result =
+				getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+		EstimatedRobotPose visionPoseEstimate=null;
 
-		// if (result.isPresent()) {
-		// 	EstimatedRobotPose visionPoseEstimate = result.get();
-		// 	poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-		// 	visionPoseEstimate.timestampSeconds);
-		// }
-		// poseEstimator.update(
-		// Rotation2d.fromDegrees(-Robot.navX.getAngle()),
-		// Robot.swerve.getModulePositions());
-		// field2d.setRobotPose(getRobotPose());
+		if (result.isPresent()) {
+			 visionPoseEstimate = result.get();
+			poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+			visionPoseEstimate.timestampSeconds);
+		}
+		poseEstimator.update(
+		Rotation2d.fromDegrees(-Robot.navX.getAngle()),
+		Robot.swerve.getModulePositions());
+		field2d.setRobotPose(getRobotPose());
 
 		lastPeriodic = timer.get();
 
@@ -484,6 +485,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.getInstance().recordOutput("Velocity X", Robot.navX.getVelocityX());
 		Logger.getInstance().recordOutput("Raw Acceleration", Robot.navX.getRawAccelX());
 		Logger.getInstance().recordOutput("Odometry", pose);
+		Logger.getInstance().recordOutput("Vision Estimate",visionPoseEstimate.estimatedPose);
 		SmartDashboard.putNumber("Pose X", pose.getX());
 		SmartDashboard.putNumber("Pose Y", pose.getY());
 		// Logger.getInstance().recordOutput("Odometry 2", getRobotPose());

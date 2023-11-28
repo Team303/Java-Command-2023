@@ -74,7 +74,7 @@ public class Robot extends LoggedRobot {
 	public static final AHRS navX = new AHRS();
 
 	/* Robot Modules */
-	public static final PhotonvisionModule photonvision = null; // new Photonvision();
+	public static final PhotonvisionModule photonvision = new PhotonvisionModule();
 	public static final UltrasonicModule ultrasonic = null; // new Ultrasonic(0, 4);
 	public static final OperatorGridModule operatorGrid = new OperatorGridModule();
 
