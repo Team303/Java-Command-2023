@@ -55,7 +55,7 @@ import frc.robot.BuildConstants;
 public class Robot extends LoggedRobot {
 
 	/* roboRIO Sensors */
-	public static final AHRS navX = new AHRS();=
+	public static final AHRS navX = new AHRS();
 
 	/* Robot Modules */
 	public static final PhotonvisionModule photonvision = null; // new Photonvision();
